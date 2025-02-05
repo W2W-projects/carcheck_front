@@ -57,6 +57,7 @@ const premium_features = reactive(featureData.features.premium_features);
           :class="[plan.plan_code === 'premium' ? 'text-[#FF7400]' : 'text-[#0F1829]']">{{
             plan.name }}</h1>
         <div class="flex flex-row items-center justify-start mt-6 space-x-4">
+
           <div class="flex flex-row items-start justify-center">
             <h3 class="text-5xl">£{{ plan.amount_trial }}</h3>
           </div>
@@ -88,6 +89,7 @@ const premium_features = reactive(featureData.features.premium_features);
               'text-white': selectedPlan === plan.plan_code,
               'text-[#0F1829]': selectedPlan !== plan.plan_code,
               'text-white': plan.plan_code === 'premium',
+
             }" class="text-[#0F1829] text-sm ml-2">{{ b_feature.title }}</h3>
           </div>
         </div>
@@ -118,9 +120,6 @@ const premium_features = reactive(featureData.features.premium_features);
             }" class="text-[#0F1829] text-sm ml-2">{{ b_feature.title }}</h3>
           </div>
         </div>
-
-
-
 
       </div>
 

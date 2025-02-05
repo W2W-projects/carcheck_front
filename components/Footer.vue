@@ -3,8 +3,7 @@ import { useAuthStore } from '@/stores/auth';
 import { computed } from 'vue';
 
 const authStore = useAuthStore();
-
-const currentUser = computed(() => authStore.getCurrentUser);
+const currentUser = computed(()=> authStore.getCurrentUser);
 
 const startCheckIn = () => {
   if (currentUser.value && Object.keys(currentUser.value).length > 0) {
@@ -145,4 +144,5 @@ const startCheckIn = () => {
       </div>
     </div>
   </footer>
+
 </template>
