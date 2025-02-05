@@ -98,12 +98,12 @@
             {
                 "id": 5,
                 "title": "Tax Calculation",
-                "icon": "warning.svg"
+                "icon": "tax-record-icon.svg"
             },
             {
                 "id": 6,
                 "title": "Technical data",
-                "icon": "warning.svg"
+                "icon": "technical-data.svg"
             }
         ],
         "standerd_features": [
