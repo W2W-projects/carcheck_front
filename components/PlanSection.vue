@@ -125,7 +125,8 @@ const premium_features = reactive(featureData.features.premium_features);
 
     </div>
 
-    <div class="w-full h-[23.5rem] bg-[#0F1829] mt-14 rounded-t-[27px] px-[4rem] flex flex-col justify-center">
+    <div
+      class="w-full h-[23.5rem] bg-[#0F1829] mt-14 rounded-t-[27px] px-[4rem] flex flex-col justify-center text-white">
       <p class="text-center text-3xl font-bold">Pick your <span class="text-[#FF7400]">ideal trial plan</span> above.
       </p>
       <p class="mt-8 text-xl font-extralight">After the 48-hour trial period expires, unless you cancel, you'll be
