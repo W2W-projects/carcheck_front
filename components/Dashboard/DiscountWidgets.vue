@@ -16,7 +16,6 @@ const customPlans = computed(() => discountWidgetsStore.customPlans);
 
 const mappedPlans = computed(() =>
   customPlans.value.map(item => {
-    // Mutate the original object by adding the new key:
     item.pricePerCheck =
       item.reports_count && item.price_after_discount
       ? Number((item.price_after_discount / item.reports_count).toFixed(2))
@@ -24,9 +23,6 @@ const mappedPlans = computed(() =>
     return item;
   })
 );
-// item.reports_count && item.price_after_discount
-//         ? item.price_after_discount / item.reports_count
-//         : null,
 </script>
 <template>
     <div class="h-[11.5rem] bg-white rounded-xl flex justify-between">

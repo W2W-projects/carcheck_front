@@ -144,6 +144,7 @@ const downloadReport = async () => {
             return navigateTo('/payment/plans');
         }
     } catch (error) {
+        debugger
         getFullReportY.value = "Get full report";
         errorMessage.value = error?.data?.message || 'Error occurred during the subscription check.';
         getFullReportButton.value = "Get full report";
@@ -251,11 +252,18 @@ watch(
             {{ getFullReportY }}
         </button> 
         <p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
+
         <NuxtLink 
             to="/payment/plans" 
             v-if="hasSubscription?.active" 
             class="ml-auto block text-right text-blue-500 hover:underline">
             Buy Single Offer
+        </NuxtLink>
+        <NuxtLink 
+            to="/payment/plans" 
+            v-if="hasSubscription?.subscription == null" 
+            class="ml-auto block text-right text-blue-500 hover:underline">
+            Buy Plan
         </NuxtLink>
     </div>
 </template>

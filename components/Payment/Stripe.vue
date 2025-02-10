@@ -144,7 +144,6 @@ async function handleCheckoutClick() {
                 }
                 setTimeout(() => {
                     buttonProcess.value = "DONE!";
-                    successMessage.value = "Payment done successfully.";
                     navigateTo('/report');
                 }, 3000);
             }else{
@@ -179,6 +178,7 @@ async function createSubscription(selectedPlan) {
             plan_id: selectedPlan.id,
         });
         if(response.success){
+            successMessage.value = "Payment done successfully.";
             buttonProcess.value = "DONE!";
         }
         let payload = response.payload;
@@ -345,9 +345,7 @@ const planPrice = computed(() => {
                             <div class="alert alert-danger" v-if="errorMessage">
                                 <span class="alert alert-danger">{{ errorMessage }}</span>
                             </div>
-                            <div class="alert alert-success" v-if="successMessage">
-                                <span class="alert alert-success">{{ successMessage }}</span>
-                            </div>
+                            
                             <div class="mb-4 w-full">
                                 <label for="cardholder-name" class="block mb-2 text-sm font-bold">Cardholder's Name</label>
                                 <div class="flex items-center py-1 border-2 border-[#4A2EB6] w-full overflow-hidden ">
@@ -407,6 +405,12 @@ const planPrice = computed(() => {
                             </div>
 
                             <div class="flex items-centder justify-dcenter h-12 mt-5">
+                                <div v-if="successMessage" 
+                                    class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" 
+                                    role="alert">
+                                    <span class="block sm:inline">{{ successMessage }}</span>
+                                    <br>
+                                </div>
                                 <button type="submit"
                                     class="px-3 py-2 text-sm font-medium text-center inline-flex items-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 
                                     focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">

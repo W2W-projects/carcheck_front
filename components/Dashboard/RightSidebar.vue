@@ -1,3 +1,33 @@
+<script lang="ts" setup>
+const full_history = [
+  {
+    title: 'Damage Check',
+    icon: '/images/svg/icon-damage-check.svg',
+  },
+  {
+    title: 'Owners History',
+    icon: '/images/svg/icon-owners-history.svg',
+  },
+  {
+    title: 'Mileage History',
+    icon: '/images/svg/icon-mileage-history.svg',
+  },
+  {
+    title: 'Car Features',
+    icon: '/images/svg/icon-car-features.svg',
+  },
+  {
+    title: 'Theft Check',
+    icon: '/images/svg/icon-theft-check.svg',
+  },
+  {
+    title: 'MOT History',
+    icon: '/images/svg/icon-mot-history.svg',
+  },
+];
+</script>
+
+
 <template>
     <div class="flex flex-col bg-city bg-white text-black h-full w-[20rem] rounded-lg px-9 py-7 relative">
       <div>

@@ -1,4 +1,14 @@
 <script lang="ts" setup>
+import { useAuthStore } from "@/stores/auth";
+
+const authStore = useAuthStore()
+const user = authStore.user;
+
+function makeLogout(){
+  if(window.confirm("Are you sure you want to log out?"))
+    authStore.logout();
+}
+
 const sideBarData = [
   {
     title: 'Home',
@@ -35,7 +45,7 @@ const sideBarData = [
         </NuxtLink>
       </div>
       <div class="mb-8">
-        <img :src="`/images/svg/icon-logout.svg`" alt="Logout">
+        <img :src="`/images/svg/icon-logout.svg`" v-on:click="makeLogout()" alt="Logout" style="cursor:pointer;" title="Log out">
       </div>
     </div>
 
@@ -48,7 +58,7 @@ const sideBarData = [
         </div>
         <div class="flex-1 flex justify-end items-center space-x-10">
           <div class="flex items-center space-x-5">
-            <p class="text-lg text-black">Greetings, User !</p>
+            <p class="text-lg text-black">Greetings, {{ user?.name }}</p>
             <div
               class="w-12 h-12 rounded-full border-2 border-blue-300 flex items-center justify-center overflow-hidden">
               <div class="w-10 h-10 flex items-center justify-center bg-pink-300 rounded-full">
