@@ -3,7 +3,6 @@
 const addedMoreFeatures = reactive([]);
 const isAddMoreBtnHidden = ref(false);
 const moreFeatures = async () => {
-  console.log("Hello world");
   addedMoreFeatures.push(
     {
       "id": 12, "title": "Write off", "icon": "warning.svg"

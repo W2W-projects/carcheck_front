@@ -28,7 +28,7 @@ const sideBarData = [
     <!-- sidebar -->
     <div class="bg-[#0F1829] w-[4.25rem] flex-shrink-0 rounded-lg flex flex-col items-center justify-between">
       <div class="flex flex-col w-full mt-[3.75rem] gap-y-10">
-        <NuxtLink v-for="(item, index) in sideBarData" :key="item.title" :to="item.target"
+        <NuxtLink v-for="(item, index) in sideBarData" :key="index" :to="item.target"
           class="flex flex-col items-center">
           <img :src="`/images/svg/${item.icon}`" :alt="item.title">
           <p class="text-[9px]">{{ item.title }}</p>

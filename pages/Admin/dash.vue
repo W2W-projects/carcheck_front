@@ -4,6 +4,7 @@ import SearchBar from '~/components/SearchBar.vue';
 
 definePageMeta({
   layout: 'dashboard',
+  middleware: ['auth'],
 });
 
 const check_colors = ['#60C5FF', '#1EE6A8', '#EF343A'];

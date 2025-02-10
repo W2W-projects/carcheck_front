@@ -9,6 +9,7 @@ const subscription = computed(() => subscriptionStore.subscription);
 const customPlans = computed(() => carStore.custom_plans);
 
 const cancelBtn = ref("Cancel Subscription");
+const buyButtonLabel = ref("Buy");
 
 // Modal state
 const isModalVisible = ref(false);
@@ -72,12 +73,17 @@ onMounted(async () => {
 
 // Buy Custom Plan
 const buyCustomPlan = async (plan) => {
+  buyButtonLabel.value = "Processing..."
   try {
     await carStore.buyCustomPlan(plan);
     alert(`Successfully purchased plan: ${plan.name}`);
   } catch (error) {
     console.error("Failed to buy custom plan:", error);
     alert("Failed to purchase plan. Please try again.");
+  }finally{
+    setTimeout(()=>{
+      buyButtonLabel.value = "Buy";
+    }, 5000);
   }
 };
 
@@ -128,7 +134,7 @@ const clearResponseMessage = () => {
               @click.prevent="buyCustomPlan(plan)"
               class="inline-flex justify-center w-full px-2 py-1.5 text-xs font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-600 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700"
             >
-              Buy
+              {{ buyButtonLabel }}
             </button>
             
           </div>

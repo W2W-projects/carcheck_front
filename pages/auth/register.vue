@@ -7,7 +7,7 @@ $listen('user:loggedIn', (user) => {
 })
 
 definePageMeta({
-  title: 'Register',
+  title: 'Create new user',
   meta: [
     { hid: 'Register for fetching Registration number details', name: 'Register for fetching Registration number details', content: 'Register for fetching Registration number details' }
 

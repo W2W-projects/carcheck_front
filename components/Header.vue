@@ -64,7 +64,7 @@ const makeLogout = async () => {
                 Reports</NuxtLink>
             </li> -->
             <li>
-              <NuxtLink href="/reports"
+              <NuxtLink href="/report"
                 class="block py-2 px-3 md:p-0 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-500 md:dark:hover:text-orange-500">
                 Reports</NuxtLink>
             </li>
