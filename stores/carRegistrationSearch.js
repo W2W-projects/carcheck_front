@@ -419,6 +419,8 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
             }
         },
         async setMOTHistory(combinedPayload) {
+            console.log("moddd: ", combinedPayload);
+            debugger
             let code = systematicFourCharCode('MOTHistory');
             if (combinedPayload.MotHistory) {
                 const data = JSON.stringify(combinedPayload.MotHistory.RecordList);

@@ -19,7 +19,6 @@ export const useCarStore = defineStore('car', {
             this.requestCounts = counts;
         },
        async fetchRequestCounts(){
-            debugger
             try {
                 const response = await ApiService.get(`fetch-user-request-counts`);
                 if(response.payload){

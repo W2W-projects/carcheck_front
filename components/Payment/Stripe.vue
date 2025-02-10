@@ -195,12 +195,11 @@ async function createSubscription(selectedPlan) {
         }
 
         if(payload?.car_data){
-            debugger
             // vehicle MOT History
             const vehicleMotHistoryObj = payload.car_data.find(item => item.MotHistory);
 
-            if (vehicleMotHistoryObj && vehicleMotHistoryObj.setMOTHistory) {
-                await registrationSearchStore.setMOTHistory(vehicleMotHistoryObj.MotHistory.RecordList);
+            if (vehicleMotHistoryObj && vehicleMotHistoryObj.MotHistory) {
+                await registrationSearchStore.setMOTHistory(vehicleMotHistoryObj);
             } else {
                 console.error("Vehicle MOT History not found in car data");
             }
