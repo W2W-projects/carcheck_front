@@ -3,6 +3,8 @@ import { onMounted, computed } from 'vue';
 import { useCarStore } from '@/stores/car';
 const carStore = useCarStore();
 
+const isLoading = ref(true);
+
 interface UserCars {
     model: null;
     image: null;
@@ -14,13 +16,12 @@ interface UserCars {
 onMounted(async () => {
     try {
         await carStore.fetchCarsUserList();
+        isLoading.value = false;
     } catch (error) {
         console.error("Failed to fetch data on mounted:", error);
     }
 });
 const userCarsList = computed<UserCars>(() => carStore.userCarsList);
-// console.log("user-car-list: ", userCarsList.value);
-// alert("hello there");
 </script>
 
 <template>
@@ -81,8 +82,8 @@ const userCarsList = computed<UserCars>(() => carStore.userCarsList);
             </div>
         </template>
 
-        <div v-else >
-            <p class="text-[0.9rem]">No car check found</p>
+        <div v-if="isLoading" >
+            <p class="text-[0.9rem]">Fetching...</p>
         </div>
     </div>
 </template>

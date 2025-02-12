@@ -76,10 +76,10 @@ export const useCarStore = defineStore('car', {
 
         async buyCustomPlan(custom_plan){
             try {
-                const response = await ApiService.post(`buy-custom-plan`,{
+                const response = await ApiService.post(`buy-custom-plan`, {
                     plan_code: custom_plan.plan_code
                 });
-                let res = response.data;
+                return response;
             } catch (error) {
                 console.error("Failed to buy custom plan", error);
                 throw error;
