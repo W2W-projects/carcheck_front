@@ -56,6 +56,7 @@ const handleLoginSubmit = async () => {
         let response = await auth.makeLogin(form);
         if (response.success && response.payload) {
             const { hasSubscription, subscription, user } = response.payload;
+            debugger
             await subscriptionStore.setHasSubscription(hasSubscription);
             await subscriptionStore.setCurrentSubscription(subscription);
             await auth.setUser(user);
