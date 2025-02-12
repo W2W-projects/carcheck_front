@@ -3,7 +3,9 @@ import SearchBar from '~/components/SearchBar.vue';
 
 
 definePageMeta({
+  title: 'User Dashboard',
   layout: 'dashboard',
+
   middleware: ['auth'],
 });
 
