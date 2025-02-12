@@ -71,6 +71,13 @@ export const useAuthStore = defineStore('auth', {
                 localStorage.clear();
                 sessionStorage.clear();
 
+                // clearing cookie data from browser 
+                document.cookie.split(";").forEach((c) => {
+                    document.cookie = c
+                        .replace(/^ +/, "")
+                        .replace(/=.*/, "=;expires=" + new Date(0).toUTCString() + ";path=/");
+                });
+                
                 if ('caches' in window) {
                     caches.keys().then((names) => {
                         names.forEach(name => caches.delete(name));
