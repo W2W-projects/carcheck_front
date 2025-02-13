@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted, watch } from "vue";
+import { useAuthStore } from '@/stores/auth'
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
 const subscriptionStore = useSubscriptionStore();
+const authStore = useAuthStore();
 
 
 const isTableVisible = ref(true);
@@ -11,6 +13,7 @@ const toggleTableVisibility = () => {
 
 const valuationLists = computed(() => carRegistrationSearchStore.vehicleValuationsList);
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
+const user = computed(() => authStore.user);
 
 const chartData = ref([]);
 const isClient = ref(false);
@@ -78,10 +81,10 @@ function getChartHeight() {
       <small>Unlock all valuation details on the full report</small>
       <button class="bg-[#FF7400] text-white text-xl w-72 rounded-lg py-2">Get full report</button>
     </div>
-
+    
     <div v-show="isTableVisible" class="text-black my-10 w-full">
       <div v-if="isClient">
-        <chart-bar v-if="chartData.length > 0" :data="chartData" :hasSubscription="hasSubscription.active"
+        <chart-bar v-if="chartData.length > 0" :data="chartData" :hasSubscription="hasSubscription.active && (user.request_count > 0 || user.one_off_request_count > 0)"
           :height="getChartHeight()" width="100%" />
       </div>
       <div v-else>

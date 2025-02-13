@@ -1,8 +1,16 @@
 <script lang="ts" setup>
 import { useAuthStore } from "@/stores/auth";
+import { useHead } from '@unhead/vue';
 
 const authStore = useAuthStore()
 const user = authStore.user;
+
+const route = useRoute();
+const pageTitle = computed(() => route.meta?.title || 'Car Check');
+
+useHead({
+  title: pageTitle,
+});
 
 function makeLogout(){
   if(window.confirm("Are you sure you want to log out?"))
@@ -13,22 +21,22 @@ const sideBarData = [
   {
     title: 'Home',
     icon: 'icon-home.svg',
-    target: '/dash'
+    target: '/admin'
   },
   {
     title: 'MyGarage',
     icon: 'icon-garage.svg',
-    target: '/garage'
+    target: '/admin/garage'
   },
   {
     title: 'History',
     icon: 'icon-history.svg',
-    target: '/history'
+    target: '/admin/history'
   },
   {
     title: 'Resources',
     icon: 'icon-resources.svg',
-    target: '/resources'
+    target: '/admin/resources'
   }
 ]
 </script>
