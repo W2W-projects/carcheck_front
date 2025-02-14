@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import hashed from "@/components/Includes/Hashed.vue";
 import { useSubscriptionStore } from '@/stores/subscription';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '~/stores/auth';
 
 const isTableVisible = ref(true);
 const numberOfPreviousKeepers = ref(0);

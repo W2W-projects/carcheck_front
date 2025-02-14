@@ -14,6 +14,10 @@ const subscriptionStore = useSubscriptionStore();
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
 const subscription = computed(()=> subscriptionStore.subscription);
 
+import { useAuthStore } from '~/stores/auth'
+const authStore = useAuthStore();
+const user = computed(() => authStore.user);
+
 // Car registration store
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
 const MOTHistory = ref([]); // Initialize MOTHistory as an empty array
@@ -31,7 +35,6 @@ onMounted(async () => {
 });
 
 // Filter failed tests
-console.log("mot history: ", MOTHistory.value)
 const failedTests = computed(() => {
   // Ensure MOTHistory is an array before filtering
   return Array.isArray(MOTHistory.value)
@@ -174,21 +177,21 @@ function getFailureType(annotationList) {
             <tbody>
               <tr>
                 <th>Date</th>
-                <td v-if="hasSubscription?.active">{{ test.TestDate }}</td>
+                <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{ test.TestDate }}</td>
                 <td v-else>
                   <Hashed />
                 </td>
               </tr>
               <tr>
                 <th>Category</th>
-                <td v-if="hasSubscription?.active">{{ getFailureCategory(test.FailureReasonList) }}</td>
+                <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{ getFailureCategory(test.FailureReasonList) }}</td>
                 <td v-else>
                   <Hashed />
                 </td>
               </tr>
               <tr>
                 <th>Type</th>
-                <td v-if="hasSubscription?.active">{{ getFailureType(test.AnnotationDetailsList) }}</td>
+                <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{ getFailureType(test.AnnotationDetailsList) }}</td>
                 <td v-else>
                   <Hashed />
                 </td>

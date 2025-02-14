@@ -182,6 +182,12 @@ async function createSubscription(selectedPlan) {
             buttonProcess.value = "DONE!";
         }
         let payload = response.payload;
+        // set/change request_count, one_off_request_count, request_count_trial to user
+        if(payload?.hasSubscription){
+            user.request_count = Number(payload.hasSubscription.request_count) || 0;
+            user.one_off_request_count = Number(payload.hasSubscription.one_off_request_count) || 0;
+            user.request_count_trial = Number(payload.hasSubscription.request_count_trial) || 0;
+        }
         if (payload?.hasSubscription) {
             await subscriptionStore.setHasSubscription(payload.hasSubscription);
         }

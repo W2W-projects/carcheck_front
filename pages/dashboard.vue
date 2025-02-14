@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, computed, reactive } from 'vue';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '~/stores/auth';
 const auth = useAuthStore();
 const cars = ref([]);
 const isLoading = ref(false);

@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, computed, reactive } from 'vue';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '~/stores/auth';
 import { useSubscriptionStore } from '@/stores/subscription';
 
 const auth = useAuthStore();

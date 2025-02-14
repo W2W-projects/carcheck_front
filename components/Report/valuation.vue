@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted, watch } from "vue";
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '~/stores/auth'
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
 const subscriptionStore = useSubscriptionStore();
 const authStore = useAuthStore();
@@ -40,7 +40,7 @@ function mapValuationToChart() {
   if (valuationLists.value && typeof valuationLists.value === "object") {
     chartData.value = Object.entries(valuationLists.value).map(([key, value]) => ({
       label: key,
-      value: parseFloat(value) || 0, // Ensure value is a number
+      value: parseFloat(value) || 0,
     }));
   } else {
     console.warn("Valuation data is not available or invalid format.");

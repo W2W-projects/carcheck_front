@@ -291,8 +291,6 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                     ? await ApiService.get(`v1/car-check/${car_reg_number}`, token)
                     : await ApiService.get(`v1/car-check/${car_reg_number}`);
 
-                debugger
-
                 if(response.success){
                     const keysToRemove = [
                         'VehicleImageUrl', 'VehicleLogo', 'SmmtDetails', 'VehicleDimension',
@@ -326,7 +324,14 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                     await this.setPerformance(combinedPayload);
                     await this.setClassificationDetails(combinedPayload);
                     await this.setMOTHistory(combinedPayload);
-                    if(authStore.user.request_count > 0 || authStore.user.one_off_request_count > 0 || authStore.user.request_count_trial > 0){
+                    //assignment of checkout count
+                    if(authStore.user){
+                        authStore.user.request_count = Number(combinedPayload.request_count) || 0;
+                        authStore.user.one_off_request_count = Number(combinedPayload.one_off_request_count) || 0;
+                        authStore.user.request_count_trial = Number(combinedPayload.request_count_trial) || 0;
+                    }
+
+                    if(authStore.user?.request_count > 0 || authStore.user?.one_off_request_count > 0 || authStore.user?.request_count_trial > 0){
                         await this.setVehicleHistory(combinedPayload);
                         await this.setVehicleValuationList(combinedPayload);
                         await this.setStolenRecord(combinedPayload);
