@@ -1,10 +1,9 @@
 import ApiService from '~/services/apiService';
-import { defineStore } from 'pinia';
 
 export const useAuthStore = defineStore('auth', {
-    state: () => ({ user: {} }),
+    state: () => ({ user: null }),
     getters: {
-        getCurrentUser: (state) => state.user || {},
+        getCurrentUser: (state) => state.user || null,
     },
     persist: {
         paths: ["user"]
@@ -14,26 +13,25 @@ export const useAuthStore = defineStore('auth', {
             this.user = user;
         },
         removeUser() {
-            this.user = {};
+            this.user = null;
         },
 
         async makeLogin(form) {
             try {
                 const response = await ApiService.post('login', form);
-                if(response && response.payload){
+                if (response && response.payload) {
                     let res = response.payload;
                     const tokenStore = useTokenStore();
                     const subscriptionStore = useSubscriptionStore();
                     const hasSubscriptionStore = useSubscriptionStore();
 
                     tokenStore.setToken(res.access_token, res.refresh_token);
-                    if(res.subscription && res.subscription.plan){
+                    if (res.subscription && res.subscription.plan) {
                         await subscriptionStore.setCurrentSubscription(res.subscription);
                     }
-                    if(res.hasSubscription){
+                    if (res.hasSubscription) {
                         await hasSubscriptionStore.setHasSubscription(res.hasSubscription);
                     }
-                    // this.setCommonSetter(res);
                     this.setUser(res.user);
                     return response;
                 }
@@ -45,7 +43,7 @@ export const useAuthStore = defineStore('auth', {
         async createNewUser(form) {
             try {
                 const response = await ApiService.post('users', form);
-                if(response.payload){
+                if (response.payload) {
                     this.setCommonSetter(response.payload);
                 }
                 return response;
@@ -58,7 +56,7 @@ export const useAuthStore = defineStore('auth', {
             const tokenStore = useTokenStore();
             const carRegistrationSearchStore = useCarRegistrationSearchStore();
             try {
-                let logout = await ApiService.post('logout', null, tokenStore.token);
+                await ApiService.post('logout', null, tokenStore.token);
                 this.removeUser();
                 tokenStore.removeToken();
                 const subscription = useSubscriptionStore();
@@ -71,11 +69,8 @@ export const useAuthStore = defineStore('auth', {
                 localStorage.clear();
                 sessionStorage.clear();
 
-                // clearing cookie data from browser 
                 document.cookie.split(";").forEach((c) => {
-                    document.cookie = c
-                        .replace(/^ +/, "")
-                        .replace(/=.*/, "=;expires=" + new Date(0).toUTCString() + ";path=/");
+                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date(0).toUTCString() + ";path=/");
                 });
                 
                 if ('caches' in window) {
@@ -83,50 +78,19 @@ export const useAuthStore = defineStore('auth', {
                         names.forEach(name => caches.delete(name));
                     });
                 }
-                // clear pinia storage
+                
                 carRegistrationSearchStore.$reset();
                 this.$reset();
-
-                window.location.reload(true);
-
-                // navigateTo('/auth/login');
+                window.location.reload();
             } catch (error) {
                 throw error;
-            }
-            finally{
-                this.removeUser();
-                tokenStore.removeToken();
-                const subscription = useSubscriptionStore();
-                subscription.setHasSubscription({
-                    auth: false,
-                    active: false,
-                    subscription_type: null,
-                    request_count: 0,
-                    one_off_request_count: 0,
-                    request_count_trial: 0,
-                });
-                localStorage.clear();
-                sessionStorage.clear();
-
-                if ('caches' in window) {
-                    caches.keys().then((names) => {
-                        names.forEach(name => caches.delete(name));
-                    });
-                }
-                // clear pinia storage
-                carRegistrationSearchStore.$reset();
-                this.$reset();
-
-                window.location.reload(true);
             }
         },
 
         async fetchUserRolesAndPermissions() {
             const tokenStore = useTokenStore();
             try {
-                let response = await ApiService.get('user/fetch-users-role-and-permissions', tokenStore.token);
-                console.log("res: ", response);
-                // navigateTo('/auth/login');
+                return await ApiService.get('user/fetch-users-role-and-permissions', tokenStore.token);
             } catch (error) {
                 throw error;
             }
@@ -135,16 +99,12 @@ export const useAuthStore = defineStore('auth', {
         async fetchUserCars(page = 1, perPage = 1) {
             const tokenStore = useTokenStore();
             try {
-                let response = await ApiService.get(`v1/user/cars?page=${page}&perPage=${perPage}`, tokenStore.token);
-                if (!response) {
-                    throw new Error('Invalid data structure');
-                }
-                console.log("Err: ", response);
-                return response;
+                return await ApiService.get(`v1/user/cars?page=${page}&perPage=${perPage}`, tokenStore.token);
             } catch (error) {
                 throw error;
-            }
+            }ß
         },
+
         setCommonSetter(payload) {
             const token = useTokenStore();
             if (payload.access_token && payload.user) {
@@ -155,10 +115,7 @@ export const useAuthStore = defineStore('auth', {
 
         async submitEmailForPasswordReset(form) {
             try {
-                const response = await ApiService.post('users/verify-email', form);
-                if(response && response.data){
-                    return response;
-                }
+                return await ApiService.post('users/verify-email', form);
             } catch (error) {
                 throw error;
             }
@@ -166,22 +123,15 @@ export const useAuthStore = defineStore('auth', {
 
         async submitTokenForPasswordReset(form) {
             try {
-                const response = await ApiService.post('users/verify-reset-token', form);
-                if(response && response.data){
-                    return response;
-                }
+                return await ApiService.post('users/verify-reset-token', form);
             } catch (error) {
                 throw error;
             }
         },
 
-
         async handlePasswordResetSubmit(form) {
             try {
-                const response = await ApiService.post('users/change-password', form);
-                if(response && response.data){
-                    return response;
-                }
+                return await ApiService.post('users/change-password', form);
             } catch (error) {
                 throw error;
             }

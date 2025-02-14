@@ -1,5 +1,9 @@
 <script lang="ts" setup>
 import Hashed from '@/components/Includes/Hashed.vue';
+import { useAuthStore } from '~/stores/auth'
+const authStore = useAuthStore();
+const user = computed(() => authStore.user);
+
 
 const isTableVisible = ref(true);
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
@@ -96,21 +100,21 @@ onMounted(async () => {
             </tr>
             <tr>
               <th>Single payment (12 months)</th>
-              <td v-if="hasSubscription?.active">{{ MOTVed?.VedRate?.Standard?.TwelveMonth || 'N/A' }}</td>
+              <td v-if="hasSubscription?.active && (user.request_count >0 || user.one_off_request_count > 0)">{{ MOTVed?.VedRate?.Standard?.TwelveMonth || 'N/A' }}</td>
               <td v-else>
                 <Hashed />
               </td>
             </tr>
             <tr>
               <th>Single six-month payment</th>
-              <td v-if="hasSubscription?.active">{{ MOTVed?.VedRate?.Standard?.SixMonth || 'N/A' }}</td>
+              <td v-if="hasSubscription?.active && (user.request_count >0 || user.one_off_request_count > 0)">{{ MOTVed?.VedRate?.Standard?.SixMonth || 'N/A' }}</td>
               <td v-else>
                 <Hashed />
               </td>
             </tr>
             <tr>
               <th>Total payable by 12 monthly instalments</th>
-              <td v-if="hasSubscription?.active">{{ MOTVed?.VedRate?.Standard?.SixMonth || 'N/A' }}</td>
+              <td v-if="hasSubscription?.active && (user.request_count >0 || user.one_off_request_count > 0)">{{ MOTVed?.VedRate?.Standard?.SixMonth || 'N/A' }}</td>
               <td v-else>
                 <Hashed />
               </td>

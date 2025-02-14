@@ -2,8 +2,12 @@
 import { useSubscriptionStore } from '@/stores/subscription';
 import Hashed from '@/components/Includes/Hashed.vue';
 import { ref, computed, onMounted } from 'vue';
-
 const isTableVisible = ref(true);
+
+import { useAuthStore } from '~/stores/auth'
+const authStore = useAuthStore();
+const user = computed(() => authStore.user);
+
 const toggleTableVisibility = () => {
   isTableVisible.value = !isTableVisible.value;
 };
@@ -117,7 +121,7 @@ const formatDate = (dateString: string) => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(finance, key) in finRecordList" :key="key" v-if="hasSubscription?.active">
+          <tr v-for="(finance, key) in finRecordList" :key="key" v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">
             <td >{{ formatDate(finance.AgreementDate) }}</td>
             <td >{{ finance.AgreementType }}</td>
             <td >{{ finance.AgreementTerm }}</td>

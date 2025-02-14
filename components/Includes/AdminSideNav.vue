@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '~/stores/auth';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faTachometerAlt, faSignOutAlt, faUserAlt,faListCheck } from '@fortawesome/free-solid-svg-icons';

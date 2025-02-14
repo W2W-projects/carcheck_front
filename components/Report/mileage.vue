@@ -63,7 +63,6 @@ function getChartHeight() {
   }
 }
 
-console.log("mileage: ", chartData.value);
 </script>
 
 <template>

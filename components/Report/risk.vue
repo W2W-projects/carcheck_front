@@ -19,12 +19,15 @@ onMounted(async () => {
   await carRegistrationSearch.fetchFinanceRecords();
 });
 
+import { useAuthStore } from '~/stores/auth'
+const authStore = useAuthStore();
+const user = computed(() => authStore.user);
+
 const hasSubscription = computed(()=> subscriptionStore.hasSubscription);
 const vehicleHistory = computed(() => carRegistrationSearch.vehicleHistory);
 const writeOff = computed(() => carRegistrationSearch.writeOff);
 const riskRecords = computed(() => carRegistrationSearch.riskRecords);
 const finances = computed(() => carRegistrationSearch.financeRecords);
-console.log("writeOff: ", writeOff.value);
 
 watch(vehicleHistory, (newHistory) => {
   if (newHistory) {
@@ -98,7 +101,7 @@ watch(vehicleHistory, (newHistory) => {
           </div>
           <div class="w-1/2">
             <h2 class="text-7xl font-bold text-[#FFA500]">
-              <span v-if="hasSubscription?.active">{{ writeOff?writeOff['WriteOffRecordCount']:0 }}</span>
+              <span v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{ writeOff?writeOff['WriteOffRecordCount']:0 }}</span>
               <hashed contain="zero" v-else></hashed>
             </h2>
             <p class="text-3xl font-light"> WRITE-OFF <br /> RECORD</p>
@@ -114,7 +117,7 @@ watch(vehicleHistory, (newHistory) => {
           </div>
           <div class="w-1/2">
             <h2 class="text-7xl font-bold text-[#EF343A]">
-                <span v-if="hasSubscription?.active">{{ riskRecords?riskRecords['HighRiskRecordCount']:0 }}</span>
+                <span v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{ riskRecords?riskRecords['HighRiskRecordCount']:0 }}</span>
                 <hashed contain="zero" v-else></hashed>
             </h2>
             <p class="text-3xl font-light"> HIGH RISK <br /> RECORD</p>
@@ -130,7 +133,7 @@ watch(vehicleHistory, (newHistory) => {
           </div>
           <div class="w-1/2">
             <h2 class="text-7xl font-bold text-[#FF7400]">
-              <span v-if="hasSubscription?.active">{{ finances?finances['FinanceRecordCount']:0 }}</span>
+              <span v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{ finances?finances['FinanceRecordCount']:0 }}</span>
                 <hashed contain="zero" type="X" v-else></hashed>
             </h2>
             <p class="text-3xl font-light">FINANCE <br /> RECORD</p>
