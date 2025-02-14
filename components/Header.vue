@@ -53,11 +53,7 @@ const makeLogout = async () => {
                 class="block py-2 px-3 md:p-0 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-500 md:dark:hover:text-orange-500">
                 About Us</NuxtLink>
             </li>
-            <li>
-              <NuxtLink to="/pricing"
-                class="block py-2 px-3 md:p-0 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-500 md:dark:hover:text-orange-500">
-                Pricing</NuxtLink>
-            </li>
+           
             <!-- <li>
               <NuxtLink href="/reports" v-if="!isEmpty(auth.user)"
                 class="block py-2 px-3 md:p-0 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-500 md:dark:hover:text-orange-500">
