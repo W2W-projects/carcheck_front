@@ -38,9 +38,8 @@ definePageMeta({
   ],
   // middleware: ['guest'],
 });
-// const vehicle_number = ref("xxxx xxx");
 const vehicle_number = ref("");
-const placeholderText = ref("xxxx xxx");
+const placeholderText = ref("AB12 CDE");
 
 const errors = ref([]);
 const errorMessage = ref("");
@@ -51,7 +50,7 @@ const validReportTypes = ["basic", "export", "single-offer"];
 
 const processedCarNumber = computed({
   get() {
-    return vehicle_number.value.replace(/[^a-zA-Z0-9 ]/g, "").toUpperCase();
+    return vehicle_number.value.toUpperCase();
   },
   set(value) {
     vehicle_number.value = value.replace(/[^a-zA-Z0-9 ]/g, "").toUpperCase();

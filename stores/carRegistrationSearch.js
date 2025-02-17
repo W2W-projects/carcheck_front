@@ -282,11 +282,10 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
             try {
                 const tokenStore = useTokenStore();
                 const token = tokenStore.getToken;
-                this.reg_number = car_reg_number;
-                
+                this.reg_number = car_reg_number.replace(/[^a-zA-Z0-9]/g, "");
                 const response = token
-                    ? await ApiService.get(`v1/car-check/${car_reg_number}`, token)
-                    : await ApiService.get(`v1/car-check/${car_reg_number}`);
+                    ? await ApiService.get(`v1/car-check/${this.reg_number}`, token)
+                    : await ApiService.get(`v1/car-check/${this.reg_number}`);
 
                 if(response.success){
                     const keysToRemove = [

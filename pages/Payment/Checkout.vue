@@ -16,6 +16,12 @@ onMounted(() => {
     // navigateTo('/');
   }
 });
+definePageMeta({
+    title: 'Payment Checkout',
+    meta: [
+        { hid: 'Car check payment checkout', name: 'Car check payment checkout', content: 'Car check payment checkout' }
+    ],
+});
 
 const handlePayment = async () => {
   isProcessing.value = true;
