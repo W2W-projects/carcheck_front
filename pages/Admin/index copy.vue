@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import SearchBar from '~/components/SearchBar.vue';
+
+
 definePageMeta({
   layout: 'dashboard',
   middleware: ['auth'],
@@ -31,6 +34,8 @@ definePageMeta({
     <dashboard-right-sidebar></dashboard-right-sidebar>
   </div>
 </template>
+
+
 
 <style scoped>
 .bg-dashboard-custom-1 {
