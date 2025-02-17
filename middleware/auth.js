@@ -8,4 +8,5 @@ export default defineNuxtRouteMiddleware((to, from) => {
   if (!tokenStore.loggedIn || !authStore.user || Object.keys(authStore.user).length === 0) {
     return navigateTo('/auth/login');
   }
+
 });
