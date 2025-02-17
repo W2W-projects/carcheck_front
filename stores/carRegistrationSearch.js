@@ -6,6 +6,7 @@ import { defineStore } from 'pinia';
 import { decryptData, encryptData } from '~/composables/useCrypto';
 import { systematicFourCharCode } from '~/composables/useGenerateLocalstorageCode';
 import { useTokenStore } from '~/stores/token';
+import { useAuthStore } from '~/stores/auth';
 
 export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch', {
     state: () => {
@@ -281,6 +282,8 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
         async searchCarRegNumber(car_reg_number) {
             try {
                 const tokenStore = useTokenStore();
+                const authStore = useAuthStore();
+               
                 const token = tokenStore.getToken;
                 this.reg_number = car_reg_number;
                 
@@ -320,13 +323,23 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                     await this.setVehicleGeneralInfo(combinedPayload);
                     await this.setPerformance(combinedPayload);
                     await this.setClassificationDetails(combinedPayload);
-                    await this.setVehicleHistory(combinedPayload);
                     await this.setMOTHistory(combinedPayload);
-                    await this.setVehicleValuationList(combinedPayload);
-                    await this.setStolenRecord(combinedPayload);
-                    await this.setWriteOffRecords(combinedPayload);
-                    await this.setFinanceRecords(combinedPayload);
-                    await this.setRiskRecords(combinedPayload);
+                    //assignment of checkout count
+                    if(authStore.user){
+                        authStore.user.request_count = Number(combinedPayload.request_count) || 0;
+                        authStore.user.one_off_request_count = Number(combinedPayload.one_off_request_count) || 0;
+                        authStore.user.request_count_trial = Number(combinedPayload.request_count_trial) || 0;
+                    }
+
+                    if(authStore.user?.request_count > 0 || authStore.user?.one_off_request_count > 0 || authStore.user?.request_count_trial > 0){
+                        await this.setVehicleHistory(combinedPayload);
+                        await this.setVehicleValuationList(combinedPayload);
+                        await this.setStolenRecord(combinedPayload);
+                        await this.setWriteOffRecords(combinedPayload);
+                        await this.setFinanceRecords(combinedPayload);
+                        await this.setRiskRecords(combinedPayload);
+                    }
+                    
                     await this.setNumberOfLooksUp(combinedPayload);
                     localStorage.setItem('reg_number', this.reg_number);
                 }

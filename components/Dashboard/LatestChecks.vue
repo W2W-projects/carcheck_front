@@ -1,32 +1,34 @@
 <script setup lang="ts">
-import { onMounted, computed } from 'vue';
+import { onMounted, computed, ref } from 'vue';
 import { useCarStore } from '@/stores/car';
-const carStore = useCarStore();
 
+const carStore = useCarStore();
 const isLoading = ref(true);
 
 interface UserCars {
-    model: null;
-    image: null;
-    plate: null;
-    mileage: null;
-    type: null;
+    model: string | null;
+    image: string | null;
+    plate: string | null;
+    mileage: number | null;
+    type: string | null;
 }
 
 onMounted(async () => {
     try {
         await carStore.fetchCarsUserList();
-        isLoading.value = false;
     } catch (error) {
         console.error("Failed to fetch data on mounted:", error);
+    } finally {
+        isLoading.value = false;
     }
 });
-const userCarsList = computed<UserCars>(() => carStore.userCarsList);
+
+const userCarsList = computed<UserCars[]>(() => carStore.userCarsList);
 </script>
 
 <template>
     <div>
-        <template v-if="userCarsList.length > 0">
+        <template v-if="userCarsList?.length">
             <div v-for="(car, index) in userCarsList" :key="index"
                 class="h-[12.5rem] rounded-xl bg-white flex flex-col items-center justify-between px-[1.7rem] py-[1.25rem]">
                 <div class="flex w-full">
@@ -76,14 +78,18 @@ const userCarsList = computed<UserCars>(() => carStore.userCarsList);
                     </div>
                     <div class="flex items-center space-x-1 text-[0.68rem] font-bold w-[30%] text-[#C2C2C2]">
                         <p>See more</p>
-                        <img src="/public/images/svg/icon-chev-right.svg" alt="">
+                        <img src="/images/svg/icon-chev-right.svg" alt="Chevron">
                     </div>
                 </div>
             </div>
         </template>
 
-        <div v-if="isLoading" >
+        <div v-if="isLoading">
             <p class="text-[0.9rem]">Fetching...</p>
+        </div>
+
+        <div v-else-if="!isLoading && userCarsList?.length === 0" class="text-center">
+            <p>No cars found.</p>
         </div>
     </div>
 </template>

@@ -1,7 +1,4 @@
 <script lang="ts" setup>
-import SearchBar from '~/components/SearchBar.vue';
-
-
 definePageMeta({
   layout: 'dashboard',
   middleware: ['auth'],
