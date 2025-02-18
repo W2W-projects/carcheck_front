@@ -12,7 +12,7 @@ const props = defineProps({
 <template>
     <div class="grid md:grid-cols-2 grid-cols-1 gap-x-[2.1rem] gap-y-[0.35rem] mt-[1.9rem] text-black pl-1">
         <div v-for="(feature, index) in features" :key="feature.id" class="flex items-center space-x-4">
-            <img :src="`/_nuxt/assets/svg/${feature.icon}`" class="w-5" :alt="`Feature Icon ${index + 1}`">
+            <img :src="`/assets/svg/${feature.icon}`" class="w-5" :alt="`Feature Icon ${index + 1}`">
             <p class="font-extralight text-xl tracking-wider">{{ feature.title }}</p>
         </div>
 
