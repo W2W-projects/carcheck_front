@@ -2,6 +2,7 @@ import ApiService from "~/services/apiService";
 
 export const useCarStore = defineStore('car', {
     state: () => ({ 
+        car_reg_number: null,
         requestCounts: 0,
         request_count_trial: 0,
         one_off_request_count: 0,
@@ -10,13 +11,20 @@ export const useCarStore = defineStore('car', {
         custom_plans: null,
     }),
     persist: {
-        paths: ["requestCounts", "userCarsList", "userReports"]
+        paths: ["car_reg_number", "requestCounts", "userCarsList", "userReports"]
     },
     getters: {
+        getCarRegNumber(){
+            return state.car_reg_number;
+        }
     },
     actions: {
         setRequestCounts(counts){
             this.requestCounts = counts;
+        },
+        setCarRegNumber(car_reg_number){
+            this.car_reg_number = car_reg_number;
+            localStorage.setItem("car_reg_number", car_reg_number);
         },
        async fetchRequestCounts(){
             try {
