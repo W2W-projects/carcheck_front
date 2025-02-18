@@ -6,13 +6,10 @@ import { useRouter } from 'vue-router';
 import ApiService from '~/services/apiService';
 
 definePageMeta({
-  title: 'Car Check Plans',
-  meta: [
-    {
-      hid: 'Car checkout plans', name: 'watchout all plans and checkout', content: 'watchout all plans and checkout'
-    }
-
-  ],
+    title: 'Plans for Checkout',
+    meta: [
+        { hid: 'Plans for checkout', name: 'Plans for Checkout', content: 'Plans for Checkout' }
+    ],
 });
 
 const router = useRouter();
@@ -88,7 +85,7 @@ onMounted(async () => {
 
         <div class="flex md:flex-row flex-col items-center justify-center mt-10 gap-4 md:gap-8 px-32">
             <!-- single offer payment  -->
-            <div v-if="hasSubscription.active" v-for="plan in planUnactive" :key="plan.plan_code"
+            <div v-if="hasSubscription?.active" v-for="plan in planUnactive" :key="plan.plan_code"
                 @click="selectPlan(plan)" :class="{
             'bg-[#0F1829] text-white': selectedPlan === plan.plan_code,
             'border-2 border-[#0F1829] text-[#0F1829]': selectedPlan !== plan.plan_code
