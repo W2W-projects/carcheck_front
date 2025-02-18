@@ -23,14 +23,16 @@ const clickedMotHistory = ref(0);
 const longestPeriodBetTests = ref(0);
 const slidesPerView = ref(0);
 const errorMessage = ref(null);
-
 const isTableVisible = ref(true);
+
+const carRegistrationSearchStore = useCarRegistrationSearchStore();
+const motHistory = computed(() => {
+  return [...carRegistrationSearchStore.MOTHistory].reverse();
+});
+
 const toggleTableVisibility = () => {
   isTableVisible.value = !isTableVisible.value;
 };
-
-const carRegistrationSearchStore = useCarRegistrationSearchStore();
-const motHistory = computed(() => carRegistrationSearchStore.MOTHistory);
 
 onMounted(async () => {
   try {
@@ -39,8 +41,8 @@ onMounted(async () => {
       expiryDate.value = motHistory.value[0].ExpiryDate;
       lastMotDate.value = motHistory.value[0].TestDate;
       totalMotChecks.value = motHistory.value.length;
-
       mostRecentMOT.value = motHistory.value[0];
+      clickedMotHistory.value = 0;
       calculateLongestPeriodBetTests(motHistory.value)
       slidesPerView.value = motHistory.value.length;
     }
@@ -73,8 +75,10 @@ const onSwiper = (swiper) => {
 };
 
 const nextSlide = () => {
-  if (motHistoryIndex.value < motHistory.value.length - 1) {
+  if (motHistory.value.length > 1 && motHistoryIndex.value < motHistory.value.length - 1) {
     motHistoryIndex.value++;
+    clickedMotHistory.value = motHistoryIndex.value;
+    mostRecentMOT.value = motHistory.value[motHistoryIndex.value]; // Update most recent MOT
   }
   if (swiperInstance) {
     swiperInstance.slideTo(motHistoryIndex.value, 800);
@@ -82,8 +86,10 @@ const nextSlide = () => {
 };
 
 const prevSlide = () => {
-  if (motHistoryIndex.value > 0) {
+  if (motHistory.value.length > 1 && motHistoryIndex.value > 0) {
     motHistoryIndex.value--;
+    clickedMotHistory.value = motHistoryIndex.value;
+    mostRecentMOT.value = motHistory.value[motHistoryIndex.value]; // Update most recent MOT
   }
   if (swiperInstance) {
     swiperInstance.slideTo(motHistoryIndex.value, 800);
@@ -91,15 +97,15 @@ const prevSlide = () => {
 };
 
 function handleSliderIndexClick(index: number) {
-  clickedMotHistory.value = index;
   let hasSub = hasSubscription.value;
 
-  if(hasSub.active && (hasSub.one_off_request_count > 0 || hasSub.request_count > 0 || hasSub.request_count_trial)){
+  if (hasSub.active && (hasSub.one_off_request_count > 0 || hasSub.request_count > 0 || hasSub.request_count_trial)) {
+    motHistoryIndex.value = index;
+    clickedMotHistory.value = index;
     mostRecentMOT.value = motHistory.value[index];
-  }else{
-    errorMessage.value = "You don't have any active subscription. Please buy subscription.";
+  } else {
+    errorMessage.value = "You don't have any active subscription. Please buy a subscription.";
     clearErrorMessage();
-    return false;
   }
 }
 
@@ -122,19 +128,17 @@ function calculateLongestPeriodBetTests(motHistories) {
 
     const daysDifference = differenceInCalendarDays(currentDate, testDate);
 
-    if(daysDifference > longestPeriodBetTests.value){
+    if (daysDifference > longestPeriodBetTests.value) {
       longestPeriodBetTests.value = daysDifference;
     }
   });
 }
 
-// Helper function for calculating days since last test and current date 
 function calculateDaysSinceLastTest(currentMOT) {
+  if (!currentMOT) return 'N/A';
   const testDate = parse(currentMOT.TestDate, 'dd/MM/yyyy', new Date());
   const currentDate = new Date();
-  const daysDifference = differenceInCalendarDays(currentDate, testDate);
-
-  return daysDifference;
+  return differenceInCalendarDays(currentDate, testDate);
 }
 
 </script>
@@ -231,7 +235,7 @@ function calculateDaysSinceLastTest(currentMOT) {
       </div>
       <div class="flex items-center justify-between w-full lg:px-5">
         <div class="w-fit">
-          <button @click="nextSlide"
+          <button @click="prevSlide"
             class="w-8 h-8 border border-black items-center justify-center flex rounded hover:bg-[#FF7400] transition-colors duration-300">
             <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -281,7 +285,7 @@ function calculateDaysSinceLastTest(currentMOT) {
           </swiper>
         </div>
         <div class="w-fit">
-          <button @click="prevSlide"
+          <button @click="nextSlide"
             class="w-8 h-8 border border-black items-center justify-center flex rounded hover:bg-[#FF7400] transition-colors duration-300">
             <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
