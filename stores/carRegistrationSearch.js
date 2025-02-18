@@ -8,6 +8,8 @@ import { systematicFourCharCode } from '~/composables/useGenerateLocalstorageCod
 import { useTokenStore } from '~/stores/token';
 import { useAuthStore } from '~/stores/auth';
 
+import { useCarStore } from '~/stores/car';
+
 export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch', {
     state: () => {
         return {
@@ -283,9 +285,13 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
             try {
                 const tokenStore = useTokenStore();
                 const authStore = useAuthStore();
+                const carStore = useCarStore();
+
                
                 const token = tokenStore.getToken;
                 this.reg_number = car_reg_number.replace(/[^a-zA-Z0-9]/g, "");
+                carStore.setCarRegNumber(this.reg_number);
+
                 const response = token
                     ? await ApiService.get(`v1/car-check/${this.reg_number}`, token)
                     : await ApiService.get(`v1/car-check/${this.reg_number}`);
@@ -323,6 +329,7 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                     await this.setPerformance(combinedPayload);
                     await this.setClassificationDetails(combinedPayload);
                     await this.setMOTHistory(combinedPayload);
+                    
                     //assignment of checkout count
                     if(authStore.user){
                         authStore.user.request_count = Number(combinedPayload.request_count) || 0;

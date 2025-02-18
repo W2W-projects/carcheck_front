@@ -13,7 +13,6 @@ const hasSubscription = computed(() => subscriptionStore.hasSubscription);
 const MOTVed = computed(() => carRegistrationSearchStore.motVed);
 const vehicleRegistration = computed(() => carRegistrationSearchStore.vehicleRegistration);
 
-// 🚀 Initialize co2label as null (No default value)
 const co2label = ref<number | null>(null);
 
 const toggleTableVisibility = () => {
@@ -21,7 +20,7 @@ const toggleTableVisibility = () => {
 };
 
 const getClass = (min: number, max: number) => {
-  if (co2label.value === null) return 'py-7'; // Default if no data
+  if (co2label.value === null) return 'py-7';
   return co2label.value >= min && co2label.value <= max ? 'border-4 border-black py-6' : 'py-7';
 };
 
@@ -58,7 +57,6 @@ onMounted(async () => {
 
 <template>
   <report-wrapper class="py-9">
-    <!-- Toggle table visibility -->
     <div @click.prevent="toggleTableVisibility" class="cursor-pointer text-black flex items-center justify-between">
       <div class="flex items-center space-x-4">
         <p class="text-2xl font-bold flex items-center justify-center">TAX CALCULATION</p>
@@ -92,7 +90,6 @@ onMounted(async () => {
         </table>
       </div>
 
-      <!-- 🚀 Only show CO2 Band Visualization if co2label exists -->
       <div v-if="co2label !== null" class="flex items-center justify-center relative lg:px-20 mt-20">
         <div class="grid grid-cols-7 gap-0 relative w-[70rem]">
           <div v-for="band in co2Bands" :key="band.label" 
@@ -101,7 +98,6 @@ onMounted(async () => {
             class="flex flex-col items-center text-center space-y-3 text-2xl relative"
             @click="setco2label(band.co2Value)">
 
-            <!-- 🚀 Hide "YOUR LABEL" if no co2label data -->
             <div v-if="isClassActive(band.min, band.max)" 
                 class="hidden lg:block absolute -top-6 bg-black scale-[106%] text-white text-sm py-1 w-full text-center">
               YOUR LABEL
@@ -118,7 +114,6 @@ onMounted(async () => {
         </div>
       </div>
 
-      <!-- 🚀 CO2 Emissions Table (Always Shown) -->
       <div>
         <table class="w-full text-black">
           <thead>

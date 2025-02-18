@@ -1,8 +1,10 @@
 <script setup>
 import { useCarRegistrationSearchStore } from "@/stores/carRegistrationSearch";
+import { useCarStore } from "~/stores/car";
 import { width } from "@fortawesome/free-solid-svg-icons/fa0";
 const router = useRouter();
 const carRegistrationSearch = useCarRegistrationSearchStore();
+const carStore = useCarStore();
 
 const props = defineProps({
   height: {
@@ -90,7 +92,13 @@ const searchForCarReg = async () => {
     }
     await carRegistrationSearch.searchCarRegNumber(processedCarNumber.value);
     searchTxt.value = null;
-    router.push(`/report`);
+    // router.push(`/report`);
+    if (router.currentRoute.value.path === "/report") {
+      window.location.reload();
+    } else {
+      router.push(`/report`);
+    }
+
   } catch (error) {
     if (!error?.data?.success) {
       // let sub = subscription.value;
