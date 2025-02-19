@@ -155,8 +155,9 @@ const searchForCarReg = async () => {
         <li v-for="error in errors" :key="error">{{ error }}</li>
       </ul>
     </div>
-    <div class="alert alert-danger absolute" v-if="errorMessage">
-      <p>{{ errorMessage }}</p>
+    <div class="alert alert-danger absolute text-center bg-white rounded-b px-6 py-4 transition-all duration-300"
+      style="line-height: 1rem;" v-if="errorMessage">
+      <small>{{ errorMessage }}</small>
     </div>
   </div>
 </template>
@@ -176,7 +177,6 @@ const searchForCarReg = async () => {
 
 .alert {
   color: red;
-  padding: 3px;
   justify-content: center;
 }
 </style>
