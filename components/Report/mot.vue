@@ -121,6 +121,7 @@ const nextSlide = () => {
   if (swiperInstance) {
     swiperInstance.slideTo(motHistoryIndex.value, 800);
   }
+  console.log("motHistoryIndex: ", motHistoryIndex.value);
 };
 
 const prevSlide = () => {
@@ -141,6 +142,7 @@ const prevSlide = () => {
   if (swiperInstance) {
     swiperInstance.slideTo(motHistoryIndex.value, 800);
   }
+  console.log("motHistoryIndex: ", motHistoryIndex.value);
 };
 
 function handleSliderIndexClick(index: number) {
@@ -314,7 +316,8 @@ function calculateDaysSinceLastTest(currentMOT) {
 
 
 
-              <span v-else class="h-8 w-8 border border-orange-300 items-center justify-center flex rounded text-primary">
+              <span v-else class="h-8 w-8 border border-orange-300 items-center justify-center flex rounded "
+                :class="(clickedMotHistory + 1 === index + 1)?'bg-[#FF7400] text-white':'text-primary bg-white'">
                 <!-- 🔓 Unlock Icon -->
                 #{{ index + 1 }}
               </span>
