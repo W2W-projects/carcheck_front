@@ -190,7 +190,7 @@ const pricingData = [
   <!-- intro -->
   <section class="flex flex-wrap items-center justify-center mx-auto lg:px-[9.12rem] px-8 panoramic-bg">
     <div
-      class="flex flex-col lg:items-start items-center lg:text-start text-center justify-center w-full h-[23rem] lg:car-bg">
+      class="flex flex-col lg:items-start items-center lg:text-start text-center justify-center w-full h-[23rem] car-bg">
       <p class="text-[2.8rem] leading-tight tracking-wider -translate-y-4 text-black">Just choose
         <br />
         <span class="text-[3rem] tracking-wide"><b>the best report</b> for you</span>
@@ -289,10 +289,12 @@ const pricingData = [
   background-repeat: no-repeat;
 }
 
-.car-bg {
-  background-image: url("/images/webp/bg-pricing-car.webp");
-  background-size: 65%;
-  background-position: 103% 96%;
-  background-repeat: no-repeat;
+@media (min-width: 768px) {
+  .car-bg {
+    background-image: url("/images/webp/bg-pricing-car.webp");
+    background-size: 65%;
+    background-position: 103% 96%;
+    background-repeat: no-repeat;
+  }
 }
 </style>
