@@ -24,7 +24,7 @@
             satisfaction—backed by industry certifications for reliability.
           </p>
           <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-2xl font-bold text-primary mb-4">
+            <h3 class="text-lg text-center font-bold text-primary mb-6">
               Start your car check today – Enter a vehicle registration number now!
             </h3>
             <div class="flex items-center justify-center">
