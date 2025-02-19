@@ -20,44 +20,96 @@ const totalFailedItems = ref(0);
 const longestPeriodBetweenTests = ref(0);
 const mostRecentMOT = ref(null);
 const clickedMotHistory = ref(0);
-const longestPeriodBetTests = ref(0);
+const longestPeriodOutOfMot = ref(0);
 const slidesPerView = ref(0);
-const errorMessage = ref(null);
-
+const errorMessage = ref("");
 const isTableVisible = ref(true);
+
+const carRegistrationSearchStore = useCarRegistrationSearchStore();
+
+const motHistory = computed(() => {
+  if (!carRegistrationSearchStore.MOTHistory || carRegistrationSearchStore.MOTHistory.length === 0) {
+    return [];
+  }
+
+  let reversedHistory = [...carRegistrationSearchStore.MOTHistory].reverse();
+
+  //filter for fail percentage
+  let failedItem = reversedHistory.filter((item)=>{
+    return item.TestResult !== "Pass";
+  })
+  if(failedItem.length > 0){
+    totalFailedItems.value = failedItem.length;
+    let failedRaw = failedItem.length / reversedHistory.length;
+    failPercentage.value = Math.round(failedRaw * 100);
+  }
+
+  // advice item
+  let adviceCount = 0;
+  reversedHistory.forEach(item=>{
+    if(item.AdvisoryNoticeCount > 0){
+      adviceCount ++;
+    }
+  });
+  totalAdviceItems.value = adviceCount;
+
+  let locked = reversedHistory.filter((_, index) => isMOThistoryLocked(index));
+  let unlocked = reversedHistory.filter((_, index) => !isMOThistoryLocked(index));
+
+  return [...locked, ...unlocked];
+});
+
 const toggleTableVisibility = () => {
   isTableVisible.value = !isTableVisible.value;
 };
-
-const carRegistrationSearchStore = useCarRegistrationSearchStore();
-const motHistory = computed(() => carRegistrationSearchStore.MOTHistory);
 
 onMounted(async () => {
   try {
     await carRegistrationSearchStore.fetchMOTHistory();
     if (motHistory.value && motHistory.value.length > 0) {
-      expiryDate.value = motHistory.value[0].ExpiryDate;
-      lastMotDate.value = motHistory.value[0].TestDate;
+      expiryDate.value = motHistory.value[0]?.ExpiryDate || "";
+      lastMotDate.value = motHistory.value[0]?.TestDate || "";
       totalMotChecks.value = motHistory.value.length;
-
       mostRecentMOT.value = motHistory.value[0];
-      calculateLongestPeriodBetTests(motHistory.value)
+      clickedMotHistory.value = 0;
+      calculateLongestPeriodBetTests(motHistory.value);
       slidesPerView.value = motHistory.value.length;
+
+      calculateLongestDaysOutOfMOT()
+
     }
   } catch (error) {
     console.error('Error fetching MOTHistory:', error);
   }
 });
 
-// Return all MOT records
 const displayedMOTHistory = computed(() => {
   return motHistory.value;
 });
 
 function isMOThistoryLocked(index: number) {
-  const unlockThreshold = 4;
-  return index > unlockThreshold;
+  if (!motHistory.value || motHistory.value.length === 0) {
+    return true;
+  }
+
+  let hasSub = hasSubscription.value;
+  const isSubscribed =
+    hasSub.active &&
+    (hasSub.one_off_request_count > 0 || hasSub.request_count > 0 || hasSub.request_count_trial > 0);
+
+  const totalRecords = motHistory.value.length;
+
+  if (totalRecords <= 5) {
+    return false;
+  }
+
+  if (index >= totalRecords - 5) {
+    return false;
+  }
+
+  return !isSubscribed;
 }
+
 
 const navigationOptions = {
   nextEl: '.swiper-button-custom-next',
@@ -73,34 +125,55 @@ const onSwiper = (swiper) => {
 };
 
 const nextSlide = () => {
-  if (motHistoryIndex.value < motHistory.value.length - 1) {
-    motHistoryIndex.value++;
+  if (!motHistory.value || motHistory.value.length === 0) return; // Prevent errors
+
+  let nextIndex = motHistoryIndex.value + 1;
+
+  while (nextIndex < motHistory.value.length && isMOThistoryLocked(nextIndex)) {
+    nextIndex++; // Skip locked records
   }
+
+  if (nextIndex < motHistory.value.length) {
+    motHistoryIndex.value = nextIndex;
+    clickedMotHistory.value = nextIndex;
+    mostRecentMOT.value = motHistory.value[nextIndex];
+  }
+
   if (swiperInstance) {
     swiperInstance.slideTo(motHistoryIndex.value, 800);
   }
 };
 
 const prevSlide = () => {
-  if (motHistoryIndex.value > 0) {
-    motHistoryIndex.value--;
+  if (!motHistory.value || motHistory.value.length === 0) return; // Prevent errors
+
+  let prevIndex = motHistoryIndex.value - 1;
+
+  while (prevIndex >= 0 && isMOThistoryLocked(prevIndex)) {
+    prevIndex--; // Skip locked records
   }
+
+  if (prevIndex >= 0) {
+    motHistoryIndex.value = prevIndex;
+    clickedMotHistory.value = prevIndex;
+    mostRecentMOT.value = motHistory.value[prevIndex]; // Update table
+  }
+
   if (swiperInstance) {
     swiperInstance.slideTo(motHistoryIndex.value, 800);
   }
 };
 
 function handleSliderIndexClick(index: number) {
-  clickedMotHistory.value = index;
-  let hasSub = hasSubscription.value;
-
-  if(hasSub.active && (hasSub.one_off_request_count > 0 || hasSub.request_count > 0 || hasSub.request_count_trial)){
-    mostRecentMOT.value = motHistory.value[index];
-  }else{
-    errorMessage.value = "You don't have any active subscription. Please buy subscription.";
+  if (isMOThistoryLocked(index)) {
+    errorMessage.value = "This MOT record is locked. Upgrade your subscription to unlock more records.";
     clearErrorMessage();
-    return false;
+    return;
   }
+
+  motHistoryIndex.value = index;
+  clickedMotHistory.value = index;
+  mostRecentMOT.value = motHistory.value[index];
 }
 
 function clearErrorMessage() {
@@ -109,32 +182,31 @@ function clearErrorMessage() {
   }, 5000);
 }
 
-function calculateLongestPeriodBetTests(motHistories) {
-  motHistories.forEach((item, index) => {
-    const testDate = parse(item.TestDate, 'dd/MM/yyyy', new Date());
+function calculateLongestPeriodBetTests(motHistory) {
+  if (!motHistory || motHistory.length < 2) return 0;
+  for (let i = 1; i < motHistory.length; i++) {
 
-    let currentDate;
-    if (index === 0) {
-      currentDate = new Date();
-    } else {
-      currentDate = parse(motHistories[index - 1].TestDate, 'dd/MM/yyyy', new Date());
+    const prevTestDate = parse(motHistory[i - 1].TestDate, "dd/MM/yyyy", new Date());
+    const currentTestDate = parse(motHistory[i].TestDate, "dd/MM/yyyy", new Date());
+
+    const daysDifference = differenceInCalendarDays(currentTestDate, prevTestDate);
+    if (daysDifference > longestPeriodBetweenTests.value) {
+      longestPeriodBetweenTests.value = daysDifference;
     }
+  }
 
-    const daysDifference = differenceInCalendarDays(currentDate, testDate);
-
-    if(daysDifference > longestPeriodBetTests.value){
-      longestPeriodBetTests.value = daysDifference;
-    }
-  });
+  return longestPeriodBetweenTests.value;
 }
 
-// Helper function for calculating days since last test and current date 
-function calculateDaysSinceLastTest(currentMOT) {
-  const testDate = parse(currentMOT.TestDate, 'dd/MM/yyyy', new Date());
-  const currentDate = new Date();
-  const daysDifference = differenceInCalendarDays(currentDate, testDate);
+function calculateLongestDaysOutOfMOT() {
+  motHistory.value.forEach(item => {
+    console.log("item: ", item.DaysOutOfMot);
+    
+    if (Number(item.DaysOutOfMot) > longestPeriodOutOfMot.value) {
+      longestPeriodOutOfMot.value = Number(item.DaysOutOfMot);
+    }
+  });
 
-  return daysDifference;
 }
 
 </script>
@@ -170,7 +242,8 @@ function calculateDaysSinceLastTest(currentMOT) {
       <div class="flex flex-1 items-center justify-center space-x-4">
         <div>
           <p>Total MOT checks</p>
-          <small><span class="font-extralight">Last MOT:</span> {{ mostRecentMOT?mostRecentMOT['TestDate']:'' }}</small>
+          <small><span class="font-extralight">Last MOT:</span> {{ mostRecentMOT ? mostRecentMOT['TestDate'] : ''
+            }}</small>
         </div>
         <h3 class="text-3xl">{{ totalMotChecks }}</h3>
       </div>
@@ -210,8 +283,7 @@ function calculateDaysSinceLastTest(currentMOT) {
               </tr>
               <tr>
                 <th>Total advice Items</th>
-                <td>
-                  96 </td>
+                <td>{{totalAdviceItems}} </td>
               </tr>
               <tr>
                 <th>Total failed items</th>
@@ -219,11 +291,11 @@ function calculateDaysSinceLastTest(currentMOT) {
               </tr>
               <tr>
                 <th>Longest period between tests</th>
-                <td>{{ longestPeriodBetweenTests??"" }} Days</td>
+                <td>{{ longestPeriodBetweenTests ?? "" }} Days</td>
               </tr>
               <tr>
                 <th>Longest period off test</th>
-                <td>{{ longestPeriodBetTests }} Days</td>
+                <td>{{ longestPeriodOutOfMot }} Days</td>
               </tr>
             </tbody>
           </table>
@@ -231,7 +303,7 @@ function calculateDaysSinceLastTest(currentMOT) {
       </div>
       <div class="flex items-center justify-between w-full lg:px-5">
         <div class="w-fit">
-          <button @click="nextSlide"
+          <button @click="prevSlide"
             class="w-8 h-8 border border-black items-center justify-center flex rounded hover:bg-[#FF7400] transition-colors duration-300">
             <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -243,45 +315,37 @@ function calculateDaysSinceLastTest(currentMOT) {
         <div class="w-[90%]">
           <swiper :centeredSlides="false" :slidesPerView="slidesPerView" :autoplay="false" @swiper="onSwiper"
             :navigation="navigationOptions" :modules="modules" class="mySwiper selection:py-6">
-            <swiper-slide
-              v-for="(_, index) in totalMotChecks"
-              :key="index"
-              @click.prevent="handleSliderIndexClick(index)"
-              class="cursor-pointer"
-            >
-              <span
-                v-if="isMOThistoryLocked(index)"
-                class="h-8 w-8 items-center justify-center flex rounded bg-[#FFA500]"
-              >
+            <swiper-slide v-for="(_, index) in totalMotChecks" :key="index"
+              @click.prevent="!isMOThistoryLocked(index) ? handleSliderIndexClick(index) : null" class="cursor-pointer">
+
+              <span v-if="isMOThistoryLocked(index)"
+                class="h-8 w-8 items-center justify-center flex rounded bg-[#FFA500]">
+                <!-- 🔒 Locked Icon -->
                 <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M7.54785 9.47011V6.63976C7.54785 4.55554 9.23744 2.86595 11.3217 2.86595C13.4059 2.86595 15.0955 4.55554 15.0955 6.63976V9.47011"
-                    stroke="white"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                  />
+                    stroke="white" stroke-width="1.5" stroke-linecap="round" />
                   <path
                     d="M4.71777 9.4702H17.9261V18.3482C17.9261 19.1766 17.2545 19.8482 16.4261 19.8482H6.21777C5.38935 19.8482 4.71777 19.1766 4.71777 18.3482V9.4702Z"
-                    stroke="white"
-                    stroke-width="1.5"
-                    stroke-linejoin="round"
-                  />
-                  <rect x="13.6807" y="14.6592" width="0.00985118" height="0.00985118" stroke="white" stroke-width="2.25"
-                    stroke-linejoin="round" />
+                    stroke="white" stroke-width="1.5" stroke-linejoin="round" />
+                  <rect x="13.6807" y="14.6592" width="0.00985118" height="0.00985118" stroke="white"
+                    stroke-width="2.25" stroke-linejoin="round" />
                 </svg>
               </span>
-              <span
-                v-else
-                class="h-8 w-8 border items-center justify-center flex rounded border-[#FF7400] text-[#FF7400] hover:bg-[#FF7400] hover:text-white"
-              >
-                <small>#{{ index + 1 }}</small>
+
+
+
+              <span v-else class="h-8 w-8 border border-orange-300 items-center justify-center flex rounded "
+                :class="(clickedMotHistory + 1 === index + 1)?'bg-[#FF7400] text-white':'text-primary bg-white'">
+                <!-- 🔓 Unlock Icon -->
+                #{{ index + 1 }}
               </span>
             </swiper-slide>
 
           </swiper>
         </div>
         <div class="w-fit">
-          <button @click="prevSlide"
+          <button @click="nextSlide"
             class="w-8 h-8 border border-black items-center justify-center flex rounded hover:bg-[#FF7400] transition-colors duration-300">
             <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -292,7 +356,8 @@ function calculateDaysSinceLastTest(currentMOT) {
         </div>
       </div>
 
-      <div v-if="errorMessage" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+      <div v-if="errorMessage"
+        class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
         <span class="font-medium">{{ errorMessage }}</span>
       </div>
 
@@ -322,7 +387,7 @@ function calculateDaysSinceLastTest(currentMOT) {
             </th>
           </tr>
         </thead>
-        <tbody v-if="mostRecentMOT">
+        <tbody v-if="mostRecentMOT && !isMOThistoryLocked(motHistoryIndex)">
           <tr>
             <th>Test date</th>
             <td>{{ mostRecentMOT.TestDate }}</td>
