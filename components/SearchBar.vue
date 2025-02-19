@@ -150,7 +150,8 @@ const searchForCarReg = async () => {
         <img src="assets/svg/search-icon.svg" v-else class="w-full" alt="Search car registration" />
       </button>
     </div>
-    <div v-if="errors && errors.length && Array.isArray(errors)" class="alert alert-danger absolute">
+    <div v-if="errors && errors.length && Array.isArray(errors)"
+      class="alert alert-danger absolute text-center bg-white rounded-b px-6 py-4 transition-all duration-300">
       <ul v-if="Array.isArray(errors)">
         <li v-for="error in errors" :key="error">{{ error }}</li>
       </ul>
