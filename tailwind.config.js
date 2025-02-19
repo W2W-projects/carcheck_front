@@ -16,6 +16,9 @@ export default {
       backgroundColor: {
         primary: "#FF7400",
       },
+      borderColor: {
+        primary: "#FF7400",
+      },
 
       fontFamily: {
         roboto: ["Roboto", "sans-serif"],
