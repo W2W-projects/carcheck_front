@@ -35,10 +35,10 @@ const motHistory = computed(() => {
   let reversedHistory = [...carRegistrationSearchStore.MOTHistory].reverse();
 
   //filter for fail percentage
-  let failedItem = reversedHistory.filter((item)=>{
+  let failedItem = reversedHistory.filter((item) => {
     return item.TestResult !== "Pass";
   })
-  if(failedItem.length > 0){
+  if (failedItem.length > 0) {
     totalFailedItems.value = failedItem.length;
     let failedRaw = failedItem.length / reversedHistory.length;
     failPercentage.value = Math.round(failedRaw * 100);
@@ -46,9 +46,9 @@ const motHistory = computed(() => {
 
   // advice item
   let adviceCount = 0;
-  reversedHistory.forEach(item=>{
-    if(item.AdvisoryNoticeCount > 0){
-      adviceCount ++;
+  reversedHistory.forEach(item => {
+    if (item.AdvisoryNoticeCount > 0) {
+      adviceCount++;
     }
   });
   totalAdviceItems.value = adviceCount;
@@ -67,15 +67,18 @@ onMounted(async () => {
   try {
     await carRegistrationSearchStore.fetchMOTHistory();
     if (motHistory.value && motHistory.value.length > 0) {
-      expiryDate.value = motHistory.value[0]?.ExpiryDate || "";
-      lastMotDate.value = motHistory.value[0]?.TestDate || "";
+      expiryDate.value = motHistory.value[motHistory.value.length - 1]?.ExpiryDate || "";
+      lastMotDate.value = motHistory.value.length [0]?.TestDate || "";
       totalMotChecks.value = motHistory.value.length;
       mostRecentMOT.value = motHistory.value[0];
       clickedMotHistory.value = 0;
       calculateLongestPeriodBetTests(motHistory.value);
       slidesPerView.value = motHistory.value.length;
 
-      calculateLongestDaysOutOfMOT()
+      setDefaultMotRecord();
+
+      calculateLongestPeriodBetTests(motHistory.value);
+      calculateLongestDaysOutOfMOT();
 
     }
   } catch (error) {
@@ -200,13 +203,41 @@ function calculateLongestPeriodBetTests(motHistory) {
 
 function calculateLongestDaysOutOfMOT() {
   motHistory.value.forEach(item => {
-    console.log("item: ", item.DaysOutOfMot);
-    
     if (Number(item.DaysOutOfMot) > longestPeriodOutOfMot.value) {
       longestPeriodOutOfMot.value = Number(item.DaysOutOfMot);
     }
   });
 
+}
+
+function calculateDaysSinceLastTest(currentMOT) {
+  if (!currentMOT) return 'N/A';
+  const testDate = parse(currentMOT.TestDate, 'dd/MM/yyyy', new Date());
+  const currentDate = new Date();
+  return differenceInCalendarDays(currentDate, testDate);
+}
+
+function setDefaultMotRecord(){
+  if (!motHistory.value || motHistory.value.length === 0) return;
+
+  let hasSub = hasSubscription.value;
+  const isSubscribed =
+    hasSub.active &&
+    (hasSub.one_off_request_count > 0 || hasSub.request_count > 0 || hasSub.request_count_trial > 0);
+
+  // Determine the default index
+  if (!isSubscribed) {
+    if (motHistory.value.length > 5) {
+      motHistoryIndex.value = Math.max(motHistory.value.length - 5, 0);
+    } else {
+      motHistoryIndex.value = 0;
+    }
+  } else {
+    motHistoryIndex.value = 0;
+  }
+
+  mostRecentMOT.value = motHistory.value[motHistoryIndex.value];
+  clickedMotHistory.value = motHistoryIndex.value;
 }
 
 </script>
@@ -263,7 +294,6 @@ function calculateLongestDaysOutOfMOT() {
     <div v-show="isTableVisible" class="text-black space-y-4 w-full">
       <div class="flex flex-col lg:flex-row items-center justify-center">
         <div class="w-full md:w-7/12 lg:w-1/3 relative">
-          {{ failPercentage }}
           <chart-gauge v-if="failPercentage" :failRate="failPercentage" height="30" width="100%" />
           <chart-gauge v-else :failRate="0" height="30" width="100%" />
         </div>
@@ -283,7 +313,7 @@ function calculateLongestDaysOutOfMOT() {
               </tr>
               <tr>
                 <th>Total advice Items</th>
-                <td>{{totalAdviceItems}} </td>
+                <td>{{ totalAdviceItems }} </td>
               </tr>
               <tr>
                 <th>Total failed items</th>
@@ -336,7 +366,7 @@ function calculateLongestDaysOutOfMOT() {
 
 
               <span v-else class="h-8 w-8 border border-orange-300 items-center justify-center flex rounded "
-                :class="(clickedMotHistory + 1 === index + 1)?'bg-[#FF7400] text-white':'text-primary bg-white'">
+                :class="(clickedMotHistory + 1 === index + 1) ? 'bg-[#FF7400] text-white' : 'text-primary bg-white'">
                 <!-- 🔓 Unlock Icon -->
                 #{{ index + 1 }}
               </span>

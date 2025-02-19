@@ -48,7 +48,7 @@ onMounted(() => {
         labels: props.data.map(item => item.label),
         datasets: [
           {
-            label: 'Valuation Data',
+            label: 'Price (£)',
             data: props.data.map(item => item.value),
             backgroundColor: '#F94144',
             borderWidth: 1,
@@ -64,7 +64,7 @@ onMounted(() => {
             beginAtZero: true,
             ticks: {
               callback: function (value) {
-                return props.hasSubscription ? value : 'X'.repeat(value.toString().length);
+                return props.hasSubscription ? `£${value.toLocaleString()}` : 'X'.repeat(value.toString().length);
               },
             },
           },
