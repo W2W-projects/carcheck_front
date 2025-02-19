@@ -20,7 +20,7 @@ const totalFailedItems = ref(0);
 const longestPeriodBetweenTests = ref(0);
 const mostRecentMOT = ref(null);
 const clickedMotHistory = ref(0);
-const longestPeriodBetTests = ref(0);
+const longestPeriodOutOfMot = ref(0);
 const slidesPerView = ref(0);
 const errorMessage = ref("");
 const isTableVisible = ref(true);
@@ -33,25 +33,31 @@ const motHistory = computed(() => {
   }
 
   let reversedHistory = [...carRegistrationSearchStore.MOTHistory].reverse();
+
   //filter for fail percentage
   let failedItem = reversedHistory.filter((item)=>{
-    return item.TestResult != "Pass";
+    return item.TestResult !== "Pass";
   })
   if(failedItem.length > 0){
-    console.log('failed: ', failedItem.length)
-    console.log('total: ', reversedHistory.length)
-    console.log("floor: ", Math.round(failedItem.length / reversedHistory.length))
-    failPercentage.value = 100 * (failedItem.length / reversedHistory.length);
+    totalFailedItems.value = failedItem.length;
+    let failedRaw = failedItem.length / reversedHistory.length;
+    failPercentage.value = Math.round(failedRaw * 100);
   }
-  console.log("failed percentage: ", failPercentage.value);
 
+  // advice item
+  let adviceCount = 0;
+  reversedHistory.forEach(item=>{
+    if(item.AdvisoryNoticeCount > 0){
+      adviceCount ++;
+    }
+  });
+  totalAdviceItems.value = adviceCount;
 
   let locked = reversedHistory.filter((_, index) => isMOThistoryLocked(index));
   let unlocked = reversedHistory.filter((_, index) => !isMOThistoryLocked(index));
 
   return [...locked, ...unlocked];
 });
-
 
 const toggleTableVisibility = () => {
   isTableVisible.value = !isTableVisible.value;
@@ -68,6 +74,9 @@ onMounted(async () => {
       clickedMotHistory.value = 0;
       calculateLongestPeriodBetTests(motHistory.value);
       slidesPerView.value = motHistory.value.length;
+
+      calculateLongestDaysOutOfMOT()
+
     }
   } catch (error) {
     console.error('Error fetching MOTHistory:', error);
@@ -173,30 +182,31 @@ function clearErrorMessage() {
   }, 5000);
 }
 
-function calculateLongestPeriodBetTests(motHistories) {
-  motHistories.forEach((item, index) => {
-    const testDate = parse(item.TestDate, 'dd/MM/yyyy', new Date());
+function calculateLongestPeriodBetTests(motHistory) {
+  if (!motHistory || motHistory.length < 2) return 0;
+  for (let i = 1; i < motHistory.length; i++) {
 
-    let currentDate;
-    if (index === 0) {
-      currentDate = new Date();
-    } else {
-      currentDate = parse(motHistories[index - 1].TestDate, 'dd/MM/yyyy', new Date());
+    const prevTestDate = parse(motHistory[i - 1].TestDate, "dd/MM/yyyy", new Date());
+    const currentTestDate = parse(motHistory[i].TestDate, "dd/MM/yyyy", new Date());
+
+    const daysDifference = differenceInCalendarDays(currentTestDate, prevTestDate);
+    if (daysDifference > longestPeriodBetweenTests.value) {
+      longestPeriodBetweenTests.value = daysDifference;
     }
+  }
 
-    const daysDifference = differenceInCalendarDays(currentDate, testDate);
-
-    if (daysDifference > longestPeriodBetTests.value) {
-      longestPeriodBetTests.value = daysDifference;
-    }
-  });
+  return longestPeriodBetweenTests.value;
 }
 
-function calculateDaysSinceLastTest(currentMOT) {
-  if (!currentMOT) return 'N/A';
-  const testDate = parse(currentMOT.TestDate, 'dd/MM/yyyy', new Date());
-  const currentDate = new Date();
-  return differenceInCalendarDays(currentDate, testDate);
+function calculateLongestDaysOutOfMOT() {
+  motHistory.value.forEach(item => {
+    console.log("item: ", item.DaysOutOfMot);
+    
+    if (Number(item.DaysOutOfMot) > longestPeriodOutOfMot.value) {
+      longestPeriodOutOfMot.value = Number(item.DaysOutOfMot);
+    }
+  });
+
 }
 
 </script>
@@ -273,8 +283,7 @@ function calculateDaysSinceLastTest(currentMOT) {
               </tr>
               <tr>
                 <th>Total advice Items</th>
-                <td>
-                  96 </td>
+                <td>{{totalAdviceItems}} </td>
               </tr>
               <tr>
                 <th>Total failed items</th>
@@ -286,7 +295,7 @@ function calculateDaysSinceLastTest(currentMOT) {
               </tr>
               <tr>
                 <th>Longest period off test</th>
-                <td>{{ longestPeriodBetTests }} Days</td>
+                <td>{{ longestPeriodOutOfMot }} Days</td>
               </tr>
             </tbody>
           </table>
