@@ -33,14 +33,15 @@ const chartData = computed(() => {
     totalRegistrations.value = motHistory.value.length;
 
     // Calculate total odometer reading
-    totalOdometerReading.value = motHistory.value.reduce(
-      (sum, record) => sum + (record.MileageSinceLastPass || 0),
-      0
-    );
+    // totalOdometerReading.value = motHistory.value.reduce(
+    //   (sum, record) => sum + (record.MileageSinceLastPass || 0),
+    //   0
+    // );
+    totalOdometerReading.value = motHistory.value?motHistory.value[motHistory.value.length - 1].OdometerReading:0;
 
     return motHistory.value.map(record => ({
       label: formatDate(record.TestDate),
-      value: record.MileageSinceLastPass
+      value: record.OdometerReading
     }));
   }
   return [];
