@@ -124,7 +124,7 @@ const searchForCarReg = async () => {
 </script>
 
 <template>
-  <div>
+  <div class="relative">
     <div class="relative bg-[#FFA500] py-1 pl-2 pr-1 rounded flex flex-row items-center space-x-1"
       :class="[props.width]">
       <div class="flex items-center justify-center mr-[0.27rem]">
@@ -138,17 +138,26 @@ const searchForCarReg = async () => {
       <button @click="searchForCarReg"
         class="bg-[#0F1829] py-1 px-2 rounded hover:bg-white md:hover:bg-transparent md:dark:hover:bg-transparent"
         :class="[props.buttonClass]">
-        <span class="text-white" v-if="searchTxt">{{ searchTxt }}</span>
+        <template v-if="searchTxt">
+          <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+        </template>
         <img src="assets/svg/search-icon.svg" v-else class="w-full" alt="Search car registration" />
       </button>
     </div>
-    <div v-if="errors && errors.length && Array.isArray(errors)" class="alert alert-danger">
+    <div v-if="errors && errors.length && Array.isArray(errors)" class="alert alert-danger absolute">
       <ul v-if="Array.isArray(errors)">
         <li v-for="error in errors" :key="error">{{ error }}</li>
       </ul>
     </div>
-    <div class="alert alert-danger" v-if="errorMessage">
-      <p>{{ errorMessage }}</p>
+    <div class="alert alert-danger absolute text-center bg-white rounded-b px-6 py-4 transition-all duration-300"
+      style="line-height: 1rem;" v-if="errorMessage">
+      <small>{{ errorMessage }}</small>
     </div>
   </div>
 </template>
@@ -168,7 +177,6 @@ const searchForCarReg = async () => {
 
 .alert {
   color: red;
-  padding: 3px;
   justify-content: center;
 }
 </style>
