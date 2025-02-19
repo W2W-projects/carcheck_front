@@ -33,6 +33,18 @@ const motHistory = computed(() => {
   }
 
   let reversedHistory = [...carRegistrationSearchStore.MOTHistory].reverse();
+  //filter for fail percentage
+  let failedItem = reversedHistory.filter((item)=>{
+    return item.TestResult != "Pass";
+  })
+  if(failedItem.length > 0){
+    console.log('failed: ', failedItem.length)
+    console.log('total: ', reversedHistory.length)
+    console.log("floor: ", Math.round(failedItem.length / reversedHistory.length))
+    failPercentage.value = 100 * (failedItem.length / reversedHistory.length);
+  }
+  console.log("failed percentage: ", failPercentage.value);
+
 
   let locked = reversedHistory.filter((_, index) => isMOThistoryLocked(index));
   let unlocked = reversedHistory.filter((_, index) => !isMOThistoryLocked(index));
@@ -121,7 +133,6 @@ const nextSlide = () => {
   if (swiperInstance) {
     swiperInstance.slideTo(motHistoryIndex.value, 800);
   }
-  console.log("motHistoryIndex: ", motHistoryIndex.value);
 };
 
 const prevSlide = () => {
@@ -142,7 +153,6 @@ const prevSlide = () => {
   if (swiperInstance) {
     swiperInstance.slideTo(motHistoryIndex.value, 800);
   }
-  console.log("motHistoryIndex: ", motHistoryIndex.value);
 };
 
 function handleSliderIndexClick(index: number) {
