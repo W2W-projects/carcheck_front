@@ -189,7 +189,8 @@ const pricingData = [
 <template>
   <!-- intro -->
   <section class="flex flex-wrap items-center justify-center mx-auto lg:px-[9.12rem] px-8 panoramic-bg">
-    <div class="flex flex-col items-start justify-center w-full h-[23rem] car-bg">
+    <div
+      class="flex flex-col lg:items-start items-center lg:text-start text-center justify-center w-full h-[23rem] lg:car-bg">
       <p class="text-[2.8rem] leading-tight tracking-wider -translate-y-4 text-black">Just choose
         <br />
         <span class="text-[3rem] tracking-wide"><b>the best report</b> for you</span>
@@ -214,9 +215,10 @@ const pricingData = [
   </section>
 
   <!-- plan section -->
-  <section class="mt-8 px-[9rem]">
+  <section class="mt-8 lg:px-[9rem] px-5">
     <PlanSection />
-    <p class="text-[#0F1829] text-lg mt-12 px-3 tracking-wider">All plans include a 48hr trial subscription. After the
+    <p class="text-[#0F1829] text-lg mt-12 px-3 tracking-wider text-justify">All plans include a 48hr trial
+      subscription. After the
       trial, unless
       you
       cancel,
@@ -230,11 +232,11 @@ const pricingData = [
     <TrustedBy class="mt-4" />
   </section>
 
-  <section class="px-[7.5rem] mt-[2.85rem] mb-[2.85rem]">
+  <section class="lg:px-[7.5rem] mt-[2.85rem] mb-[2.85rem]">
     <table class="w-full text-black">
       <thead>
-        <tr class="flex text-xl">
-          <th class="h-[3.26rem] flex items-center justify-center  w-[32.1%]"></th>
+        <tr class="flex lg:text-xl text-sm">
+          <th class="h-[3.26rem] flex items-center justify-center lg:w-[32.1%] w-[25%]"></th>
           <th class="h-[3.26rem] flex items-center justify-center rounded flex-1 border border-black text-[#0F1829]">
             Basic report</th>
           <th
@@ -248,8 +250,9 @@ const pricingData = [
         </tr>
       </thead>
       <tbody class="border-t border-gray-400">
-        <tr class="flex text-2xl" v-for="data in pricingData" :key="data">
-          <td class="h-[4.65rem] flex items-center pl-[3.75rem] border-b border-gray-400 w-[32.1%] font-light">
+        <tr class="flex lg:text-2xl text-sm" v-for="data in pricingData" :key="data">
+          <td
+            class="h-[4.65rem] flex items-center lg:justify-start justify-center lg:pl-[3.75rem] border-b border-gray-400 lg:w-[32.1%] w-[25%] text-center lg:text-start font-light">
             {{ data.title }}
           </td>
           <td class="h-[4.65rem] flex items-center justify-center border-b border-l border-gray-400 flex-1">
@@ -283,6 +286,7 @@ const pricingData = [
   background-image: url("/images/webp/panoramic-city.webp");
   background-size: 100%;
   background-position: bottom;
+  background-repeat: no-repeat;
 }
 
 .car-bg {
