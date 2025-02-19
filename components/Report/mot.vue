@@ -75,7 +75,10 @@ onMounted(async () => {
       calculateLongestPeriodBetTests(motHistory.value);
       slidesPerView.value = motHistory.value.length;
 
-      calculateLongestDaysOutOfMOT()
+      setDefaultMotRecord();
+
+      calculateLongestPeriodBetTests(motHistory.value);
+      calculateLongestDaysOutOfMOT();
 
     }
   } catch (error) {
@@ -214,6 +217,29 @@ function calculateDaysSinceLastTest(currentMOT) {
   return differenceInCalendarDays(currentDate, testDate);
 }
 
+function setDefaultMotRecord(){
+  if (!motHistory.value || motHistory.value.length === 0) return;
+
+  let hasSub = hasSubscription.value;
+  const isSubscribed =
+    hasSub.active &&
+    (hasSub.one_off_request_count > 0 || hasSub.request_count > 0 || hasSub.request_count_trial > 0);
+
+  // Determine the default index
+  if (!isSubscribed) {
+    if (motHistory.value.length > 5) {
+      motHistoryIndex.value = Math.max(motHistory.value.length - 5, 0);
+    } else {
+      motHistoryIndex.value = 0;
+    }
+  } else {
+    motHistoryIndex.value = 0;
+  }
+
+  mostRecentMOT.value = motHistory.value[motHistoryIndex.value];
+  clickedMotHistory.value = motHistoryIndex.value;
+}
+
 </script>
 
 <template>
@@ -268,7 +294,6 @@ function calculateDaysSinceLastTest(currentMOT) {
     <div v-show="isTableVisible" class="text-black space-y-4 w-full">
       <div class="flex flex-col lg:flex-row items-center justify-center">
         <div class="w-full md:w-7/12 lg:w-1/3 relative">
-          {{ failPercentage }}
           <chart-gauge v-if="failPercentage" :failRate="failPercentage" height="30" width="100%" />
           <chart-gauge v-else :failRate="0" height="30" width="100%" />
         </div>
