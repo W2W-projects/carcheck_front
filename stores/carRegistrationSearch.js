@@ -18,6 +18,7 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
             vehicleStatus: null,
             vehicleDetails: null,
             MOTHistory: [],
+            MOTAdditionalInfo: null,
             technicalDetails: null,
             classificationDetails: null,
             vehicleHistory: null,
@@ -186,11 +187,25 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
                     this.MOTHistory = JSON.parse(decrypted);
                 } catch (error) {
-                    console.error("Failed to decrypt Vehicle MOT History: ", error);
+                    console.error("Failed to decrypt Vehicle MOT Additional Information: ", error);
                 }
             }
             return this.MOTHistory;
         },
+        async fetchMOTAdditionalInformation() {
+            let code = systematicFourCharCode('MOTAdditionalInfo');
+            const encryptedData = localStorage.getItem(code);
+            if (encryptedData) {
+                try {
+                    const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
+                    this.MOTAdditionalInfo = JSON.parse(decrypted);
+                } catch (error) {
+                    console.error("Failed to decrypt Vehicle MOT History: ", error);
+                }
+            }
+            return this.MOTAdditionalInfo;
+        },
+
         async fetchValuationList() {
             let code = systematicFourCharCode('VehicleValuationsList');
             const encryptedData = localStorage.getItem(code);
@@ -297,28 +312,15 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                     : await ApiService.get(`v1/car-check/${this.reg_number}`);
 
                 if(response.success){
-                    const keysToRemove = [
-                        'VehicleImageUrl', 'VehicleLogo', 'SmmtDetails', 'VehicleDimension',
-                        'VehicleRegistration', 'VehicleMotVed', 'VehicleGeneralInfo', 'Performance',
-                        'VehicleClassificationDetails', 'VehicleHistory', 'MOTHistory', 'vehicleValuationsList',
-                        'vehicleStolenRecords', 'vehicleWriteOffRecords', 'vehicleRiskRecords', 
-                        'vehicleFinanceRecords', 'vbrand_logo'
-                    ];
-
-                    keysToRemove.forEach(key => {
-                        const storageKey = systematicFourCharCode(key);
-                        localStorage.removeItem(storageKey);
-                    });
+                    await this.cleanupLocalStorage();
                 }
 
                 if (response.payload && Array.isArray(response.payload)) {
                     let combinedPayload = response.payload.reduce((acc, item) => {
                         return { ...acc, ...item };
                     }, {});
-                    // clean localStorage data 
-                    await this.cleanupLocalStorage();
-                    // end 
-                    // Update store state with fetched data
+
+
                     await this.setVehicleImageUrl(combinedPayload);
                     await this.setVehicleLogo(combinedPayload);
                     await this.setSmmtDetails(combinedPayload);
@@ -329,6 +331,7 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                     await this.setPerformance(combinedPayload);
                     await this.setClassificationDetails(combinedPayload);
                     await this.setMOTHistory(combinedPayload);
+                    await this.setMOTAdditionalInfo(combinedPayload);
                     
                     //assignment of checkout count
                     if(authStore.user){
@@ -445,6 +448,14 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
+        async setMOTAdditionalInfo(combinedPayload) {
+            let code = systematicFourCharCode('MOTAdditionalInfo');
+            if (combinedPayload.MotHistory) {
+                const data = JSON.stringify(combinedPayload.MotHistory?.AdditionalInformation);
+                const encryptedData = await encryptData(code, data);
+                localStorage.setItem(code, JSON.stringify(encryptedData));
+            }
+        },
         async setFullReportText(text) {
             this.getFullReportText = text;
         },
@@ -525,7 +536,7 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
             const keysToRemove = [
                 'VehicleImageUrl', 'VehicleLogo', 'SmmtDetails', 'VehicleDimension',
                 'VehicleRegistration', 'VehicleMotVed', 'VehicleGeneralInfo', 'Performance',
-                'VehicleClassificationDetails', 'VehicleHistory', 'MOTHistory', 'VehicleValuationsList',
+                'VehicleClassificationDetails', 'VehicleHistory', 'MOTHistory', 'MOTAdditionalInfo', 'VehicleValuationsList',
                 'vehicleStolenRecords', 'vehicleWriteOffRecords', 'vehicleRiskRecords', 
                 'vehicleFinanceRecords', 'numberOfLooksUp', 'reg_number'
             ];
@@ -535,7 +546,6 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                 localStorage.removeItem(storageKey);
             });
         
-            console.log('Local storage cleaned.');
         }
     },
     persist: {
