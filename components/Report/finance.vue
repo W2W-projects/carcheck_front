@@ -14,6 +14,8 @@ const toggleTableVisibility = () => {
 
 const subscriptionStore = useSubscriptionStore();
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
+const subscription = computed(()=> subscriptionStore.subscription);
+
 
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
 const financeRecords = computed(() => carRegistrationSearchStore.financeRecords);
@@ -35,6 +37,31 @@ const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   return date.toISOString().split('T')[0];
 };
+
+function isShowable() {
+  if (
+    !subscription.value ||
+    !subscription.value.plan ||
+    !hasSubscription.value ||
+    !user.value
+  ) {
+    return false; 
+  }
+
+  if (
+    !(
+      subscription.value.plan.plan_code === "48h-basic-subscription" &&
+      hasSubscription.value.onTrial
+    )
+  ) {
+    return (
+      (user.value.request_count || 0) > 0 ||
+      (user.value.one_off_request_count || 0) > 0
+    );
+  }
+
+  return false;
+}
 </script>
 
 
@@ -121,7 +148,8 @@ const formatDate = (dateString: string) => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(finance, key) in finRecordList" :key="key" v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">
+
+          <tr v-for="(finance, key) in finRecordList" :key="key" v-if="isShowable()">
             <td >{{ formatDate(finance.AgreementDate) }}</td>
             <td >{{ finance.AgreementType }}</td>
             <td >{{ finance.AgreementTerm }}</td>

@@ -13,6 +13,7 @@ const toggleTableVisibility = () => {
 
 const valuationLists = computed(() => carRegistrationSearchStore.vehicleValuationsList);
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
+const subscription = computed(() => subscriptionStore.subscription);
 const user = computed(() => authStore.user);
 
 const chartData = ref([]);
@@ -53,6 +54,31 @@ function getChartHeight() {
   if (screenWidth >= 768) return 40;
   return 50;
 }
+
+function isShowable() {
+  if (
+    !subscription.value ||
+    !subscription.value.plan ||
+    !hasSubscription.value ||
+    !user.value
+  ) {
+    return false; 
+  }
+
+  if (
+    !(
+      subscription.value.plan.plan_code === "48h-basic-subscription" &&
+      hasSubscription.value.onTrial
+    )
+  ) {
+    return (
+      (user.value.request_count || 0) > 0 ||
+      (user.value.one_off_request_count || 0) > 0
+    );
+  }
+
+  return false;
+}
 </script>
 
 
@@ -83,9 +109,10 @@ function getChartHeight() {
     </div>
     
     <div v-show="isTableVisible" class="text-black my-10 w-full">
+      <!-- v-if="isClient && " -->
+      <!-- v-if="!(subscription?.plan?.plan_code ==='48h-basic-subscription' && hasSubscription?.onTrial) && (user.request_count > 0 || user.one_off_request_count > 0)" -->
       <div v-if="isClient">
-        <chart-bar v-if="chartData.length > 0" :data="chartData" :hasSubscription="hasSubscription.active && (user.request_count > 0 || user.one_off_request_count > 0)"
-          :height="getChartHeight()" width="100%" />
+        <chart-bar v-if="chartData.length > 0" :data="chartData" :hasSubscription="isShowable()" :height="getChartHeight()" width="100%" />
       </div>
       <div v-else>
         <p>Loading data...</p>
