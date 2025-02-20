@@ -38,7 +38,6 @@ definePageMeta({
     <ReportSection1 />
     <!-- Section 2 -->
     <ReportInfo />
-
     <!-- Section 3 -->
     <ReportMileage />
 

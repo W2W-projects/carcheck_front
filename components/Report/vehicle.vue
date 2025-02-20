@@ -3,23 +3,51 @@ import hashed from "@/components/Includes/Hashed.vue";
 import { useSubscriptionStore } from '@/stores/subscription';
 import { useAuthStore } from '~/stores/auth';
 
+const subscriptionStore = useSubscriptionStore();
+const carRegistrationSearch = useCarRegistrationSearchStore();
+const authStore = useAuthStore();
+
 const isTableVisible = ref(true);
 const numberOfPreviousKeepers = ref(0);
 const plateChangesCount = ref(0);
 const theftReports = ref(0);
 
+const hasSubscription = computed(() => subscriptionStore.hasSubscription);
+const subscription = computed(() => subscriptionStore.subscription);
+const user = computed(()=> authStore.user);
+const vehicleHistory = computed(() => carRegistrationSearch.vehicleHistory);
 
-const carRegistrationSearch = useCarRegistrationSearchStore();
+
+
 const toggleTableVisibility = () => {
   isTableVisible.value = !isTableVisible.value
 }
 
-const vehicleHistory = computed(() => carRegistrationSearch.vehicleHistory);
-const subscriptionStore = useSubscriptionStore();
-const hasSubscription = computed(()=> subscriptionStore.hasSubscription);
+function isShowable() {
+  if (
+    !subscription.value ||
+    !subscription.value.plan ||
+    !hasSubscription.value ||
+    !user.value
+  ) {
+    return false; 
+  }
 
-const authStore = useAuthStore();
-const user = computed(()=> authStore.user);
+  if (
+    !(
+      subscription.value.plan.plan_code === "48h-basic-subscription" &&
+      hasSubscription.value.onTrial
+    )
+  ) {
+    return (
+      (user.value.request_count || 0) > 0 ||
+      (user.value.one_off_request_count || 0) > 0
+    );
+  }
+
+  return false;
+}
+
 
 onMounted(async () => {
   if (!vehicleHistory.value) {
@@ -94,7 +122,7 @@ watch(vehicleHistory, (newHistory) => {
         <div class="bg-[#EEEEEE] rounded flex items-center overflow-hidden h-[10.5rem]">
           <div class="w-1/2 flex flex-col items-center">
             <h2 class="text-7xl font-bold text-[#FFA500]">
-              <span v-if="hasSubscription?.active && (user.request_count || user.one_off_request_count)" >{{ numberOfPreviousKeepers > 9 ? numberOfPreviousKeepers : '0' + numberOfPreviousKeepers }}</span>
+              <span v-if="false" >{{ numberOfPreviousKeepers > 9 ? numberOfPreviousKeepers : '0' + numberOfPreviousKeepers }}</span>
               <hashed contain="zero" v-else></hashed>
             </h2>
             <p class="text-2xl font-light"> PREVIOUS <br /> OWNERS</p>
@@ -130,7 +158,7 @@ watch(vehicleHistory, (newHistory) => {
         <div class="bg-[#EEEEEE] rounded flex items-center overflow-hidden h-[10.5rem]">
           <div class="w-1/2 flex flex-col items-center">
             <h2 class="text-7xl font-bold text-[#EF343A]">
-              <span v-if="hasSubscription?.active && (user.request_count || user.one_off_request_count)" >{{ theftReports > 9 ? theftReports : '0' + theftReports }}</span>
+              <span v-if="false">{{ theftReports > 9 ? theftReports : '0' + theftReports }}</span>
               <hashed contain="zero" v-else></hashed>
             </h2>
             <p class="text-2xl font-light"> THEFT <br /> REPORT</p>
@@ -160,7 +188,7 @@ watch(vehicleHistory, (newHistory) => {
         <div class="bg-[#EEEEEE] rounded flex items-center overflow-hidden h-[10.5rem]">
           <div class="w-1/2 flex flex-col items-center">
             <h2 class="text-7xl font-bold text-[#FF7400]">
-              <span v-if="hasSubscription?.active && (user.request_count || user.one_off_request_count)" >{{ plateChangesCount > 9 ? plateChangesCount : '0' + plateChangesCount }}</span>
+              <span v-if="false">{{ plateChangesCount > 9 ? plateChangesCount : '0' + plateChangesCount }}</span>
               <hashed contain="zero" v-else></hashed>
             </h2>
             <p class="text-2xl font-light">PLATE <br /> CHANGE</p>
