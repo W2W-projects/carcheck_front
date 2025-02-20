@@ -87,7 +87,7 @@ const startTimer = () => {
       </div>
     </div>
 
-    <div class="w-full lg:absolute hidden bottom-[16.05%] -z-10">
+    <div class="w-full lg:block absolute hidden bottom-[16.05%] -z-10">
       <div class="relative z-10">
         <img src="/images/webp/checkout-car.webp" class="w-[35rem] translate-x-[6.9rem] translate-y-[3.5rem]" alt="">
       </div>
