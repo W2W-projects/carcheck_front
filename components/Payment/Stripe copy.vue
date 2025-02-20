@@ -24,7 +24,7 @@ const loading = ref(false);
 const cardComplete = ref(false);
 const termsAccepted = ref(false);
 const cardholderName = ref('');
-const buttonProcess = ref('Get report');
+const buttonProcess = ref('PROCESS');
 
 let elements: StripeElements;
 let cardNumberElement: StripeCardNumberElement;
@@ -106,8 +106,8 @@ async function handleCheckoutClick() {
             buttonProcess.value = "PROCESS";
             return;
         }
-
-        if (plan.getSelectedPlan == null) {
+        
+        if(plan.getSelectedPlan == null){
             console.error(error);
             (errorMessage.value as any) = "User don't have any plan";
             buttonProcess.value = "PROCESS";
@@ -119,7 +119,7 @@ async function handleCheckoutClick() {
             plan: plan.getSelectedPlan,
         });
 
-
+        
         if ((response as any).payload.paymentStatus !== 'succeeded') {
             const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment((response as any).payload.clientSecret, {
                 payment_method: paymentMethod.id,
@@ -135,9 +135,9 @@ async function handleCheckoutClick() {
         paymentMethodId.value = paymentMethod.id;
 
         // handling single offer plan
-        if (plan.getSelectedPlan) {
+        if(plan.getSelectedPlan){
             let selectedPlan = plan.getSelectedPlan;
-            if (selectedPlan.plan_code === "single-offer") {
+            if(selectedPlan.plan_code === "single-offer"){
                 let payload = response.payload;
                 if (payload?.hasSubscription) {
                     await subscriptionStore.setHasSubscription(payload.hasSubscription);
@@ -146,13 +146,13 @@ async function handleCheckoutClick() {
                     buttonProcess.value = "DONE!";
                     navigateTo('/report');
                 }, 3000);
-            } else {
+            }else{
                 await createSubscription(selectedPlan);
             }
         }
     } catch (error) {
 
-        if (!error.data?.success) {
+        if(!error.data?.success){
             errorMessage.value = error.data.message;
 
         }
@@ -177,13 +177,13 @@ async function createSubscription(selectedPlan) {
             },
             plan_id: selectedPlan.id,
         });
-        if (response.success) {
+        if(response.success){
             successMessage.value = "Payment done successfully.";
             buttonProcess.value = "DONE!";
         }
         let payload = response.payload;
         // set/change request_count, one_off_request_count, request_count_trial to user
-        if (payload?.hasSubscription) {
+        if(payload?.hasSubscription){
             user.request_count = Number(payload.hasSubscription.request_count) || 0;
             user.one_off_request_count = Number(payload.hasSubscription.one_off_request_count) || 0;
             user.request_count_trial = Number(payload.hasSubscription.request_count_trial) || 0;
@@ -200,7 +200,7 @@ async function createSubscription(selectedPlan) {
             await plan.setSelectedPlan(payload.plan);
         }
 
-        if (payload?.car_data) {
+        if(payload?.car_data){
             // vehicle MOT History
             const vehicleMotHistoryObj = payload.car_data.find(item => item.MotHistory);
 
@@ -287,7 +287,7 @@ async function createSubscription(selectedPlan) {
                 console.error("Vehicle status not found in car data");
             }
         }
-
+        
         // if (selectedPlan.plan_code === '48h-basic-subscription') {
         //     navigateTo('/vehicle/basic-report');
         // } else if (selectedPlan.plan_code === '48h-export-subscription') {
@@ -300,7 +300,7 @@ async function createSubscription(selectedPlan) {
             navigateTo('/report');
         }, 3000);
         buttonProcess.value = "REDIRECTING!";
-
+        
     } catch (error) {
         buttonProcess.value = "FAILED!";
         console.error("Error creating subscription: ", error);
@@ -325,97 +325,125 @@ watch(errorMessage, (newErrorMessage) => {
     }
 });
 
+const planPrice = computed(() => {
+  const selectedPlan = plan.getSelectedPlan;
 
+  if (!selectedPlan) return '0';
+  return selectedPlan.plan_code !== 'single-offer' 
+    ? selectedPlan.amount_trial 
+    : selectedPlan.amount_premium;
+});
 
 </script>
 <template>
-    <form @submit.prevent="handleCheckoutClick" class="w-full h-full p-0 m-0">
-        <div class="alert alert-danger" v-if="errorMessage">
-            <span class="alert alert-danger">{{ errorMessage }}</span>
-        </div>
-
-        <div class="mb-4 w-full">
-            <label for="cardholder-name" class="block mb-2 text-sm">Cardholder's Name</label>
-            <div class="flex items-center py-1 border-2 border-[#0F1829] rounded-lg w-full overflow-hidden ">
-                <div class="px-3 border-r border-black">
-                    <img src="/assets/svg/cardName.svg" alt="" />
-                </div>
-                <input v-model="cardholderName" type="text" id="cardholder-name" placeholder="John Strawzen"
-                    class="w-full md:p-3 p-2  uppercase focus:border-none focus:outline-none bg-transparent" />
-            </div>
-        </div>
-        <div class="mb-4 w-full">
-            <label for="card-number-element" class="block mb-2 text-sm">Card Number</label>
-            <div class="flex items-center py-2 border-2 border-[#0F1829] rounded-lg overflow-hidden ">
-                <div class="px-3 border-r border-black">
-                    <img src="/assets/svg/cardNumber.svg" alt="" />
-                </div>
-                <div id="card-number-element" class="md:p-3 p-2  border-none w-full">
-                </div>
-            </div>
-        </div>
-        <div class="flex mb-4 space-x-3 w-full">
-            <div class="w-1/2">
-                <label for="card-expiry-element" class="block mb-2 text-sm">Expiry</label>
-                <div class="flex items-center py-2 border-2 border-[#0F1829] rounded-lg overflow-hidden ">
-                    <div class="px-5 border-r border-black">
-                        <img src="/assets/svg/cardExpiry.svg" alt="" class="scale-150" />
+    <section class="bg-gray-50 dark:bg-gray-900">
+        <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 grid lg:grid-cols-2 gap-8 lg:gap-16">
+            <OrderSummary />
+            <div>
+                <div class="w-full lg:max-w-xl p-6 space-y-8 sm:p-8 bg-white rounded-lg shadow-xl dark:bg-gray-800">
+                   
+                    <div class="flex flex-row items-center justify-between ">
+                        <h1 class="text-lg font-bold px-2">Make Payment</h1>
+                        <span class="text-[#0F1829] text-xs rounded bg-[#FF7400] px-2 py-0.5"
+                            >£{{ planPrice }}</span>
                     </div>
-                    <div id="card-expiry-element" class="md:p-3 p-2  border-none w-full">
-                    </div>
+                        <form @submit.prevent="handleCheckoutClick">
+                            <div class="alert alert-danger" v-if="errorMessage">
+                                <span class="alert alert-danger">{{ errorMessage }}</span>
+                            </div>
+                            
+                            <div class="mb-4 w-full">
+                                <label for="cardholder-name" class="block mb-2 text-sm font-bold">Cardholder's Name</label>
+                                <div class="flex items-center py-1 border-2 border-[#4A2EB6] w-full overflow-hidden ">
+                                    <div class="px-2">
+                                        <img src="/assets/svg/cardName.svg" alt="" />
+                                    </div>
+                                    <input v-model="cardholderName" type="text" id="cardholder-name"
+                                        placeholder="John Strawzen"
+                                        class="w-full px-3 py-2 uppercase focus:border-none focus:outline-none bg-transparent" />
+                                </div>
+                            </div>
+                            <div class="mb-4 w-full">
+                                <label for="card-number-element" class="block mb-2 text-sm font-bold">Card Number</label>
+                                <div class="flex items-center py-1 border-2 border-[#4A2EB6] overflow-hidden ">
+                                    <div class="px-2">
+                                        <img src="/assets/svg/cardNumber.svg" alt="" />
+                                    </div>
+                                    <div id="card-number-element" class="px-3 py-2 border-none w-full">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex mb-4 space-x-3 w-full">
+                                <div class="w-1/2">
+                                    <label for="card-expiry-element" class="block mb-2 text-sm font-bold">Expiry</label>
+                                    <div class="flex items-center py-1 border-2 border-[#4A2EB6] overflow-hidden ">
+                                        <div class="px-2">
+                                            <img src="/assets/svg/cardExpiry.svg" alt="" />
+                                        </div>
+                                        <div id="card-expiry-element" class="px-3 py-2 border-none w-full">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="w-1/2">
+                                    <label for="card-cvc-element" class="block mb-2 text-sm font-bold">CVV</label>
+                                    <div class="flex items-center py-1 border-2 border-[#4A2EB6] overflow-hidden ">
+                                        <div class="px-2">
+                                            <img src="/assets/svg/cardCvv.svg" alt="" />
+
+                                        </div>
+                                        <div id="card-cvc-element" class="px-3 py-2 border-none w-full">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-center w-full space-x-2">
+                                <input type="checkbox" v-model="termsAccepted" id="agree-terms" class="mr-2 w-5 h-5"
+                                    style="border: solid #4A2EB6 !important;" />
+                                <label for="agree-terms" class="flex-1">I agree to the
+                                    <a href="/terms" target="_blank" class="text-primary-yellow"> terms & conditions</a> of
+                                    service.
+                                </label>
+                            </div>
+
+                            <div v-if="formValidationMessage" class="text-red-500 mt-2">
+                                {{ formValidationMessage }}
+                            </div>
+
+                            <div class="flex items-centder justify-dcenter h-12 mt-5">
+                                <div v-if="successMessage" 
+                                    class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" 
+                                    role="alert">
+                                    <span class="block sm:inline">{{ successMessage }}</span>
+                                    <br>
+                                </div>
+                                <button type="submit"
+                                    class="px-3 py-2 text-sm font-medium text-center inline-flex items-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 
+                                    focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    {{ buttonProcess }}
+                                </button>
+
+
+                            </div>
+
+                            <div v-show="errorMessage"
+                                class="absolute w-[25.5rem] h-[30.5rem] top-80 bg-white z-10 flex items-center justify-center p-5">
+                                <p class="text-red-500 ">{{ errorMessage }}</p>
+                                <span
+                                    class="absolute top-5 right-5 rounded-full  bg-red-500 h-7 w-7 flex items-center justify-center cursor-pointer hover:bg-red-600"
+                                    @click="resetError">
+                                    <font-awesome-icon :icon="faTimes" class="text-white" /> 
+                                </span>
+                            </div> 
+                        </form> 
                 </div>
-            </div>
 
-            <div class="w-1/2">
-                <label for="card-cvc-element" class="block mb-2 text-sm">CVV</label>
-                <div class="flex items-center py-2 border-2 border-[#0F1829] rounded-lg overflow-hidden ">
-                    <!-- <div class="px-3 border-r border-black">
-                        <img src="/assets/svg/cardCvv.svg" alt="" />
-
-                    </div> -->
-                    <div id="card-cvc-element" class="md:p-3 p-2  border-none w-full">
-                    </div>
-                </div>
             </div>
         </div>
-        <div class="flex items-center justify-center w-full space-x-2">
-            <input type="checkbox" v-model="termsAccepted" id="agree-terms" class="mr-2 w-[1.35rem] h-[1.35rem]"
-                style="border:1px solid #0F1829 !important; border-radius: 30% !important;" />
-            <label for="agree-terms" class="flex-1 font-thin">
-                I agree to the
-                <a href="/terms" target="_blank" class="text-primary"> privacy policy</a>
-                and
-                <a href="/terms" target="_blank" class="text-primary"> terms & conditions</a> of
-                service.
-            </label>
-        </div>
+    </section>
 
-        <div v-if="formValidationMessage" class="text-red-500 mt-2">
-            {{ formValidationMessage }}
-        </div>
 
-        <div class="flex items-centder justify-dcenter h-12 mt-5">
-            <div v-if="successMessage"
-                class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                <span class="block sm:inline">{{ successMessage }}</span>
-                <br>
-            </div>
-            <button type="submit" class="w-full px-3 py-3 text-lg font-bold text-center text-white rounded-lg hover:bg-primary/90
-                                    focus:ring-4 focus:outline-none focus:ring-blue-300 bg-primary">
-                {{ buttonProcess }}
-            </button>
-        </div>
 
-        <div v-show="errorMessage"
-            class="absolute w-[25.5rem] h-[30.5rem] top-80 bg-white z-10 flex items-center justify-center p-5">
-            <p class="text-red-500 ">{{ errorMessage }}</p>
-            <span
-                class="absolute top-5 right-5 rounded-full  bg-red-500 h-7 w-7 flex items-center justify-center cursor-pointer hover:bg-red-600"
-                @click="resetError">
-                <font-awesome-icon :icon="faTimes" class="text-white" />
-            </span>
-        </div>
-    </form>
 </template>
 <style scoped>
 /* Add your styles here */
