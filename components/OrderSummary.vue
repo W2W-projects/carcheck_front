@@ -47,7 +47,7 @@ const includedData = [{
 <template>
     <div class="flex flex-col h-full text-black">
         <h1 class="md:text-5xl text-2xl">Your report <span class="font-bold">is waiting for you !</span></h1>
-        <div class="space-y-[0.18rem] mt-5">
+        <div class="lg:space-y-[1rem] space-y-[0.18rem] mt-5">
             <p class="md:text-[1.7rem] text-lg font-light">You selected:</p>
             <div
                 class="grid grid-cols-2 bg-primary text-white md:w-[23.899rem] w-full md:pl-9 md:pr-8 px-5 md:py-6 py-5 space-x-2 rounded-xl">
