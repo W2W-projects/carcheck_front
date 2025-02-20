@@ -13,7 +13,7 @@ useHead({
 </script>
 
 <template>
-  <div class="bg-checkout">
+  <div class="bg-checkout min-h-screen">
     <Header />
     <main>
       <NuxtPage />

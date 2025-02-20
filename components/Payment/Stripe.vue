@@ -30,9 +30,9 @@ let elements: StripeElements;
 let cardNumberElement: StripeCardNumberElement;
 let cardExpiryElement: StripeCardExpiryElement;
 let cardCvcElement: StripeCardCvcElement;
-const errorMessage = ref<string | null>(null);
-const successMessage = ref<string | null>(null);
-const formValidationMessage = ref<string | null>(null);
+const errorMessage = ref < string | null > (null);
+const successMessage = ref < string | null > (null);
+const formValidationMessage = ref < string | null > (null);
 const customerId = ref('');
 const paymentMethodId = ref('');
 
