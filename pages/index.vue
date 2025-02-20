@@ -13,11 +13,9 @@ if (redirectMessage.value) {
   }, 3000);
 }
 
-
 const toggleBilling = (type) => {
   isMonthlyActive.value = (type === 'monthly');
 };
-
 
 definePageMeta({
   title: 'Welcome to Car check',
