@@ -37,7 +37,7 @@ const chartData = computed(() => {
     //   (sum, record) => sum + (record.MileageSinceLastPass || 0),
     //   0
     // );
-    totalOdometerReading.value = motHistory.value?motHistory.value[motHistory.value.length - 1].OdometerReading:0;
+    totalOdometerReading.value = motHistory.value ? motHistory.value[motHistory.value.length - 1].OdometerReading : 0;
 
     return motHistory.value.map(record => ({
       label: formatDate(record.TestDate),
@@ -49,7 +49,7 @@ const chartData = computed(() => {
 
 watch(chartData, (newValue) => {
   if (newValue.length > 0) {
-    chartLoaded.value = true; 
+    chartLoaded.value = true;
   }
 });
 
@@ -125,12 +125,9 @@ function getChartHeight() {
 
     <div v-show="isTableVisible" class="space-y-3">
       <div class="flex flex-col md:flex-row md:space-x-12 lg:px-8 mt-11 pb-3">
-        <div>
-          <h4 class="text-xl font-bold hidden lg:solid">
+        <div class="text-black">
+          <h4 class="text-xl font-bold">
             Current <br /> Mileage
-          </h4>
-          <h4 class="text-xl font-bold solid lg:hidden">
-            Current Mileage
           </h4>
         </div>
 
@@ -141,7 +138,7 @@ function getChartHeight() {
             {{ totalOdometerReading }}
           </h3>
           <small>
-            Last registration:
+            <span class="text-gray-500">Last registration: </span>
             <b>
               {{ first_date }}
             </b>
@@ -150,17 +147,17 @@ function getChartHeight() {
 
         <!-- ---------------------------------------------------- -->
 
-        <div class="flex flex-col">
-          <small>Total registration: <b>{{ totalRegistrations }}</b></small>
-          <small>Odometer: <b>{{ totalOdometerReading }}</b></small>
-          <small>First registration: <b>{{ first_date }}</b></small>
+        <div class="flex flex-col flex-1">
+          <small><span class="text-gray-500">Total registration:</span> <b>{{ totalRegistrations }}</b></small>
+          <small><span class="text-gray-500">Odometer:</span> <b>{{ totalOdometerReading }}</b></small>
+          <small><span class="text-gray-500">First registration:</span> <b>{{ first_date }}</b></small>
         </div>
 
         <!-- ---------------------------------------------------- -->
 
-        <div class="flex flex-col items-center justify-start flex-1 space-y-1">
-          <p>Lorem ipsum dolor sit amet.</p>
-          <Includes-get-full-report get-full-report="Get full report"></Includes-get-full-report>
+        <div class="flex flex-col items-center justify-center flex-1 space-y-1">
+          <p class="text-gray-500 font-thin">Check for mileage anomalies in full report</p>
+          <Includes-get-full-report get-full-report="Get full report" class="mx-auto w-full"></Includes-get-full-report>
         </div>
       </div>
       <div class="pt-10 border-t">

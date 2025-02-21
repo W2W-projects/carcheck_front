@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { defineProps, ref, onMounted, computed, reactive, watch } from 'vue';
-import carDefaultImage from '/images/car-icon.png';
 import { navigateTo } from 'nuxt/app';
+import { computed, defineProps, reactive, ref, watch } from 'vue';
 import ApiService from '~/services/apiService';
 
 // Store initialization
@@ -32,7 +31,7 @@ const props = defineProps({
         type: String,
         default: 'Get full report',
     },
-    width: {
+    class: {
         type: String,
         default: 'w-72',
     },
@@ -50,7 +49,7 @@ const reportDate = () => {
 const downloadReport = async () => {
     getFullReportY.value = "Downloading...";
     const isAuthenticated = tokenStore.getToken && tokenStore.getStatus;
-    
+
     if (!isAuthenticated) {
         return navigateTo('/auth/login');
     }
@@ -58,7 +57,7 @@ const downloadReport = async () => {
     try {
         const hasSubscription = await subscriptionStore.getHasSubscription();
         const subscription = await subscriptionStore.getUserSubscription();
-        if(hasSubscription && hasSubscription.onTrial && subscription.plan?.plan_code ==='48h-basic-subscription'){
+        if (hasSubscription && hasSubscription.onTrial && subscription.plan?.plan_code === '48h-basic-subscription') {
             errorMessage.value = "Your are on basic trial plan. Please buy single offer.";
             return;
         }
@@ -71,26 +70,26 @@ const downloadReport = async () => {
         await carRegistrationSearchStore.fetchPerformance();
 
         let car_data = [
-            { vehicleStatus : carRegistrationSearchStore.vehicleStatus },
-            { vehicleDetails : carRegistrationSearchStore.vehicleDetails },
-            { MOTHistory : carRegistrationSearchStore.MOTHistory },
-            { technicalDetails : carRegistrationSearchStore.technicalDetails },
-            { classificationDetails : carRegistrationSearchStore.classificationDetails },
-            { vehicleHistory : carRegistrationSearchStore.vehicleHistory },
-            { vehicleValuationsList : carRegistrationSearchStore.vehicleValuationsList },
-            { dimensions : carRegistrationSearchStore.dimensions },
-            { general : carRegistrationSearchStore.general },
-            { vehicleRegistration : carRegistrationSearchStore.vehicleRegistration },
-            { motVed : carRegistrationSearchStore.motVed },
-            { smmtDetails : carRegistrationSearchStore.smmtDetails },
-            { performance : carRegistrationSearchStore.performance },
-            { vbrand_logo : carRegistrationSearchStore.vbrand_logo },
-            { vehicleImageUrl : carRegistrationSearchStore.vehicleImageUrl },
-            { getFullReportText : carRegistrationSearchStore.getFullReportText },
-            { stolenRecord : carRegistrationSearchStore.stolenRecord },
-            { writeOff : carRegistrationSearchStore.writeOff },
-            { riskRecords : carRegistrationSearchStore.riskRecords },
-            { financeRecords : carRegistrationSearchStore.financeRecords }
+            { vehicleStatus: carRegistrationSearchStore.vehicleStatus },
+            { vehicleDetails: carRegistrationSearchStore.vehicleDetails },
+            { MOTHistory: carRegistrationSearchStore.MOTHistory },
+            { technicalDetails: carRegistrationSearchStore.technicalDetails },
+            { classificationDetails: carRegistrationSearchStore.classificationDetails },
+            { vehicleHistory: carRegistrationSearchStore.vehicleHistory },
+            { vehicleValuationsList: carRegistrationSearchStore.vehicleValuationsList },
+            { dimensions: carRegistrationSearchStore.dimensions },
+            { general: carRegistrationSearchStore.general },
+            { vehicleRegistration: carRegistrationSearchStore.vehicleRegistration },
+            { motVed: carRegistrationSearchStore.motVed },
+            { smmtDetails: carRegistrationSearchStore.smmtDetails },
+            { performance: carRegistrationSearchStore.performance },
+            { vbrand_logo: carRegistrationSearchStore.vbrand_logo },
+            { vehicleImageUrl: carRegistrationSearchStore.vehicleImageUrl },
+            { getFullReportText: carRegistrationSearchStore.getFullReportText },
+            { stolenRecord: carRegistrationSearchStore.stolenRecord },
+            { writeOff: carRegistrationSearchStore.writeOff },
+            { riskRecords: carRegistrationSearchStore.riskRecords },
+            { financeRecords: carRegistrationSearchStore.financeRecords }
         ];
         if (hasSubscription?.active || hasSubscription?.request_count > 0 || user.request_count > 0) {
             console.log("HasSub: ", hasSubscription);
@@ -105,7 +104,7 @@ const downloadReport = async () => {
             //     report_type = 'single-offer';
             // }
 
-            if(!subscription){
+            if (!subscription) {
                 errorMessage.value = "You don't have any active subscription. Please buy or upgrade plan.";
             }
 
@@ -148,9 +147,9 @@ const downloadReport = async () => {
         errorMessage.value = error?.data?.message || 'Error occurred during the subscription check.';
         getFullReportButton.value = "Get full report";
     }
-    finally{
-        setTimeout(()=>{
-            errorMessage.value ="";
+    finally {
+        setTimeout(() => {
+            errorMessage.value = "";
             getFullReportY.value = "Get full report";
         }, 3000);
     }
@@ -162,12 +161,12 @@ const handleGetFullReport = async () => {
         const response = await ApiService.post('users/check-email-exist', { email: form.email });
         if (response.success && response.payload) {
             let payload = response.payload;
-            if(payload.user_type && payload.user_type=="newlyCreatedUser"){
+            if (payload.user_type && payload.user_type == "newlyCreatedUser") {
                 const tokenStore = useTokenStore();
                 tokenStore.setToken(payload.access_token, payload.access_token);
                 await authStore.setUser(payload.user);
                 navigateTo('payment/plans');
-            }else{
+            } else {
                 showPasswordField.value = true;
                 getFullReportY.value = "Submit";
             }
@@ -186,12 +185,12 @@ const handleLoginSubmit = async () => {
 
     try {
         const response = await authStore.makeLogin(form);
-        if (!response.success){
+        if (!response.success) {
             errorMessage.value = "Login failed.";
             getFullReportY.value = "Get full report";
-        }else{
+        } else {
             let payload = response.payload;
-            if(response.success){
+            if (response.success) {
                 showPasswordField.value = false;
             }
             //make frontend log in
@@ -199,15 +198,15 @@ const handleLoginSubmit = async () => {
             tokenStore.setToken(payload.access_token, payload.access_token);
             await authStore.setUser(payload.user);
 
-            if(payload.hasSubscription){
+            if (payload.hasSubscription) {
                 let hasSubscription = payload.hasSubscription;
 
-                if(hasSubscription.active){
+                if (hasSubscription.active) {
                     downloadReport()
-                }else{
+                } else {
                     navigateTo('payment/plans');
                 }
-            }else{
+            } else {
                 navigateTo('payment/plans');
             }
             getFullReportY.value = "Get full report";
@@ -231,36 +230,34 @@ watch(
 </script>
 
 <template>
-    <div class="w-full">
-    <form @submit.prevent="handleGetFullReport" v-if="(!authStore.user || Object.keys(authStore.user).length === 0) && !showPasswordField">
+    <div :class="props.class">
+        <form @submit.prevent="handleGetFullReport"
+            v-if="(!authStore.user || Object.keys(authStore.user).length === 0) && !showPasswordField"
+            class="space-y-2">
             <FormInputText id="email" v-model="form.email" placeholder="Enter your email address" type="text" />
-            <button :class="['bg-[#FF7400] text-white text-xl rounded-lg py-2', width]">
+            <button class="w-full" :class="['bg-[#FF7400] text-white text-xl rounded-lg py-2']">
                 {{ getFullReportY }}
             </button>
         </form>
 
-        <form @submit.prevent="handleLoginSubmit" v-else-if="showPasswordField">
+        <form @submit.prevent="handleLoginSubmit" v-else-if="showPasswordField" class="space-y-2">
             <FormInputText id="password" v-model="form.password" placeholder="Enter your password" type="password" />
-            <button :class="['bg-[#FF7400] text-white text-xl rounded-lg py-2', width]">
+            <button class="w-full" :class="['bg-[#FF7400] text-white text-xl rounded-lg py-2']">
                 {{ getFullReportY }}
             </button>
         </form>
 
-        <button v-else @click.prevent="downloadReport"
-            :class="['bg-[#FF7400] text-white text-xl rounded-lg py-2', width]">
+        <button v-else @click.prevent="downloadReport" class="w-full"
+            :class="['bg-[#FF7400] text-white text-xl rounded-lg py-2']">
             {{ getFullReportY }}
-        </button> 
+        </button>
         <p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
 
-        <NuxtLink 
-            to="/payment/plans" 
-            v-if="hasSubscription?.active" 
+        <NuxtLink to="/payment/plans" v-if="hasSubscription?.active"
             class="ml-auto block text-right text-blue-500 hover:underline">
             Buy Single Offer
         </NuxtLink>
-        <NuxtLink 
-            to="/payment/plans" 
-            v-if="hasSubscription?.subscription == null" 
+        <NuxtLink to="/payment/plans" v-if="hasSubscription?.subscription == null"
             class="ml-auto block text-right text-blue-500 hover:underline">
             Buy Plan
         </NuxtLink>

@@ -22,6 +22,12 @@ const makeLogout = async () => {
     error.value = error.data.errors
   }
 }
+
+const isAuthenticated = computed(() => {
+  return auth.getCurrentUser;
+});
+
+
 </script>
 
 <template>
@@ -63,7 +69,8 @@ const makeLogout = async () => {
                 class="block py-2 px-3 md:p-0 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-500 md:dark:hover:text-orange-500">
                 Reports</NuxtLink>
             </li>
-            <li>
+            <li class="flex items-center justify-center space-x-4">
+              <includes-user-auth-indicator v-show="isAuthenticated" />
               <SearchBar width="w-[16.5rem]" input-height="h-[2.35rem]" />
             </li>
             <!-- <li>
