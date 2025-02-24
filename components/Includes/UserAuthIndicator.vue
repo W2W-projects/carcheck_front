@@ -13,6 +13,18 @@ function handleClickOutside(event: MouseEvent) {
     dropdownOpen.value = false;
   }
 }
+const errors = ref([]);
+const auth = useAuthStore();
+
+const handleLogout = async () => {
+  try {
+    await auth.logout();
+    navigateTo('/')
+  } catch (error) {
+    console.log("login error: ", error);
+    errors.value = error?.data?.errors
+  }
+}
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
@@ -43,7 +55,8 @@ onUnmounted(() => {
     <div v-if="dropdownOpen"
       class="absolute right-1/2 mt-2 w-36 translate-x-1/2 bg-white border rounded shadow-lg text-sm text-center">
       <a href="/dashboard" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Dashboard</a>
-      <a href="/logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Logout</a>
+      <button @click="handleLogout"
+        class="block px-4 py-2 text-gray-800 hover:bg-gray-200 text-center w-full">Logout</button>
     </div>
   </div>
 </template>

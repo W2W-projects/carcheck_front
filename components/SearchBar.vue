@@ -132,7 +132,7 @@ const searchForCarReg = async () => {
       </div>
       <input @keyup.enter="searchForCarReg" type="text" :placeholder="placeholderText" v-model="processedCarNumber"
         required
-        class="block placeholder-opacity-low custom-spacing py-4 text-2xl px-5 text-white bg-[#FFA500] rounded hover:bg-white md:hover:bg-transparent md:hover:text-white md:dark:hover:text-white"
+        class="block w-full placeholder-opacity-low custom-spacing py-4 transition text-2xl text-white bg-[#FFA500] rounded hover:bg-white md:hover:bg-transparent md:hover:text-white md:dark:hover:text-white ring-0 active:ring-0 active:border-transparent outline-none focus:outline-none active:outline-none focus:border-transparent"
         :class="[props.inputHeight, props.inputWidth]" />
 
       <button @click="searchForCarReg"

@@ -12,7 +12,7 @@ const toggleTableVisibility = () => {
 // Subscription check
 const subscriptionStore = useSubscriptionStore();
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
-const subscription = computed(()=> subscriptionStore.subscription);
+const subscription = computed(() => subscriptionStore.subscription);
 
 import { useAuthStore } from '~/stores/auth'
 const authStore = useAuthStore();
@@ -27,7 +27,7 @@ onMounted(async () => {
   try {
     // Await the result of fetchMOTHistory
     const motHistoryResult = await carRegistrationSearchStore.fetchMOTHistory();
-    
+
     MOTHistory.value = motHistoryResult || []; // Ensure it's always an array
   } catch (error) {
     console.error("Error fetching MOT History:", error);
@@ -62,8 +62,8 @@ function getFailureType(annotationList) {
 
 <template>
   <report-wrapper class="py-11">
-    <div @click="toggleTableVisibility" class="cursor-pointer text-black flex items-center justify-between">
-      <div class="flex items-center space-x-4">
+    <div class="text-black flex items-center justify-between">
+      <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
         <svg width="34" height="16" viewBox="0 0 34 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g clip-path="url(#clip0_245_136)">
             <path
@@ -85,17 +85,8 @@ function getFailureType(annotationList) {
           DAMAGE HISTORY
         </p>
         <span>
-          <svg v-if="isTableVisible" width="12" height="7" viewBox="0 0 12 7" fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <path d="M1 1L6 6" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M6 6L11 1" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-
-          <svg v-else width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1 6L6 1" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M6 1L11 6" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-
+          <img v-if="isTableVisible" src="/svg/chev-down.svg" alt="">
+          <img v-else src="/svg/chev-up.svg" alt="">
         </span>
       </div>
 
@@ -107,8 +98,8 @@ function getFailureType(annotationList) {
     </div>
     <div v-show="isTableVisible" class="flex flex-row w-full pt-4 space-x-8">
       <div class="lg:w-2/3">
-        
-        <template v-if="subscription?.plan?.plan_code ==='48h-basic-subscription' && hasSubscription?.onTrial">
+
+        <template v-if="subscription?.plan?.plan_code === '48h-basic-subscription' && hasSubscription?.onTrial">
           <table class="w-full text-black mt-8">
             <thead>
               <tr class="header-row">
@@ -134,10 +125,10 @@ function getFailureType(annotationList) {
                   <Hashed />
                 </td>
               </tr>
-              
+
             </tbody>
           </table>
-          <table class="w-full text-black mt-8 mb-2" >
+          <table class="w-full text-black mt-8 mb-2">
             <thead>
               <tr class="header-row">
                 <th colspan="2">DAMAGE 1</th>
@@ -162,13 +153,13 @@ function getFailureType(annotationList) {
                   <Hashed />
                 </td>
               </tr>
-              
+
             </tbody>
           </table>
         </template>
 
         <template v-for="(test, index) in failedTests" :key="index" v-else-if="hasSubscription?.active">
-          <table class="w-full text-black mt-8" >
+          <table class="w-full text-black mt-8">
             <thead>
               <tr class="header-row">
                 <th colspan="2">DAMAGE {{ index + 1 }}</th>
@@ -177,21 +168,24 @@ function getFailureType(annotationList) {
             <tbody>
               <tr>
                 <th>Date</th>
-                <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{ test.TestDate }}</td>
+                <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{
+                  test.TestDate }}</td>
                 <td v-else>
                   <Hashed />
                 </td>
               </tr>
               <tr>
                 <th>Category</th>
-                <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{ getFailureCategory(test.FailureReasonList) }}</td>
+                <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{
+                  getFailureCategory(test.FailureReasonList) }}</td>
                 <td v-else>
                   <Hashed />
                 </td>
               </tr>
               <tr>
                 <th>Type</th>
-                <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{ getFailureType(test.AnnotationDetailsList) }}</td>
+                <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{
+                  getFailureType(test.AnnotationDetailsList) }}</td>
                 <td v-else>
                   <Hashed />
                 </td>
@@ -226,10 +220,10 @@ function getFailureType(annotationList) {
                   <Hashed />
                 </td>
               </tr>
-              
+
             </tbody>
           </table>
-          <table class="w-full text-black mt-8 mb-2" >
+          <table class="w-full text-black mt-8 mb-2">
             <thead>
               <tr class="header-row">
                 <th colspan="2">DAMAGE 1</th>
@@ -254,15 +248,13 @@ function getFailureType(annotationList) {
                   <Hashed />
                 </td>
               </tr>
-              
+
             </tbody>
           </table>
         </template>
 
         <div class="bg-[#EF343A] w-full flex items-center justify-center py-2">
           <h3 class="text-xl font-semibold">Lorem ipsum dolor sit amet.
-            <Includes-get-full-report get-full-report="check the full
-              report"></Includes-get-full-report>
           </h3>
         </div>
       </div>

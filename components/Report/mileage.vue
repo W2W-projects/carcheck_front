@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
+import { useAuthStore } from '~/stores/auth';
 
 const isTableVisible = ref(true);
 const totalRegistrations = ref(0);
@@ -7,6 +8,10 @@ const totalOdometerReading = ref(0);
 const first_date = ref("");
 const last_date = ref("");
 const chartLoaded = ref(false);
+
+const isAuthenticated = computed(() => {
+  return useAuthStore().isAuthenticated;
+});
 
 const toggleTableVisibility = () => {
   isTableVisible.value = !isTableVisible.value;
@@ -68,8 +73,8 @@ function getChartHeight() {
 
 <template>
   <report-wrapper class="pt-7 text-black">
-    <div @click="toggleTableVisibility" class="cursor-pointer text-black flex items-center justify-between">
-      <div class="flex items-center space-x-4">
+    <div class=" text-black flex items-center justify-between">
+      <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
         <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g clip-path="url(#clip0_230_6081)">
             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -102,16 +107,8 @@ function getChartHeight() {
           MILEAGE
         </p>
         <span>
-          <svg v-if="isTableVisible" width="12" height="7" viewBox="0 0 12 7" fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <path d="M1 1L6 6" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M6 6L11 1" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-
-          <svg v-else width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1 6L6 1" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M6 1L11 6" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
+          <img v-if="isTableVisible" src="/svg/chev-down.svg" alt="">
+          <img v-else src="/svg/chev-up.svg" alt="">
 
         </span>
       </div>
@@ -155,9 +152,10 @@ function getChartHeight() {
 
         <!-- ---------------------------------------------------- -->
 
-        <div class="flex flex-col items-center justify-center flex-1 space-y-1">
+        <div class="flex flex-col items-center justify-center flex-1 space-y-2">
           <p class="text-gray-500 font-thin">Check for mileage anomalies in full report</p>
-          <Includes-get-full-report get-full-report="Get full report" class="mx-auto w-full"></Includes-get-full-report>
+          <Includes-get-full-report :show-form="isAuthenticated"
+            get-full-report="Get full report"></Includes-get-full-report>
         </div>
       </div>
       <div class="pt-10 border-t">

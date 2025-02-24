@@ -6,7 +6,7 @@ const authStore = useAuthStore();
 
 import { useSubscriptionStore } from '@/stores/subscription';
 const subscriptionStore = useSubscriptionStore();
-const subscription = computed(()=> subscriptionStore.subscription);
+const subscription = computed(() => subscriptionStore.subscription);
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
 
 const refreshToken = computed(() => tokenStore.refreshToken);
@@ -35,7 +35,7 @@ definePageMeta({
   <div class="bg-white">
 
     <!-- Section 1 -->
-    <ReportSection1 />
+    <ReportSection1 id="report" />
     <!-- Section 2 -->
     <ReportInfo />
     <!-- Section 3 -->
@@ -53,8 +53,8 @@ definePageMeta({
     <ReportFinance />
 
     <!-- Section 8 -->
-    <ReportValuation v-if="hasSubscription.active"/>
-    <ReportValuationDemo v-else/>
+    <ReportValuation v-if="hasSubscription.active" />
+    <ReportValuationDemo v-else />
 
     <!-- Section 9 -->
     <ReportTax />

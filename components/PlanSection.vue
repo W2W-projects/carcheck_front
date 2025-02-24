@@ -1,10 +1,29 @@
 <script setup>
 import { ref } from 'vue';
 import { usePlanStore } from "@/stores/plan";
+import featureData from '@/features.json';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '~/stores/auth';
 
 const planStore = usePlanStore();
 const plans = ref([]);
-import featureData from '@/features.json';
+const router = useRouter();
+const auth = useAuthStore();
+
+const isAuthenticated = computed(() => auth.isAuthenticated);
+
+const basic_features = readonly(featureData.features.basic_features);
+const standard_features = readonly(featureData.features.standerd_features);
+const premium_features = readonly(featureData.features.premium_features);
+
+const startChecking = (plan) => {
+  // console.log(plan);
+  planStore.setSelectedPlan(plan);
+  isAuthenticated ?
+    router.push("/payment/checkout") : router.push("/auth/login");
+};
+
+
 
 onMounted(async () => {
   await planStore.fetchPlans();
@@ -15,26 +34,27 @@ onMounted(async () => {
     }))
     .filter(item => item.status === "active");
 });
-console.log(plans.value);
-
-
-const basic_features = reactive(featureData.features.basic_features);
-const standard_features = reactive(featureData.features.standerd_features);
-const premium_features = reactive(featureData.features.premium_features);
-
 </script>
 
 <template>
 
-  <div class="flex md:flex-row flex-col items-stretch justify-center  gap-4 md:gap-8 lg:gap-x-5"
+  <div class="flex md:flex-row-reverse flex-col items-stretch justify-center  gap-4 md:gap-8 lg:gap-x-5"
     style="min-height: 500px;">
 
     <div v-for="plan in plans" :key="plan.plan_code"
       class="items-center border-2 border-[#0F1829] rounded-3xl px-[2.1rem] py-6 w-full"
       :class="[plan.plan_code === 'premium' ? 'bg-[#0F1829] text-white' : 'bg-white text-[#0F1829]']">
-      <h1 class="text-lg font-bold px-2" :class="[plan.plan_code === 'premium' ? 'text-[#FF7400]' : 'text-[#0F1829]']">
-        {{
-          plan.name }}</h1>
+      <div class="flex items-center justify-between">
+        <h1 class="text-lg font-bold px-2"
+          :class="[plan.plan_code === 'premium' ? 'text-[#FF7400]' : 'text-[#0F1829]']">
+          {{ plan.name }}
+        </h1>
+
+        <div v-if="plan.plan_code === 'premium'"
+          class="text-[0.5rem] font-bold bg-primary text-[#0F1829] px-2 py-[0.2rem] rounded">
+          Most popular
+        </div>
+      </div>
       <div class="flex flex-row items-center justify-start mt-6 space-x-4">
 
         <div class="flex flex-row items-start justify-center">
@@ -47,15 +67,16 @@ const premium_features = reactive(featureData.features.premium_features);
         </div>
       </div>
       <h1 class="text-sm font-thin  mt-7">Generate up to <span class="font-bold"> 7 reports</span></h1>
-      <button class="bg-[#0F1829] text-lg  px-4 py-2 rounded-lg mt-6 block w-full text-white" :class="{
-        'bg-[#FF7400]': plan.plan_code === 'premium',
-        'bg-[#0F1829]': plan.plan_code !== 'premium'
-      }">Start Checking</button>
-      <button class=" text-lg px-4 py-2 rounded-lg mt-2 border block w-full" :class="{
+      <button @click.stop="startChecking(plan)"
+        class="bg-[#0F1829] text-lg  px-4 py-2 rounded-lg mt-6 block w-full text-white" :class="{
+          'bg-[#FF7400]': plan.plan_code === 'premium',
+          'bg-[#0F1829]': plan.plan_code !== 'premium'
+        }">Start Checking</button>
+      <a href="#report-offering" class="text-center text-lg px-4 py-2 rounded-lg mt-2 border block w-full" :class="{
         'border-white text-white': plan.plan_code === 'premium',
         'border-[#0F1829]': plan.plan_code !== 'premium'
       }">Read
-        More</button>
+        More</a>
       <h2 class=" text-xl mt-12">Included</h2>
       <p class=" text-sm font-thin">What’s included with our plan</p>
 

@@ -1,6 +1,9 @@
 import { important } from '../.nuxt/types/tailwind.config';
 <script setup>
-
+import { ref, reactive, onMounted } from 'vue';
+import featureData from '@/features.json';
+import { usePlanStore } from '@/stores/plan';
+import { useRouter } from 'vue-router';
 const pricingData = [
   {
     "title": "Pricing",
@@ -185,6 +188,67 @@ const pricingData = [
   }
 ];
 
+
+definePageMeta({
+  title: 'Plans for Checkout',
+  meta: [
+    { hid: 'Plans for checkout', name: 'Plans for Checkout', content: 'Plans for Checkout' }
+  ],
+});
+
+const router = useRouter();
+const planStore = usePlanStore();
+const subscriptionStore = useSubscriptionStore();
+const hasSubscription = computed(() => subscriptionStore.hasSubscription);
+
+const basic_features = reactive(featureData.features.basic_features);
+const standard_features = reactive(featureData.features.standerd_features);
+const premium_features = reactive(featureData.features.premium_features);
+const showLoader = ref(false);
+
+const isMonthlyActive = ref(true);
+const selectedPlan = ref("48h-expert-subscription");
+const plans = ref([]);
+const planUnactive = ref(null);
+
+const toggleBilling = (type) => {
+  isMonthlyActive.value = (type === 'monthly');
+};
+
+const startChecking = (plan) => {
+  planStore.setSelectedPlan(plan);
+  router.push("/payment/checkout");
+};
+
+const selectPlan = (plan) => {
+  selectedPlan.value = plan.plan_code;
+};
+
+const getFeatureIcon = (iconName) => {
+  return `/assets/svg/${iconName}`;
+};
+
+onMounted(async () => {
+  showLoader.value = true;
+  await planStore.fetchPlans();
+
+  // plans
+  plans.value = planStore.plans
+    .map(item => ({
+      ...item,
+      price: (parseFloat(item.amount_premium) / 100).toFixed(2)
+    }))
+    .filter(item => item.status === "active");
+  // unactive plan
+  planUnactive.value = planStore.plans
+    .map(item => ({
+      ...item,
+      price: (parseFloat(item.amount_premium) / 100).toFixed(2)
+    }))
+    .filter(item => item.status === "inactive");
+  showLoader.value = false;
+});
+
 </script>
 <template>
   <!-- intro -->
@@ -198,7 +262,8 @@ const pricingData = [
       <div class="flex flex-col items-center justify-center space-y-4 -translate-y-4">
         <p class="text-[1.8rem] tracking-wider text-[#2464A6]">We run the checks</p>
         <div class="mx-auto">
-          <svg width="48" height="62" viewBox="0 0 48 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg class="animate-pulse" width="48" height="62" viewBox="0 0 48 62" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
             <path
               d="M24 24C22.0617 24 20.1234 23.2463 18.6559 21.7668L0.60225 3.56615C-0.20075 2.75661 -0.20075 1.41669 0.60225 0.607153C1.40525 -0.202384 2.73435 -0.202384 3.53735 0.607153L21.591 18.8078C22.9201 20.1477 25.0799 20.1477 26.409 18.8078L44.4626 0.607153C45.2656 -0.202384 46.5947 -0.202384 47.3977 0.607153C48.2007 1.41669 48.2007 2.75661 47.3977 3.56615L29.3441 21.7668C27.8766 23.2463 25.9383 24 24 24Z"
               fill="#2464A6" />
@@ -232,7 +297,7 @@ const pricingData = [
     <TrustedBy class="mt-4" />
   </section>
 
-  <section class="lg:px-[7.5rem] mt-[2.85rem] mb-[2.85rem]">
+  <section class="lg:px-[7.5rem] mt-[2.85rem] mb-[2.85rem]" id="report-offering">
     <table class="w-full text-black">
       <thead>
         <tr class="flex lg:text-xl text-sm">

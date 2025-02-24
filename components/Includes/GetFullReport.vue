@@ -35,6 +35,10 @@ const props = defineProps({
         type: String,
         default: 'w-72',
     },
+    showForm: {
+        type: Boolean,
+        default: true,
+    },
 });
 // Helper function to format date
 const reportDate = () => {
@@ -165,7 +169,8 @@ const handleGetFullReport = async () => {
                 const tokenStore = useTokenStore();
                 tokenStore.setToken(payload.access_token, payload.access_token);
                 await authStore.setUser(payload.user);
-                navigateTo('payment/plans');
+                // navigateTo('payment/plans');
+                navigateTo('pricing');
             } else {
                 showPasswordField.value = true;
                 getFullReportY.value = "Submit";
@@ -230,7 +235,8 @@ watch(
 </script>
 
 <template>
-    <div :class="props.class">
+
+    <div v-if="showForm" :class="props.class">
         <form @submit.prevent="handleGetFullReport"
             v-if="(!authStore.user || Object.keys(authStore.user).length === 0) && !showPasswordField"
             class="space-y-2">
@@ -253,13 +259,16 @@ watch(
         </button>
         <p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
 
-        <NuxtLink to="/payment/plans" v-if="hasSubscription?.active"
+        <NuxtLink to="/pricing" v-if="hasSubscription?.active"
             class="ml-auto block text-right text-blue-500 hover:underline">
             Buy Single Offer
         </NuxtLink>
-        <NuxtLink to="/payment/plans" v-if="hasSubscription?.subscription == null"
+        <NuxtLink to="/pricing" v-if="hasSubscription?.subscription == null"
             class="ml-auto block text-right text-blue-500 hover:underline">
             Buy Plan
         </NuxtLink>
+    </div>
+    <div v-else class="bg-red-400 w-[22rem] flex items-center justify-end rounded-lg">
+        <a href="#report" class="bg-primary px-20 py-2 rounded-lg text-white w-full text-center">Get full report</a>
     </div>
 </template>

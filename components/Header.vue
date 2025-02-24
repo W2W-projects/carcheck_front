@@ -4,30 +4,19 @@ import SearchBar from "~/components/SearchBar.vue";
 import { ref } from 'vue';
 
 const isMenuOpen = ref(false);
-const errors = ref([]);
 
 function toggleMenu() {
   isMenuOpen.value = !isMenuOpen.value;
 }
 const token = useTokenStore();
 const auth = useAuthStore();
-// console.log("auth.user", auth.getCurrentUser.name)
-
-const makeLogout = async () => {
-  try {
-    await auth.logout();
-    navigateTo('/')
-  } catch (error) {
-    console.log("login error: ", error);
-    error.value = error.data.errors
-  }
-}
 
 const isAuthenticated = computed(() => {
   return auth.getCurrentUser;
 });
 
-
+const route = useRoute();
+const currentPath = computed(() => route.name);
 </script>
 
 <template>
@@ -47,7 +36,7 @@ const isAuthenticated = computed(() => {
         <div :class="{ 'hidden': !isMenuOpen, 'flex': isMenuOpen }"
           class="items-center justify-between w-full md:flex md:w-auto md:order-1" id="navbar-cta">
           <ul
-            class="flex flex-col md:items-center items-start font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg lg:space-x-[3.075rem] md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 text-black text-xl tracking-wide">
+            class="flex flex-col md:items-center items-start font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg lg:space-x-[2.8rem] md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 text-black text-xl tracking-wide">
             <li>
               <NuxtLink to="/how-it-works"
                 class="block py-2 px-3 md:p-0 rounded md:bg-transparent md:hover:text-orange-500 active:text-orange-500"
@@ -64,7 +53,12 @@ const isAuthenticated = computed(() => {
                 class="block py-2 px-3 md:p-0 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-500 md:dark:hover:text-orange-500">
                 Reports</NuxtLink>
             </li> -->
-            <li>
+            <li v-show="currentPath !== 'pricing'">
+              <NuxtLink href="/pricing"
+                class="block py-2 px-3 md:p-0 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-500 md:dark:hover:text-orange-500">
+                Pricing</NuxtLink>
+            </li>
+            <li v-show="currentPath !== 'report'">
               <NuxtLink href="/report"
                 class="block py-2 px-3 md:p-0 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-500 md:dark:hover:text-orange-500">
                 Reports</NuxtLink>
@@ -74,7 +68,7 @@ const isAuthenticated = computed(() => {
               <SearchBar width="w-[16.5rem]" input-height="h-[2.35rem]" />
             </li>
             <!-- <li>
-            <NuxtLink to="/dashboard" v-if="!isEmpty(auth.getCurrentUser)" @click.prevent="makeLogout"
+            <NuxtLink to="/dashboard" v-if="!isEmpty(auth.getCurrentUser)" @click.prevent="handleLogout"
               class="block py-2 px-3 md:p-0 rounded md:bg-transparent md:hover:text-orange-500 active:text-orange-500"
               aria-current="page">Logout</NuxtLink>
 
