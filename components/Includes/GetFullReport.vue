@@ -39,6 +39,10 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    showForm: {
+        type: Boolean,
+        default: true,
+    },
 });
 // Helper function to format date
 const reportDate = () => {
@@ -61,10 +65,11 @@ const downloadReport = async () => {
     try {
         const hasSubscription = await subscriptionStore.getHasSubscription();
         const subscription = await subscriptionStore.getUserSubscription();
-        if (hasSubscription && hasSubscription.onTrial && subscription.plan?.plan_code === '48h-basic-subscription') {
-            errorMessage.value = "Your are on basic trial plan. Please buy single offer.";
-            return;
-        }
+        // if (subscription !== null && hasSubscription && hasSubscription?.onTrial && subscription.plan?.plan_code === '48h-basic-subscription') {
+        // if (subscription !== null) {
+        //     errorMessage.value = "Your are on basic trial plan. Please buy single offer.";
+        //     return;
+        // }
         const user = authStore.user;
         let email = user?.email;
         const userSubscription = await subscriptionStore.fetchUserSubscription(email);
@@ -72,6 +77,7 @@ const downloadReport = async () => {
         await carRegistrationSearchStore.fetchVehicleDimension();
         await carRegistrationSearchStore.fetchVehicleGeneralInfo();
         await carRegistrationSearchStore.fetchPerformance();
+
 
         let car_data = [
             { vehicleStatus: carRegistrationSearchStore.vehicleStatus },
@@ -137,8 +143,6 @@ const downloadReport = async () => {
 
             } else {
                 throw new Error('Failed to retrieve the report data.');
-                getFullReportButton.value = "Get full report";
-                getFullReportY.value = "Get full report";
             }
         } else {
             getFullReportButton.value = "Get full report";
@@ -169,6 +173,8 @@ const handleGetFullReport = async () => {
                 const tokenStore = useTokenStore();
                 tokenStore.setToken(payload.access_token, payload.access_token);
                 await authStore.setUser(payload.user);
+                // navigateTo('payment/plans');
+                navigateTo('pricing');
                 // navigateTo('payment/plans');
                 navigateTo('pricing');
             } else {
@@ -252,23 +258,24 @@ watch(
                 {{ getFullReportY }}
             </button>
         </form>
-
         <button v-else @click.prevent="downloadReport" class="w-full"
             :class="['bg-[#FF7400] text-white text-xl rounded-lg py-2']">
-            {{ getFullReportY }}
+            Download Report
         </button>
-        <p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
-
-        <NuxtLink to="/pricing" v-if="hasSubscription?.active"
-            class="ml-auto block text-right text-blue-500 hover:underline">
+        <div class="w-full text-center">
+            <small v-if="errorMessage" class="mt-2 text-red-500">{{ errorMessage }}</small>
+        </div>
+        <!-- <NuxtLink to="/pricing" v-if="hasSubscription?.active"
+            class="block ml-auto text-right text-blue-500 hover:underline">
             Buy Single Offer
         </NuxtLink>
         <NuxtLink to="/pricing" v-if="hasSubscription?.subscription == null"
-            class="ml-auto block text-right text-blue-500 hover:underline">
+            class="block ml-auto text-right text-blue-500 hover:underline">
             Buy Plan
-        </NuxtLink>
+        </NuxtLink> -->
     </div>
     <div v-else class="bg-red-400 w-[22rem] flex items-center justify-end rounded-lg">
-        <a href="#report" class="bg-primary px-20 py-2 rounded-lg text-white w-full text-center">Get full report</a>
+        <a href="#report" class="w-full px-20 py-2 text-center text-white rounded-lg bg-primary">Get full report</a>
     </div>
+
 </template>

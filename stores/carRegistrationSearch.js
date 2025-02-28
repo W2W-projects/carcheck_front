@@ -287,6 +287,7 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
         async fetchNumberOfLooksUp() {
             let code = systematicFourCharCode('numberOfLooksUp');
             const encryptedData = localStorage.getItem(code);
+            
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
@@ -541,7 +542,7 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                 'VehicleRegistration', 'VehicleMotVed', 'VehicleGeneralInfo', 'Performance',
                 'VehicleClassificationDetails', 'VehicleHistory', 'MOTHistory', 'MOTAdditionalInfo', 'VehicleValuationsList',
                 'vehicleStolenRecords', 'vehicleWriteOffRecords', 'vehicleRiskRecords', 
-                'vehicleFinanceRecords', 'numberOfLooksUp', 'reg_number'
+                'vehicleFinanceRecords', 'numberOfLooksUp', 'reg_number','car_reg_number'
             ];
         
             keysToRemove.forEach(key => {

@@ -1,11 +1,14 @@
 <script setup lang="ts">
-type DisplayType = '0' | 'X';
+// type DisplayType = '0' | 'X';
 
-const props = defineProps<{
-  contain: string;
-  // count: number,
-  // type: DisplayType
-}>();
+// const props = defineProps<{
+//   contain?: string;
+//   // count: number,
+//   // type: DisplayType
+// }>();
+
+const props = defineProps<{ contain?: String }>();
+
 </script>
 
 <template>

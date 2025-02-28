@@ -17,14 +17,14 @@ const subscriptionStore = useSubscriptionStore();
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
 
 const basic_features = reactive(featureData.features.basic_features);
-const standard_features = reactive(featureData.features.standerd_features);
+const standard_features = reactive(featureData.features.standard_features);
 const premium_features = reactive(featureData.features.premium_features);
 const showLoader = ref(false);
 
 const isMonthlyActive = ref(true);
 const selectedPlan = ref("48h-expert-subscription");
 const plans = ref([]);
-const planUnactive = ref(null);
+const planInactive = ref(null);
 
 const toggleBilling = (type) => {
     isMonthlyActive.value = (type === 'monthly');
@@ -55,7 +55,7 @@ onMounted(async () => {
         }))
         .filter(item => item.status === "active");
     // unactive plan
-    planUnactive.value = planStore.plans
+    planInactive.value = planStore.plans
         .map(item => ({
             ...item,
             price: (parseFloat(item.amount_premium) / 100).toFixed(2)
@@ -84,7 +84,7 @@ onMounted(async () => {
 
         <div class="flex md:flex-row flex-col items-center justify-center mt-10 gap-4 md:gap-8 px-32">
             <!-- single offer payment  -->
-            <div v-if="hasSubscription?.active" v-for="plan in planUnactive" :key="plan.plan_code"
+            <div v-if="hasSubscription?.active" v-for="plan in planInactive" :key="plan.plan_code"
                 @click="selectPlan(plan)" :class="{
                     'bg-[#0F1829] text-white': selectedPlan === plan.plan_code,
                     'border-2 border-[#0F1829] text-[#0F1829]': selectedPlan !== plan.plan_code
@@ -212,7 +212,7 @@ onMounted(async () => {
 import { ref } from 'vue';
 import featureData from '../../features.json';
 const basic_features = reactive(featureData.features.basic_features);
-const standerd_features = reactive(featureData.features.standerd_features);
+const standard_features = reactive(featureData.features.standard_features);
 const premium_features = reactive(featureData.features.premium_features);
 
 const isMonthlyActive = ref(true);
