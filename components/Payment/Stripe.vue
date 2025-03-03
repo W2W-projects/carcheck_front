@@ -341,7 +341,7 @@ watch(errorMessage, (newErrorMessage) => {
                     <img src="/assets/svg/cardName.svg" alt="" />
                 </div>
                 <input v-model="cardholderName" type="text" id="cardholder-name" placeholder="John Strawzen"
-                    class="w-full md:p-3 p-2  uppercase focus:border-none focus:outline-none bg-transparent" />
+                    class="w-full md:p-3 p-2  uppercase focus:border-none focus:outline-none bg-transparent active:border-none active:outline-none focus:ring-0 focus:ring-offset-0" />
             </div>
         </div>
         <div class="mb-4 w-full">

@@ -28,9 +28,10 @@ const companies = ref([
 
 <template>
   <div class="flex flex-col items-center justify-center w-full h-[10rem]">
-    <div class="relative w-full overflow-hidden px-12">
+    <div class="relative w-full overflow-hidden mx-auto">
       <swiper :modules="[Navigation, Autoplay]" :autoplay="autoplay" :slides-per-view="'auto'" :space-between="39"
-        :speed="800" :effect="'slide'" :slides-per-group="1" :draggable="true" :grab-cursor="true" class="w-full">
+        :speed="800" :effect="'slide'" :slides-per-group="1" :draggable="true" :grab-cursor="true" :centered-slides="true"
+        :initial-slide="companies.length / 2" class="w-full">
         <swiper-slide v-for="(company, index) in companies" :key="company.alt"
           class="flex items-center justify-center my-auto">
           <img :src="company.src" :alt="company.alt" />
