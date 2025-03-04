@@ -213,7 +213,6 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
                     this.vehicleValuationsList = JSON.parse(decrypted);
-                    console.log("valud: ", this.vehicleValuationsList);
                 } catch (error) {
                     console.error("Failed to decrypt Vehicle MOT History: ", error);
                 }
@@ -225,7 +224,7 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
         },
         async fetchStolenRecords() {
             let code = systematicFourCharCode('vehicleStolenRecords');
-            const encryptedData = localStorage.getItem(code);
+            const encryptedData = localStorage.getItem(code);            
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
@@ -271,9 +270,13 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
         async fetchFinanceRecords() {
             let code = systematicFourCharCode('vehicleFinanceRecords');
             const encryptedData = localStorage.getItem(code);
+            console.log("encryptedData: ", encryptedData);
+            
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
+                    console.log("decrypted: ", decrypted);
+                    
                     this.financeRecords = JSON.parse(decrypted);
                 } catch (error) {
                     console.error("Failed to decrypt Vehicle risk data: ", error);
@@ -284,6 +287,7 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
         async fetchNumberOfLooksUp() {
             let code = systematicFourCharCode('numberOfLooksUp');
             const encryptedData = localStorage.getItem(code);
+            
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
@@ -538,7 +542,7 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                 'VehicleRegistration', 'VehicleMotVed', 'VehicleGeneralInfo', 'Performance',
                 'VehicleClassificationDetails', 'VehicleHistory', 'MOTHistory', 'MOTAdditionalInfo', 'VehicleValuationsList',
                 'vehicleStolenRecords', 'vehicleWriteOffRecords', 'vehicleRiskRecords', 
-                'vehicleFinanceRecords', 'numberOfLooksUp', 'reg_number'
+                'vehicleFinanceRecords', 'numberOfLooksUp', 'reg_number','car_reg_number'
             ];
         
             keysToRemove.forEach(key => {

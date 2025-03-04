@@ -1,15 +1,18 @@
 <script setup lang="ts">
-type DisplayType = '0' | 'X';
+// type DisplayType = '0' | 'X';
 
-const props = defineProps<{
-  contain: string;
-  count: number,
-  type: DisplayType
-}>();
+// const props = defineProps<{
+//   contain?: string;
+//   // count: number,
+//   // type: DisplayType
+// }>();
+
+const props = defineProps<{ contain?: String }>();
+
 </script>
 
 <template>
-  <span class="blur-text">{{ contain === 'zero' ? '00' : 'XXXXX' }}</span>
+  <span class="blur-text">{{ props.contain === 'zero' ? '00' : 'XXXXX' }}</span>
 </template>
 
 <style scoped>

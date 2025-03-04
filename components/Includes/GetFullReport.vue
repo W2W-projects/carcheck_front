@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { defineProps, ref, onMounted, computed, reactive, watch } from 'vue';
-import carDefaultImage from '/images/car-icon.png';
 import { navigateTo } from 'nuxt/app';
+import { computed, defineProps, reactive, ref, watch } from 'vue';
 import ApiService from '~/services/apiService';
 
 // Store initialization
@@ -9,11 +8,6 @@ const carRegistrationSearchStore = useCarRegistrationSearchStore();
 const tokenStore = useTokenStore();
 const subscriptionStore = useSubscriptionStore();
 const authStore = useAuthStore();
-const planStore = usePlanStore();
-
-// Computed properties and refs
-const vbrand_logo = computed(() => carRegistrationSearchStore.vbrand_logo);
-const vehicleImageUrl = computed(() => carRegistrationSearchStore.vehicleImageUrl);
 
 const errorMessage = ref<string | null>(null);
 const showPasswordField = ref(false);
@@ -24,7 +18,7 @@ const form = reactive({
 });
 const getFullReportButton = ref('Get full report');
 const getFullReportY = ref('Get full report');
-const hasSubscription = computed(() => subscriptionStore.hasSubscription);
+const subscriptionStatus = computed(() => subscriptionStore.getSubscriptionStatus);
 
 // Props
 const props = defineProps({
@@ -32,10 +26,14 @@ const props = defineProps({
         type: String,
         default: 'Get full report',
     },
-    width: {
+    class: {
         type: String,
         default: 'w-72',
     },
+    showForm: {
+        type: Boolean,
+        default: true,
+    }
 });
 // Helper function to format date
 const reportDate = () => {
@@ -50,62 +48,54 @@ const reportDate = () => {
 const downloadReport = async () => {
     getFullReportY.value = "Downloading...";
     const isAuthenticated = tokenStore.getToken && tokenStore.getStatus;
-    
+    const hasSubscription = await subscriptionStore.getHasSubscription();
+
     if (!isAuthenticated) {
         return navigateTo('/auth/login');
     }
 
+    if (isAuthenticated && !subscriptionStatus.value) {
+        return navigateTo('/pricing');
+    }
     try {
-        const hasSubscription = await subscriptionStore.getHasSubscription();
         const subscription = await subscriptionStore.getUserSubscription();
-        if(hasSubscription && hasSubscription.onTrial && subscription.plan?.plan_code ==='48h-basic-subscription'){
-            errorMessage.value = "Your are on basic trial plan. Please buy single offer.";
-            return;
-        }
+        // if (subscription !== null && hasSubscription && hasSubscription?.onTrial && subscription.plan?.plan_code === '48h-basic-subscription') {
+        // if (subscription !== null) {
+        //     errorMessage.value = "Your are on basic trial plan. Please buy single offer.";
+        //     return;
+        // }
         const user = authStore.user;
-        let email = user?.email;
-        const userSubscription = await subscriptionStore.fetchUserSubscription(email);
 
         await carRegistrationSearchStore.fetchVehicleDimension();
         await carRegistrationSearchStore.fetchVehicleGeneralInfo();
         await carRegistrationSearchStore.fetchPerformance();
 
-        let car_data = [
-            { vehicleStatus : carRegistrationSearchStore.vehicleStatus },
-            { vehicleDetails : carRegistrationSearchStore.vehicleDetails },
-            { MOTHistory : carRegistrationSearchStore.MOTHistory },
-            { technicalDetails : carRegistrationSearchStore.technicalDetails },
-            { classificationDetails : carRegistrationSearchStore.classificationDetails },
-            { vehicleHistory : carRegistrationSearchStore.vehicleHistory },
-            { vehicleValuationsList : carRegistrationSearchStore.vehicleValuationsList },
-            { dimensions : carRegistrationSearchStore.dimensions },
-            { general : carRegistrationSearchStore.general },
-            { vehicleRegistration : carRegistrationSearchStore.vehicleRegistration },
-            { motVed : carRegistrationSearchStore.motVed },
-            { smmtDetails : carRegistrationSearchStore.smmtDetails },
-            { performance : carRegistrationSearchStore.performance },
-            { vbrand_logo : carRegistrationSearchStore.vbrand_logo },
-            { vehicleImageUrl : carRegistrationSearchStore.vehicleImageUrl },
-            { getFullReportText : carRegistrationSearchStore.getFullReportText },
-            { stolenRecord : carRegistrationSearchStore.stolenRecord },
-            { writeOff : carRegistrationSearchStore.writeOff },
-            { riskRecords : carRegistrationSearchStore.riskRecords },
-            { financeRecords : carRegistrationSearchStore.financeRecords }
-        ];
-        if (hasSubscription?.active || hasSubscription?.request_count > 0 || user.request_count > 0) {
-            console.log("HasSub: ", hasSubscription);
-            // let report_type = '';
-            // if (subscription?.plan?.plan_code === '48h-export-subscription') {
-            //     report_type = '48h-expert-subscription';
-            // } else if (subscription?.plan?.plan_code === '48h-basic-subscription') {
-            //     report_type = '48h-basic-subscription';
-            // } else if (subscription?.plan?.plan_code === 'premium-3x') {
-            //     report_type = subscription.plan.plan_code;
-            // } else {
-            //     report_type = 'single-offer';
-            // }
 
-            if(!subscription){
+        if (hasSubscription?.active || hasSubscription?.request_count > 0 || user.request_count > 0) {
+            let car_data = [
+                { vehicleStatus: carRegistrationSearchStore.vehicleStatus },
+                { vehicleDetails: carRegistrationSearchStore.vehicleDetails },
+                { MOTHistory: carRegistrationSearchStore.MOTHistory },
+                { technicalDetails: carRegistrationSearchStore.technicalDetails },
+                { classificationDetails: carRegistrationSearchStore.classificationDetails },
+                { vehicleHistory: carRegistrationSearchStore.vehicleHistory },
+                { vehicleValuationsList: carRegistrationSearchStore.vehicleValuationsList },
+                { dimensions: carRegistrationSearchStore.dimensions },
+                { general: carRegistrationSearchStore.general },
+                { vehicleRegistration: carRegistrationSearchStore.vehicleRegistration },
+                { motVed: carRegistrationSearchStore.motVed },
+                { smmtDetails: carRegistrationSearchStore.smmtDetails },
+                { performance: carRegistrationSearchStore.performance },
+                { vbrand_logo: carRegistrationSearchStore.vbrand_logo },
+                { vehicleImageUrl: carRegistrationSearchStore.vehicleImageUrl },
+                { getFullReportText: carRegistrationSearchStore.getFullReportText },
+                { stolenRecord: carRegistrationSearchStore.stolenRecord },
+                { writeOff: carRegistrationSearchStore.writeOff },
+                { riskRecords: carRegistrationSearchStore.riskRecords },
+                { financeRecords: carRegistrationSearchStore.financeRecords }
+            ];
+
+            if (!subscription) {
                 errorMessage.value = "You don't have any active subscription. Please buy or upgrade plan.";
             }
 
@@ -118,7 +108,6 @@ const downloadReport = async () => {
                     car_data: car_data
                 },
                 token
-                // { responseType: 'blob' }
             );
             if (response.success && response.payload) {
                 const payload = response.payload;
@@ -134,8 +123,6 @@ const downloadReport = async () => {
 
             } else {
                 throw new Error('Failed to retrieve the report data.');
-                getFullReportButton.value = "Get full report";
-                getFullReportY.value = "Get full report";
             }
         } else {
             getFullReportButton.value = "Get full report";
@@ -147,13 +134,12 @@ const downloadReport = async () => {
         getFullReportY.value = "Get full report";
         errorMessage.value = error?.data?.message || 'Error occurred during the subscription check.';
         getFullReportButton.value = "Get full report";
-    }
-    finally{
-        setTimeout(()=>{
-            errorMessage.value ="";
+        setTimeout(() => {
+            errorMessage.value = "";
             getFullReportY.value = "Get full report";
         }, 3000);
     }
+
 };
 
 const handleGetFullReport = async () => {
@@ -162,12 +148,13 @@ const handleGetFullReport = async () => {
         const response = await ApiService.post('users/check-email-exist', { email: form.email });
         if (response.success && response.payload) {
             let payload = response.payload;
-            if(payload.user_type && payload.user_type=="newlyCreatedUser"){
+            if (payload.user_type && payload.user_type == "newlyCreatedUser") {
                 const tokenStore = useTokenStore();
                 tokenStore.setToken(payload.access_token, payload.access_token);
                 await authStore.setUser(payload.user);
-                navigateTo('payment/plans');
-            }else{
+                // navigateTo('payment/plans');
+                navigateTo('pricing');
+            } else {
                 showPasswordField.value = true;
                 getFullReportY.value = "Submit";
             }
@@ -181,33 +168,64 @@ const handleGetFullReport = async () => {
     }
 };
 
+// const handleLoginSubmit = async () => {
+//     getFullReportY.value = "Processing...";
+
+//     try {
+//         const response = await authStore.makeLogin(form);
+//         if (!response.success) {
+//             errorMessage.value = "Login failed.";
+//             getFullReportY.value = "Get full report";
+//         } else {
+//             let payload = response.payload;
+//             if (response.success) {
+//                 showPasswordField.value = false;
+//             }
+//             //make frontend log in
+//             const tokenStore = useTokenStore();
+//             tokenStore.setToken(payload.access_token, payload.access_token);
+//             await authStore.setUser(payload.user);
+
+//             if (payload.hasSubscription) {
+//                 let hasSubscription = payload.hasSubscription;
+
+//                 if (hasSubscription.active) {
+//                     downloadReport()
+//                 } else {
+//                     navigateTo('payment/plans');
+//                 }
+//             } else {
+//                 navigateTo('payment/plans');
+//             }
+//             getFullReportY.value = "Get full report";
+//         }
+//     } catch (error) {
+//         getFullReportY.value = "Get full report";
+//         errorMessage.value = error?.data?.message || 'Something went wrong. Please try again!';
+//     }
+// };
+
+
 const handleLoginSubmit = async () => {
     getFullReportY.value = "Processing...";
 
     try {
         const response = await authStore.makeLogin(form);
-        if (!response.success){
+        if (!response.success) {
             errorMessage.value = "Login failed.";
             getFullReportY.value = "Get full report";
-        }else{
+        } else {
             let payload = response.payload;
-            if(response.success){
-                showPasswordField.value = false;
-            }
-            //make frontend log in
+            showPasswordField.value = false;
+
+            // Make frontend log in
             const tokenStore = useTokenStore();
             tokenStore.setToken(payload.access_token, payload.access_token);
             await authStore.setUser(payload.user);
 
-            if(payload.hasSubscription){
-                let hasSubscription = payload.hasSubscription;
-
-                if(hasSubscription.active){
-                    downloadReport()
-                }else{
-                    navigateTo('payment/plans');
-                }
-            }else{
+            if (payload.hasSubscription?.active) {
+                downloadReport();
+            } else {
                 navigateTo('payment/plans');
             }
             getFullReportY.value = "Get full report";
@@ -231,38 +249,41 @@ watch(
 </script>
 
 <template>
-    <div class="w-full">
-    <form @submit.prevent="handleGetFullReport" v-if="(!authStore.user || Object.keys(authStore.user).length === 0) && !showPasswordField">
+
+    <div v-if="showForm" :class="props.class">
+        <form @submit.prevent="handleGetFullReport"
+            v-if="(!authStore.user || Object.keys(authStore.user).length === 0) && !showPasswordField"
+            class="space-y-2">
             <FormInputText id="email" v-model="form.email" placeholder="Enter your email address" type="text" />
-            <button :class="['bg-[#FF7400] text-white text-xl rounded-lg py-2', width]">
+            <button class="w-full" :class="['bg-[#FF7400] text-white text-xl rounded-lg py-2']">
                 {{ getFullReportY }}
             </button>
         </form>
 
-        <form @submit.prevent="handleLoginSubmit" v-else-if="showPasswordField">
+        <form @submit.prevent="handleLoginSubmit" v-else-if="showPasswordField" class="space-y-2">
             <FormInputText id="password" v-model="form.password" placeholder="Enter your password" type="password" />
-            <button :class="['bg-[#FF7400] text-white text-xl rounded-lg py-2', width]">
+            <button class="w-full" :class="['bg-[#FF7400] text-white text-xl rounded-lg py-2']">
                 {{ getFullReportY }}
             </button>
         </form>
-
-        <button v-else @click.prevent="downloadReport"
-            :class="['bg-[#FF7400] text-white text-xl rounded-lg py-2', width]">
-            {{ getFullReportY }}
-        </button> 
-        <p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
-
-        <NuxtLink 
-            to="/payment/plans" 
-            v-if="hasSubscription?.active" 
-            class="ml-auto block text-right text-blue-500 hover:underline">
+        <button v-else @click.prevent="downloadReport" class="w-full"
+            :class="['bg-[#FF7400] text-white text-xl rounded-lg py-2']">
+            Download Report
+        </button>
+        <div class="w-full text-center">
+            <small v-if="errorMessage" class="mt-2 text-red-500">{{ errorMessage }}</small>
+        </div>
+        <!-- <NuxtLink to="/pricing" v-if="hasSubscription?.active"
+            class="block ml-auto text-right text-blue-500 hover:underline">
             Buy Single Offer
         </NuxtLink>
-        <NuxtLink 
-            to="/payment/plans" 
-            v-if="hasSubscription?.subscription == null" 
-            class="ml-auto block text-right text-blue-500 hover:underline">
+        <NuxtLink to="/pricing" v-if="hasSubscription?.subscription == null"
+            class="block ml-auto text-right text-blue-500 hover:underline">
             Buy Plan
-        </NuxtLink>
+        </NuxtLink> -->
     </div>
+    <div v-else class="bg-red-400 w-[22rem] flex items-center justify-end rounded-lg">
+        <a href="#report" class="w-full px-20 py-2 text-center text-white rounded-lg bg-primary">Get full report</a>
+    </div>
+
 </template>

@@ -4,6 +4,8 @@ const toggleTableVisibility = () => {
   isTableVisible.value = !isTableVisible.value;
 };
 
+const isAuthenticated = computed(() => useAuthStore().isAuthenticated);
+
 const chartData = [
   { label: "OTR(On The Road)", value: 30000 },
   { label: "asdqw", value: 12371 },
@@ -32,9 +34,8 @@ function getChartHeight() {
 </script>
 <template>
   <report-wrapper>
-    <div @click="toggleTableVisibility"
-      class="cursor-pointer text-black flex flex-col md:flex-row items-center justify-between">
-      <div class="flex items-center space-x-4">
+    <div class=" text-black flex flex-col md:flex-row items-center justify-between">
+      <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
         <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g clip-path="url(#clip0_230_6081)">
             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -67,23 +68,14 @@ function getChartHeight() {
           VALUATION DETAILS
         </p>
         <span>
-          <svg v-if="isTableVisible" width="12" height="7" viewBox="0 0 12 7" fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <path d="M1 1L6 6" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M6 6L11 1" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-
-          <svg v-else width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1 6L6 1" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M6 1L11 6" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
+          <img v-if="isTableVisible" src="/svg/chev-down.svg" alt="">
+          <img v-else src="/svg/chev-up.svg" alt="">
         </span>
       </div>
 
       <small>Unlock all valuation details on the full report</small>
-      <button class="bg-[#FF7400] text-white text-xl w-72 rounded-lg py-2">
-        Get full report
-      </button>
+      <Includes-get-full-report :show-form="isAuthenticated"
+        get-full-report="Get full report"></Includes-get-full-report>
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="8" cy="8" r="8" fill="#BDBDBD" />
         <rect x="6.66602" y="6.22229" width="2.66666" height="7.1111" rx="1.33333" fill="white" />

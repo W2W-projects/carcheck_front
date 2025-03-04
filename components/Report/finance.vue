@@ -14,7 +14,7 @@ const toggleTableVisibility = () => {
 
 const subscriptionStore = useSubscriptionStore();
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
-const subscription = computed(()=> subscriptionStore.subscription);
+const subscription = computed(() => subscriptionStore.subscription);
 
 
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
@@ -45,7 +45,7 @@ function isShowable() {
     !hasSubscription.value ||
     !user.value
   ) {
-    return false; 
+    return false;
   }
 
   if (
@@ -67,8 +67,8 @@ function isShowable() {
 
 <template>
   <report-wrapper class="py-8">
-    <div @click="toggleTableVisibility" class="cursor-pointer text-black flex items-center justify-between">
-      <div class="flex items-center space-x-4">
+    <div class="flex items-center justify-between text-black">
+      <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
         <svg width="24" height="26" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g clip-path="url(#clip0_230_6359)">
             <path
@@ -92,20 +92,12 @@ function isShowable() {
         </svg>
 
 
-        <p class="text-2xl font-bold flex items-center justify-center">
+        <p class="flex items-center justify-center text-2xl font-bold">
           FINANCE
         </p>
         <span>
-          <svg v-if="isTableVisible" width="12" height="7" viewBox="0 0 12 7" fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <path d="M1 1L6 6" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M6 6L11 1" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-
-          <svg v-else width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1 6L6 1" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M6 1L11 6" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
+          <img v-if="isTableVisible" src="/svg/chev-down.svg" alt="">
+          <img v-else src="/svg/chev-up.svg" alt="">
 
         </span>
       </div>
@@ -117,7 +109,7 @@ function isShowable() {
       </svg>
     </div>
     <div v-show="isTableVisible">
-      <table class="w-full text-black mt-6">
+      <table class="w-full mt-6 text-black">
         <thead>
           <tr class="header-row">
             <th colspan="7">
@@ -150,22 +142,36 @@ function isShowable() {
         <tbody>
 
           <tr v-for="(finance, key) in finRecordList" :key="key" v-if="isShowable()">
-            <td >{{ formatDate(finance.AgreementDate) }}</td>
-            <td >{{ finance.AgreementType }}</td>
-            <td >{{ finance.AgreementTerm }}</td>
-            <td >{{ finance.AgreementNumber }}</td>
-            <td >{{ finance.FinanceCompany }}</td>
-            <td >{{ finance.ContactNumber }}</td>
-            <td >{{ finance.VehicleDescription }}</td>
+            <td>{{ formatDate(finance.AgreementDate) }}</td>
+            <td>{{ finance.AgreementType }}</td>
+            <td>{{ finance.AgreementTerm }}</td>
+            <td>{{ finance.AgreementNumber }}</td>
+            <td>{{ finance.FinanceCompany }}</td>
+            <td>{{ finance.ContactNumber }}</td>
+            <td>{{ finance.VehicleDescription }}</td>
           </tr>
           <tr v-else>
-            <td ><hashed /></td>
-            <td ><hashed /></td>
-            <td ><hashed /></td>
-            <td ><hashed /></td>
-            <td ><hashed /></td>
-            <td ><hashed /></td>
-            <td ><hashed /></td>
+            <td>
+              <hashed />
+            </td>
+            <td>
+              <hashed />
+            </td>
+            <td>
+              <hashed />
+            </td>
+            <td>
+              <hashed />
+            </td>
+            <td>
+              <hashed />
+            </td>
+            <td>
+              <hashed />
+            </td>
+            <td>
+              <hashed />
+            </td>
           </tr>
         </tbody>
       </table>

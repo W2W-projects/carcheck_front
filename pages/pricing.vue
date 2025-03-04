@@ -1,189 +1,47 @@
-import { important } from '../.nuxt/types/tailwind.config';
 <script setup>
+import { usePlanStore } from '@/stores/plan';
+import { onMounted, ref } from 'vue';
 
-const pricingData = [
-  {
-    "title": "Pricing",
-    "basic": {
-      "type": 'text',
-      "value": "£1.95"
-    },
-    "premium": {
-      "type": 'text',
-      "value": "£3.95"
-    },
-    "expert": {
-      "type": 'text',
-      "value": "£5.95"
-    }
-  },
-  {
-    "title": "Pricing",
-    "basic": {
-      "type": 'text',
-      "value": "£1.95"
-    },
-    "premium": {
-      "type": 'text',
-      "value": "£3.95"
-    },
-    "expert": {
-      "type": 'text',
-      "value": "£5.95"
-    }
-  },
-  {
-    "title": "Pricing",
-    "basic": {
-      "type": 'text',
-      "value": "£1.95"
-    },
-    "premium": {
-      "type": 'text',
-      "value": "£3.95"
-    },
-    "expert": {
-      "type": 'text',
-      "value": "£5.95"
-    }
-  },
-  {
-    "title": "Vehicle Informations",
-    "basic": {
-      "type": 'check',
-      "value": true
-    },
-    "premium": {
-      "type": 'check',
-      "value": true
-    },
-    "expert": {
-      "type": 'check',
-      "value": true
-    }
-  },
-  {
-    "title": "Vehicle Informations",
-    "basic": {
-      "type": 'check',
-      "value": true
-    },
-    "premium": {
-      "type": 'check',
-      "value": true
-    },
-    "expert": {
-      "type": 'check',
-      "value": true
-    }
-  },
-  {
-    "title": "Vehicle Informations",
-    "basic": {
-      "type": 'check',
-      "value": true
-    },
-    "premium": {
-      "type": 'check',
-      "value": true
-    },
-    "expert": {
-      "type": 'check',
-      "value": true
-    }
-  },
-  {
-    "title": "Vehicle Informations",
-    "basic": {
-      "type": 'check',
-      "value": true
-    },
-    "premium": {
-      "type": 'check',
-      "value": true
-    },
-    "expert": {
-      "type": 'check',
-      "value": true
-    }
-  },
-  {
-    "title": "Vehicle Informations",
-    "basic": {
-      "type": 'check',
-      "value": true
-    },
-    "premium": {
-      "type": 'check',
-      "value": true
-    },
-    "expert": {
-      "type": 'check',
-      "value": true
-    }
-  },
-  {
-    "title": "Vehicle Informations",
-    "basic": {
-      "type": 'check',
-      "value": true
-    },
-    "premium": {
-      "type": 'check',
-      "value": true
-    },
-    "expert": {
-      "type": 'check',
-      "value": true
-    }
-  },
-  {
-    "title": "Vehicle Informations",
-    "basic": {
-      "type": 'check',
-      "value": false
-    },
-    "premium": {
-      "type": 'check',
-      "value": true
-    },
-    "expert": {
-      "type": 'check',
-      "value": true
-    }
-  },
-  {
-    "title": "Vehicle Informations",
-    "basic": {
-      "type": 'check',
-      "value": false
-    },
-    "premium": {
-      "type": 'check',
-      "value": false
-    },
-    "expert": {
-      "type": 'check',
-      "value": true
-    }
-  },
+import pricingData from '@/static/pricing';
 
-  {
-    "title": "Vehicle Informations",
-    "basic": {
-      "type": 'check',
-      "value": false
-    },
-    "premium": {
-      "type": 'check',
-      "value": false
-    },
-    "expert": {
-      "type": 'check',
-      "value": true
-    }
+definePageMeta({
+  title: 'Plans for Checkout',
+  meta: [
+    { hid: 'Plans for checkout', name: 'Plans for Checkout', content: 'Plans for Checkout' }
+  ],
+});
+
+const planStore = usePlanStore();
+
+const plans = ref([]);
+const showLoader = ref(false);
+const subsPrice = planStore.getSubsPrice;
+
+onMounted(async () => {
+  showLoader.value = true;
+  await planStore.fetchPlans();
+
+  // plans
+  plans.value = planStore.getActivePlans
+    .map(item => ({
+      ...item,
+      price: (parseFloat(item.amount_premium) / 100).toFixed(2)
+    }));
+
+
+  showLoader.value = false;
+});
+
+
+function replaceText(text) {
+  let x = text.toLowerCase();
+  let replaced = x.replace(/subscription/g, 'report')
+  if (!replaced.includes('report')) {
+    replaced += ' report';
   }
-];
+  return replaced;
+}
+
 
 </script>
 <template>
@@ -198,7 +56,8 @@ const pricingData = [
       <div class="flex flex-col items-center justify-center space-y-4 -translate-y-4">
         <p class="text-[1.8rem] tracking-wider text-[#2464A6]">We run the checks</p>
         <div class="mx-auto">
-          <svg width="48" height="62" viewBox="0 0 48 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg class="animate-pulse" width="48" height="62" viewBox="0 0 48 62" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
             <path
               d="M24 24C22.0617 24 20.1234 23.2463 18.6559 21.7668L0.60225 3.56615C-0.20075 2.75661 -0.20075 1.41669 0.60225 0.607153C1.40525 -0.202384 2.73435 -0.202384 3.53735 0.607153L21.591 18.8078C22.9201 20.1477 25.0799 20.1477 26.409 18.8078L44.4626 0.607153C45.2656 -0.202384 46.5947 -0.202384 47.3977 0.607153C48.2007 1.41669 48.2007 2.75661 47.3977 3.56615L29.3441 21.7668C27.8766 23.2463 25.9383 24 24 24Z"
               fill="#2464A6" />
@@ -224,7 +83,8 @@ const pricingData = [
       cancel,
       the
       subscription will
-      automatically renew at £39.90 per month. You can cancel anytime. Feel free to contact us with any questions.</p>
+      automatically renew at {{ subsPrice }} per month. You can cancel anytime. Feel free to contact us with any
+      questions.</p>
   </section>
 
   <!-- trusted by -->
@@ -232,16 +92,16 @@ const pricingData = [
     <TrustedBy class="mt-4" />
   </section>
 
-  <section class="lg:px-[7.5rem] mt-[2.85rem] mb-[2.85rem]">
+  <section class="lg:px-[7.5rem] mt-[2.85rem] mb-[2.85rem]" id="report-offering">
     <table class="w-full text-black">
       <thead>
-        <tr class="flex lg:text-xl text-sm">
+        <tr class="flex text-sm lg:text-xl">
           <th class="h-[3.26rem] flex items-center justify-center lg:w-[32.1%] w-[25%]"></th>
           <th class="h-[3.26rem] flex items-center justify-center rounded flex-1 border border-black text-[#0F1829]">
             Basic report</th>
           <th
             class="h-[3.26rem] flex items-center justify-center rounded flex-1 border border-primary bg-primary text-[#0F1829]">
-            Permium
+            Premium
             report</th>
           <th
             class="h-[3.26rem] flex items-center justify-center rounded flex-1 border border-[#0F1829] bg-[#0F1829] text-white">
@@ -250,7 +110,52 @@ const pricingData = [
         </tr>
       </thead>
       <tbody class="border-t border-gray-400">
-        <tr class="flex lg:text-2xl text-sm" v-for="data in pricingData" :key="data">
+
+        <!-- Pricing -->
+        <tr class="flex text-sm lg:text-2xl">
+          <td
+            class="h-[4.65rem] flex items-center lg:justify-start justify-center lg:pl-[3.75rem] border-b border-gray-400 lg:w-[32.1%] w-[25%] text-center lg:text-start font-light">
+            Pricing
+          </td>
+          <td v-for="(item, index) in plans" :key="item?.amount_trial"
+            class="h-[4.65rem] flex items-center justify-center border-b border-l border-gray-400 flex-1">
+            <p>
+              {{ item.amount_trial && (item.currency.symbol + item.amount_trial) }}
+            </p>
+          </td>
+        </tr>
+
+        <!-- Quota -->
+        <tr class="flex text-sm lg:text-2xl">
+          <td
+            class="h-[4.65rem] flex items-center lg:justify-start justify-center lg:pl-[3.75rem] border-b border-gray-400 lg:w-[32.1%] w-[25%] text-center lg:text-start font-light">
+            Quota
+          </td>
+          <td v-for="(item, index) in plans" :key="item?.reports_count"
+            class="h-[4.65rem] flex items-center justify-center border-b border-l border-gray-400 flex-1">
+            <p>
+              {{ item.reports_count || 0 }} Check{{ item.reports_count && item.reports_count !== 1 ?
+                's'
+                : '' }}
+            </p>
+          </td>
+        </tr>
+
+        <!-- Report Type -->
+        <tr class="flex text-sm lg:text-2xl">
+          <td
+            class="h-[4.65rem] flex items-center lg:justify-start justify-center lg:pl-[3.75rem] border-b border-gray-400 lg:w-[32.1%] w-[25%] text-center lg:text-start font-light">
+            Report Type
+          </td>
+          <td v-for="(item, index) in plans" :key="item?.name"
+            class="h-[4.65rem] flex items-center justify-center border-b border-l border-gray-400 flex-1 capitalize">
+            <p class="mx-auto text-center">{{ item?.name && replaceText(item.name) }}</p>
+          </td>
+
+        </tr>
+
+        <!-- List -->
+        <tr class="flex text-sm lg:text-2xl" v-for="data in pricingData" :key="data">
           <td
             class="h-[4.65rem] flex items-center lg:justify-start justify-center lg:pl-[3.75rem] border-b border-gray-400 lg:w-[32.1%] w-[25%] text-center lg:text-start font-light">
             {{ data.title }}

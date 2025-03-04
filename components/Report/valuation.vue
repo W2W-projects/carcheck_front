@@ -25,7 +25,6 @@ onMounted(async () => {
   await carRegistrationSearchStore.fetchValuationList();
   if (valuationLists.value && typeof valuationLists.value === "object") {
     mapValuationToChart();
-    console.log("chartData after mapping:", chartData.value);
   } else {
     console.warn("Valuation data is not available or invalid format.");
   }
@@ -62,7 +61,7 @@ function isShowable() {
     !hasSubscription.value ||
     !user.value
   ) {
-    return false; 
+    return false;
   }
 
   if (
@@ -86,33 +85,25 @@ function isShowable() {
 <template>
   <report-wrapper>
     <!-- Toggle table visibility -->
-    <div @click="toggleTableVisibility"
-      class="cursor-pointer text-black flex flex-col md:flex-row items-center justify-between">
-      <div class="flex items-center space-x-4">
-        <p class="text-2xl font-bold flex items-center justify-center">VALUATION DETAILS</p>
+    <div class="flex flex-col items-center justify-between text-black  md:flex-row">
+      <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
+        <p class="flex items-center justify-center text-2xl font-bold">VALUATION DETAILS</p>
         <span>
-          <svg v-if="isTableVisible" width="12" height="7" viewBox="0 0 12 7" fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <path d="M1 1L6 6" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M6 6L11 1" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-
-          <svg v-else width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1 6L6 1" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M6 1L11 6" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
+          <img v-if="isTableVisible" src="/svg/chev-down.svg" alt="">
+          <img v-else src="/svg/chev-up.svg" alt="">
         </span>
       </div>
 
       <small>Unlock all valuation details on the full report</small>
       <button class="bg-[#FF7400] text-white text-xl w-72 rounded-lg py-2">Get full report</button>
     </div>
-    
-    <div v-show="isTableVisible" class="text-black my-10 w-full">
+
+    <div v-show="isTableVisible" class="w-full my-10 text-black">
       <!-- v-if="isClient && " -->
       <!-- v-if="!(subscription?.plan?.plan_code ==='48h-basic-subscription' && hasSubscription?.onTrial) && (user.request_count > 0 || user.one_off_request_count > 0)" -->
       <div v-if="isClient">
-        <chart-bar v-if="chartData.length > 0" :data="chartData" :hasSubscription="isShowable()" :height="getChartHeight()" width="100%" />
+        <chart-bar v-if="chartData.length > 0" :data="chartData" :hasSubscription="isShowable()"
+          :height="getChartHeight()" width="100%" />
       </div>
       <div v-else>
         <p>Loading data...</p>

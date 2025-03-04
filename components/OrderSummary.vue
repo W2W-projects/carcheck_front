@@ -50,7 +50,7 @@ const includedData = [{
         <div class="lg:space-y-[1rem] space-y-[0.18rem] mt-5">
             <p class="md:text-[1.7rem] text-lg font-light">You selected:</p>
             <div
-                class="grid grid-cols-2 bg-primary text-white md:w-[23.899rem] w-full md:pl-9 md:pr-8 px-5 md:py-6 py-5 space-x-2 rounded-xl">
+                class="grid grid-cols-2 bg-primary text-white md:w-[26.5rem] w-full md:pl-9 md:pr-8 px-5 md:py-6 py-5 space-x-2 rounded-xl">
                 <div class="leading-3">
                     <p class="text-xl font-bold text-[#733500]">Basic plan</p>
                     <div class="md:leading-5 leading-6">
@@ -60,7 +60,8 @@ const includedData = [{
                 </div>
                 <div class="flex items-center justify-center space-x-2">
                     <div>
-                        <p class="text-6xl">£{{ planPrice || 5 }}</p>
+                        <p class="text-3xl">£{{ planPrice || 5 }}
+                        </p>
                     </div>
                     <div class="leading-[1.25rem] text-[0.89rem] font-light">
                         <p>per user</p>

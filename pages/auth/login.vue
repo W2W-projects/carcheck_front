@@ -60,7 +60,7 @@ const handleLoginSubmit = async () => {
             await subscriptionStore.setCurrentSubscription(subscription);
             await auth.setUser(user);
 
-            if(localStorage.getItem('redirect-url')){
+            if (localStorage.getItem('redirect-url')) {
                 navigateTo('/payment/plans');
             }
 
@@ -88,11 +88,11 @@ const navigateToRegister = () => navigateTo('/auth/register');
 const navigateToForgotPassword = () => navigateTo('/auth/password-reset-token');
 </script>
 <template>
-    <div class="min-h-screen flex items-center">
+    <div class="flex items-center py-10">
         <div class="w-full">
             <div
-                class="card bg-white p-8 rounded-lg shadow-xl border-2 border-dark-500 border-solid py-4 md:w-3/4 mx-auto lg:w-1/3">
-                <h3 class="text-center text-2xl font-semibold">User Login</h3>
+                class="p-8 mx-auto bg-white border-2 border-solid rounded-lg shadow-xl card border-dark-500 md:w-3/4 lg:w-1/3">
+                <h3 class="text-2xl font-semibold text-center text-black">User Login</h3>
 
                 <form @submit.prevent="handleLoginSubmit">
                     <div class="mb-6">
@@ -109,27 +109,28 @@ const navigateToForgotPassword = () => navigateTo('/auth/password-reset-token');
                         <span v-if="errors.password" class="text-red-500">{{ errors.password }}</span>
                     </div>
 
-                    <div class="row mb-2" v-if="errorMessage">
+                    <div class="mb-2 row" v-if="errorMessage">
                         <div class="alert alert-danger">
-                            <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oops!</span> {{ errorMessage }}</p>
+                            <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span
+                                    class="font-medium">Oops!</span> {{ errorMessage }}</p>
                         </div>
 
                     </div>
 
-                    <div class="flex justify-between items-center">
+                    <div class="flex items-center justify-between">
                         <ButtonPrimary :disabled="isProcessing">{{ loginSubmit }}</ButtonPrimary>
-                        <span @click="navigateToRegister" class="cursor-pointer">
-                            <i class="fa fa-user"></i> Create new user
-                        </span>
+
+                        <NuxtLink to="/auth/password-reset-token">
+                            <small class="underline cursor-pointer text-primary hover:text-primary/90">
+                                Forgot Password
+                            </small>
+                        </NuxtLink>
                     </div>
 
-                    <div class="flex justify-center items-center mt-4">
-                        <NuxtLink to="/auth/password-reset-token" >
-                            <span
-                                class="text-blue-500 hover:text-blue-700 cursor-pointer">
-                                Forgot Password
-                            </span>
-                        </NuxtLink>    
+                    <div class="flex items-center justify-center mt-4">
+                        <span @click="navigateToRegister" class="text-black cursor-pointer">
+                            <i class="fa fa-user"></i> Create new user
+                        </span>
                     </div>
                 </form>
             </div>

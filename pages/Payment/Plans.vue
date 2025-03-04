@@ -1,9 +1,8 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
 import featureData from '@/features.json';
 import { usePlanStore } from '@/stores/plan';
+import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import ApiService from '~/services/apiService';
 
 definePageMeta({
     title: 'Plans for Checkout',
@@ -18,14 +17,14 @@ const subscriptionStore = useSubscriptionStore();
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
 
 const basic_features = reactive(featureData.features.basic_features);
-const standard_features = reactive(featureData.features.standerd_features);
+const standard_features = reactive(featureData.features.standard_features);
 const premium_features = reactive(featureData.features.premium_features);
 const showLoader = ref(false);
 
 const isMonthlyActive = ref(true);
 const selectedPlan = ref("48h-expert-subscription");
 const plans = ref([]);
-const planUnactive = ref(null);
+const planInactive = ref(null);
 
 const toggleBilling = (type) => {
     isMonthlyActive.value = (type === 'monthly');
@@ -56,7 +55,7 @@ onMounted(async () => {
         }))
         .filter(item => item.status === "active");
     // unactive plan
-    planUnactive.value = planStore.plans
+    planInactive.value = planStore.plans
         .map(item => ({
             ...item,
             price: (parseFloat(item.amount_premium) / 100).toFixed(2)
@@ -85,11 +84,11 @@ onMounted(async () => {
 
         <div class="flex md:flex-row flex-col items-center justify-center mt-10 gap-4 md:gap-8 px-32">
             <!-- single offer payment  -->
-            <div v-if="hasSubscription?.active" v-for="plan in planUnactive" :key="plan.plan_code"
+            <div v-if="hasSubscription?.active" v-for="plan in planInactive" :key="plan.plan_code"
                 @click="selectPlan(plan)" :class="{
-            'bg-[#0F1829] text-white': selectedPlan === plan.plan_code,
-            'border-2 border-[#0F1829] text-[#0F1829]': selectedPlan !== plan.plan_code
-        }" class="rounded-xl px-8 py-6 cursor-pointer transition duration-300 ease-in-out">
+                    'bg-[#0F1829] text-white': selectedPlan === plan.plan_code,
+                    'border-2 border-[#0F1829] text-[#0F1829]': selectedPlan !== plan.plan_code
+                }" class="rounded-xl px-8 py-6 cursor-pointer transition duration-300 ease-in-out">
 
                 <div class="flex flex-row items-center justify-between">
                     <h1 class="text-lg font-bold px-2">{{ plan.name }}</h1>
@@ -99,7 +98,7 @@ onMounted(async () => {
 
                 <div class="flex flex-row items-center justify-start mt-6">
                     <h3 class="text-4xl">£{{ plan.plan_code === "single-offer" ? plan.amount_premium : plan.amount_trial
-                        }}
+                    }}
                     </h3>
                     <div class="flex flex-col items-center justify-center ml-4">
                         <span class="text-sm font-thin -ml-2">Per User</span>
@@ -122,18 +121,18 @@ onMounted(async () => {
                         <img :src="getFeatureIcon(premium_feature.icon)" :alt="premium_feature.title"
                             class="w-6 orange-filter" />
                         <h3 :class="{
-            'text-white': selectedPlan === plan.plan_code,
-            'text-[#0F1829]': selectedPlan !== plan.plan_code
-        }" class="text-[#0F1829] text-sm ml-2">{{ premium_feature.title }}</h3>
+                            'text-white': selectedPlan === plan.plan_code,
+                            'text-[#0F1829]': selectedPlan !== plan.plan_code
+                        }" class="text-[#0F1829] text-sm ml-2">{{ premium_feature.title }}</h3>
                     </div>
                 </div>
             </div>
             <!-- single offer payment end -->
 
             <div v-else v-for="plan in plans" :key="plan.plan_code" @click="selectPlan(plan)" :class="{
-            'bg-[#0F1829] text-white': selectedPlan === plan.plan_code,
-            'border-2 border-[#0F1829] text-[#0F1829]': selectedPlan !== plan.plan_code
-        }" class="rounded-xl px-8 py-6 cursor-pointer transition duration-300 ease-in-out">
+                'bg-[#0F1829] text-white': selectedPlan === plan.plan_code,
+                'border-2 border-[#0F1829] text-[#0F1829]': selectedPlan !== plan.plan_code
+            }" class="rounded-xl px-8 py-6 cursor-pointer transition duration-300 ease-in-out">
                 <div class="flex flex-row items-center justify-between">
                     <h1 class="text-lg font-bold px-2">{{ plan.name }}</h1>
                     <span class="text-[#0F1829] text-xs rounded bg-[#FF7400] px-2 py-0.5"
@@ -142,7 +141,7 @@ onMounted(async () => {
 
                 <div class="flex flex-row items-center justify-start mt-6">
                     <h3 class="text-4xl">£{{ plan.plan_code === "single-offer" ? plan.amount_premium : plan.amount_trial
-                        }}
+                    }}
                     </h3>
                     <div class="flex flex-col items-center justify-center ml-4">
                         <span class="text-sm font-thin -ml-2">Per User</span>
@@ -165,9 +164,9 @@ onMounted(async () => {
                         class="flex flex-row items-center justify-start">
                         <img :src="getFeatureIcon(b_feature.icon)" :alt="b_feature.title" class="w-6 orange-filter" />
                         <h3 :class="{
-            'text-white': selectedPlan === plan.plan_code,
-            'text-[#0F1829]': selectedPlan !== plan.plan_code
-        }" class="text-[#0F1829] text-sm ml-2">{{ b_feature.title }}</h3>
+                            'text-white': selectedPlan === plan.plan_code,
+                            'text-[#0F1829]': selectedPlan !== plan.plan_code
+                        }" class="text-[#0F1829] text-sm ml-2">{{ b_feature.title }}</h3>
                     </div>
                 </div>
 
@@ -178,9 +177,9 @@ onMounted(async () => {
                         class="flex flex-row items-center justify-start">
                         <img :src="getFeatureIcon(b_feature.icon)" :alt="b_feature.title" class="w-6 orange-filter" />
                         <h3 :class="{
-            'text-white': selectedPlan === plan.plan_code,
-            'text-[#0F1829]': selectedPlan !== plan.plan_code
-        }" class="text-[#0F1829] text-sm ml-2">{{ b_feature.title }}</h3>
+                            'text-white': selectedPlan === plan.plan_code,
+                            'text-[#0F1829]': selectedPlan !== plan.plan_code
+                        }" class="text-[#0F1829] text-sm ml-2">{{ b_feature.title }}</h3>
                     </div>
                 </div>
                 <!-- premium plan  -->
@@ -190,9 +189,9 @@ onMounted(async () => {
                         <img :src="getFeatureIcon(premium_feature.icon)" :alt="premium_feature.title"
                             class="w-6 orange-filter" />
                         <h3 :class="{
-            'text-white': selectedPlan === plan.plan_code,
-            'text-[#0F1829]': selectedPlan !== plan.plan_code
-        }" class="text-[#0F1829] text-sm ml-2">{{ premium_feature.title }}</h3>
+                            'text-white': selectedPlan === plan.plan_code,
+                            'text-[#0F1829]': selectedPlan !== plan.plan_code
+                        }" class="text-[#0F1829] text-sm ml-2">{{ premium_feature.title }}</h3>
                     </div>
                 </div>
 
@@ -213,7 +212,7 @@ onMounted(async () => {
 import { ref } from 'vue';
 import featureData from '../../features.json';
 const basic_features = reactive(featureData.features.basic_features);
-const standerd_features = reactive(featureData.features.standerd_features);
+const standard_features = reactive(featureData.features.standard_features);
 const premium_features = reactive(featureData.features.premium_features);
 
 const isMonthlyActive = ref(true);
