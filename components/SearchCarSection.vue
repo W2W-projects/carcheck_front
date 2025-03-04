@@ -26,15 +26,15 @@ const moreFeatures = async () => {
 
 <template>
   <!-- <div class="lg:px-[9.12rem] section-1-bg lg:min-h-[75rem]"> -->
-  <div class="lg:px-[9.12rem] section-1-bg lg:min-h-[41rem] flex flex-col items-start w-full pt-[5.4%]">
+  <div class="lg:px-[9.12rem] section-1-bg lg:min-h-[41rem] flex flex-col items-start w-full pt-[5.4%]" id="check">
     <h1 class="lg:text-[2.5rem] text-xl text-[#0F1829] leading-[2.8rem]">Check it before
       <br />
-      <span class="lg:text-4xl text-2xl text-center font-bold">you regret it </span>
+      <span class="text-2xl font-bold text-center lg:text-4xl">you regret it </span>
     </h1>
 
     <!-- <SearchBar class="mt-4" inputHeight="h-[3.75rem]" width="w-[24.6rem]" /> -->
     <div class="h-[4.25rem] bg-blue-500 mt-4 flex translate-x-[30%] relative items-center">
-      <SearchBar class="scale-[160%]" width="w-[15.55rem]" />
+      <SearchBar class="scale-[160%]" width="w-[15.55rem]" :focused="true" />
     </div>
     <p class="text-[#0F1829] mt-5 lg:text-[1.95rem] md:text-2xl text-xl  font-thin">We can generate a <span
         class="font-bold">full history</span> <br />
@@ -42,7 +42,7 @@ const moreFeatures = async () => {
     <!--  features      -->
     <div>
       <Features :addedMoreFeatures="addedMoreFeatures"></Features>
-      <div class="flex flex-row items-center justify-center mt-5 w-full" v-if="isAddMoreBtnHidden == false">
+      <div class="flex flex-row items-center justify-center w-full mt-5" v-if="isAddMoreBtnHidden == false">
         <button class="bg-none" @click="moreFeatures">
           <p class="text-[#FF7400] text-[1.3rem] tracking-widest font-bold">And more ...</p>
         </button>

@@ -13,14 +13,18 @@ const plans = computed(() => planStore.getActivePlans);
 const isAuthenticated = computed(() => auth.isAuthenticated);
 const selectedPlan = computed(() => planStore?.getSelectedPlan);
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
+const subscriptionActive = computed(() => subscriptionStore.getSubscriptionStatus);
 const InActivePlans = computed(() => planStore.getInActivePlans);
 const { basic_features, standard_features, premium_features } = readonly(featureData.features);
 
 
 const startChecking = (plan) => {
   planStore.setSelectedPlan(plan);
-  isAuthenticated ?
-    router.push("/payment/checkout") : router.push("/auth/login");
+  if (subscriptionActive?.value) {
+    router.push({ path: '/', hash: '#check' });
+  } else {
+    isAuthenticated.value ? router.push("/payment/checkout") : router.push("/auth/login");
+  }
 };
 
 onMounted(async () => {
@@ -35,7 +39,7 @@ onMounted(async () => {
   <div class="flex flex-col items-stretch justify-center gap-4 md:flex-row md:gap-8 lg:gap-x-5"
     style="min-height: 500px;">
 
-    <div v-if="hasSubscription?.active" v-for="plan in InActivePlans" :key="plan.plan_code"
+    <!-- <div v-if="hasSubscription?.active" v-for="plan in InActivePlans" :key="plan.plan_code"
       class="items-center border-2 border-[#0F1829] rounded-3xl px-[2.1rem] py-6 w-[22rem]"
       :class="[plan.plan_code === 'premium' ? 'bg-[#0F1829] text-white' : 'bg-white text-[#0F1829]']">
       <div class="flex items-center justify-between">
@@ -82,9 +86,9 @@ onMounted(async () => {
           }" class="text-[#0F1829] text-sm ml-2">{{ premium_feature.title }}</h3>
         </div>
       </div>
-    </div>
+    </div> -->
 
-    <div v-else v-for="plan in plans" :key="plan.plan_code"
+    <div v-for="plan in plans" :key="plan.plan_code"
       class="items-center border-2 border-[#0F1829] rounded-3xl px-[2.1rem] py-6 w-full"
       :class="[plan.plan_code === 'premium' ? 'bg-[#0F1829] text-white' : 'bg-white text-[#0F1829]']">
       <div class="flex items-center justify-between">
