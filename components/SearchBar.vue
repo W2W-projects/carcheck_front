@@ -5,6 +5,7 @@ import { width } from "@fortawesome/free-solid-svg-icons/fa0";
 const router = useRouter();
 const carRegistrationSearch = useCarRegistrationSearchStore();
 const carStore = useCarStore();
+const searchInput = ref(null);
 
 const props = defineProps({
   height: {
@@ -26,6 +27,10 @@ const props = defineProps({
   buttonClass: {
     type: String,
     default: "h-9 w-[2.85rem]"
+  },
+  focused: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -68,6 +73,9 @@ onMounted(() => {
       vehicle_number.value = "";
     }
   }
+  if (props.focused) {
+    searchInput.value?.focus();
+  }
 });
 
 watch(errors, () => {
@@ -75,6 +83,22 @@ watch(errors, () => {
     errors.value = [];
   }, 5000);
 });
+
+watch(() => props.focused, (newValue) => {
+  if (newValue) {
+    nextTick(() => {
+      searchInput.value?.focus();
+    });
+  }
+});
+
+const handleBlur = () => {
+  if (props.focused) {
+    nextTick(() => {
+      searchInput.value?.focus();
+    });
+  }
+};
 
 const searchForCarReg = async () => {
   errorMessage.value = "";
@@ -101,8 +125,8 @@ const searchForCarReg = async () => {
 
   } catch (error) {
     if (!error?.data?.success) {
-      // let sub = subscription.value;
-      // if(hasSubscription.active==true){
+// let sub = subscription.value;
+// if(hasSubscription.active==true){
       // }
     }
 
@@ -130,10 +154,10 @@ const searchForCarReg = async () => {
       <div class="flex items-center justify-center mr-[0.27rem]">
         <img src="assets/svg/uk-flag.svg" class="w-8" alt="UK Flag" />
       </div>
-      <input @keyup.enter="searchForCarReg" type="text" :placeholder="placeholderText" v-model="processedCarNumber"
-        required
+      <input @keyup.enter="searchForCarReg" @blur="handleBlur" type="text" :placeholder="placeholderText"
+        v-model="processedCarNumber" required
         class="block w-full placeholder-opacity-low custom-spacing py-4 transition text-2xl text-white bg-[#FFA500] rounded hover:bg-white md:hover:bg-transparent md:hover:text-white md:dark:hover:text-white ring-0 active:ring-0 active:border-transparent outline-none focus:outline-none active:outline-none focus:border-transparent"
-        :class="[props.inputHeight, props.inputWidth]" />
+        :class="[props.inputHeight, props.inputWidth]" :autofocus="props.focused" ref="searchInput" />
 
       <button @click="searchForCarReg"
         class="bg-[#0F1829] py-1 px-2 rounded hover:bg-white md:hover:bg-transparent md:dark:hover:bg-transparent"
