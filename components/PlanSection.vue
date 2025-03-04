@@ -14,7 +14,6 @@ const isAuthenticated = computed(() => auth.isAuthenticated);
 const selectedPlan = computed(() => planStore?.getSelectedPlan);
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
 const InActivePlans = computed(() => planStore.getInActivePlans);
-
 const { basic_features, standard_features, premium_features } = readonly(featureData.features);
 
 
@@ -25,7 +24,9 @@ const startChecking = (plan) => {
 };
 
 onMounted(async () => {
-  await planStore.fetchPlans();
+  if (!planStore.plansFetched) {
+    await planStore.fetchPlans();
+  }
 });
 
 </script>

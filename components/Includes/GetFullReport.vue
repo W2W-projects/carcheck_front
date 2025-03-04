@@ -8,11 +8,6 @@ const carRegistrationSearchStore = useCarRegistrationSearchStore();
 const tokenStore = useTokenStore();
 const subscriptionStore = useSubscriptionStore();
 const authStore = useAuthStore();
-const planStore = usePlanStore();
-
-// Computed properties and refs
-const vbrand_logo = computed(() => carRegistrationSearchStore.vbrand_logo);
-const vehicleImageUrl = computed(() => carRegistrationSearchStore.vehicleImageUrl);
 
 const errorMessage = ref<string | null>(null);
 const showPasswordField = ref(false);
@@ -23,7 +18,7 @@ const form = reactive({
 });
 const getFullReportButton = ref('Get full report');
 const getFullReportY = ref('Get full report');
-const hasSubscription = computed(() => subscriptionStore.hasSubscription);
+const subscriptionStatus = computed(() => subscriptionStore.getSubscriptionStatus);
 
 // Props
 const props = defineProps({
@@ -38,11 +33,7 @@ const props = defineProps({
     showForm: {
         type: Boolean,
         default: true,
-    },
-    showForm: {
-        type: Boolean,
-        default: true,
-    },
+    }
 });
 // Helper function to format date
 const reportDate = () => {
@@ -57,13 +48,16 @@ const reportDate = () => {
 const downloadReport = async () => {
     getFullReportY.value = "Downloading...";
     const isAuthenticated = tokenStore.getToken && tokenStore.getStatus;
+    const hasSubscription = await subscriptionStore.getHasSubscription();
 
     if (!isAuthenticated) {
         return navigateTo('/auth/login');
     }
 
+    if (isAuthenticated && !subscriptionStatus.value) {
+        return navigateTo('/pricing');
+    }
     try {
-        const hasSubscription = await subscriptionStore.getHasSubscription();
         const subscription = await subscriptionStore.getUserSubscription();
         // if (subscription !== null && hasSubscription && hasSubscription?.onTrial && subscription.plan?.plan_code === '48h-basic-subscription') {
         // if (subscription !== null) {
@@ -71,48 +65,35 @@ const downloadReport = async () => {
         //     return;
         // }
         const user = authStore.user;
-        let email = user?.email;
-        const userSubscription = await subscriptionStore.fetchUserSubscription(email);
 
         await carRegistrationSearchStore.fetchVehicleDimension();
         await carRegistrationSearchStore.fetchVehicleGeneralInfo();
         await carRegistrationSearchStore.fetchPerformance();
 
 
-        let car_data = [
-            { vehicleStatus: carRegistrationSearchStore.vehicleStatus },
-            { vehicleDetails: carRegistrationSearchStore.vehicleDetails },
-            { MOTHistory: carRegistrationSearchStore.MOTHistory },
-            { technicalDetails: carRegistrationSearchStore.technicalDetails },
-            { classificationDetails: carRegistrationSearchStore.classificationDetails },
-            { vehicleHistory: carRegistrationSearchStore.vehicleHistory },
-            { vehicleValuationsList: carRegistrationSearchStore.vehicleValuationsList },
-            { dimensions: carRegistrationSearchStore.dimensions },
-            { general: carRegistrationSearchStore.general },
-            { vehicleRegistration: carRegistrationSearchStore.vehicleRegistration },
-            { motVed: carRegistrationSearchStore.motVed },
-            { smmtDetails: carRegistrationSearchStore.smmtDetails },
-            { performance: carRegistrationSearchStore.performance },
-            { vbrand_logo: carRegistrationSearchStore.vbrand_logo },
-            { vehicleImageUrl: carRegistrationSearchStore.vehicleImageUrl },
-            { getFullReportText: carRegistrationSearchStore.getFullReportText },
-            { stolenRecord: carRegistrationSearchStore.stolenRecord },
-            { writeOff: carRegistrationSearchStore.writeOff },
-            { riskRecords: carRegistrationSearchStore.riskRecords },
-            { financeRecords: carRegistrationSearchStore.financeRecords }
-        ];
         if (hasSubscription?.active || hasSubscription?.request_count > 0 || user.request_count > 0) {
-            console.log("HasSub: ", hasSubscription);
-            // let report_type = '';
-            // if (subscription?.plan?.plan_code === '48h-export-subscription') {
-            //     report_type = '48h-expert-subscription';
-            // } else if (subscription?.plan?.plan_code === '48h-basic-subscription') {
-            //     report_type = '48h-basic-subscription';
-            // } else if (subscription?.plan?.plan_code === 'premium-3x') {
-            //     report_type = subscription.plan.plan_code;
-            // } else {
-            //     report_type = 'single-offer';
-            // }
+            let car_data = [
+                { vehicleStatus: carRegistrationSearchStore.vehicleStatus },
+                { vehicleDetails: carRegistrationSearchStore.vehicleDetails },
+                { MOTHistory: carRegistrationSearchStore.MOTHistory },
+                { technicalDetails: carRegistrationSearchStore.technicalDetails },
+                { classificationDetails: carRegistrationSearchStore.classificationDetails },
+                { vehicleHistory: carRegistrationSearchStore.vehicleHistory },
+                { vehicleValuationsList: carRegistrationSearchStore.vehicleValuationsList },
+                { dimensions: carRegistrationSearchStore.dimensions },
+                { general: carRegistrationSearchStore.general },
+                { vehicleRegistration: carRegistrationSearchStore.vehicleRegistration },
+                { motVed: carRegistrationSearchStore.motVed },
+                { smmtDetails: carRegistrationSearchStore.smmtDetails },
+                { performance: carRegistrationSearchStore.performance },
+                { vbrand_logo: carRegistrationSearchStore.vbrand_logo },
+                { vehicleImageUrl: carRegistrationSearchStore.vehicleImageUrl },
+                { getFullReportText: carRegistrationSearchStore.getFullReportText },
+                { stolenRecord: carRegistrationSearchStore.stolenRecord },
+                { writeOff: carRegistrationSearchStore.writeOff },
+                { riskRecords: carRegistrationSearchStore.riskRecords },
+                { financeRecords: carRegistrationSearchStore.financeRecords }
+            ];
 
             if (!subscription) {
                 errorMessage.value = "You don't have any active subscription. Please buy or upgrade plan.";
@@ -127,7 +108,6 @@ const downloadReport = async () => {
                     car_data: car_data
                 },
                 token
-                // { responseType: 'blob' }
             );
             if (response.success && response.payload) {
                 const payload = response.payload;
@@ -154,13 +134,12 @@ const downloadReport = async () => {
         getFullReportY.value = "Get full report";
         errorMessage.value = error?.data?.message || 'Error occurred during the subscription check.';
         getFullReportButton.value = "Get full report";
-    }
-    finally {
         setTimeout(() => {
             errorMessage.value = "";
             getFullReportY.value = "Get full report";
         }, 3000);
     }
+
 };
 
 const handleGetFullReport = async () => {
@@ -173,8 +152,6 @@ const handleGetFullReport = async () => {
                 const tokenStore = useTokenStore();
                 tokenStore.setToken(payload.access_token, payload.access_token);
                 await authStore.setUser(payload.user);
-                // navigateTo('payment/plans');
-                navigateTo('pricing');
                 // navigateTo('payment/plans');
                 navigateTo('pricing');
             } else {
@@ -191,6 +168,44 @@ const handleGetFullReport = async () => {
     }
 };
 
+// const handleLoginSubmit = async () => {
+//     getFullReportY.value = "Processing...";
+
+//     try {
+//         const response = await authStore.makeLogin(form);
+//         if (!response.success) {
+//             errorMessage.value = "Login failed.";
+//             getFullReportY.value = "Get full report";
+//         } else {
+//             let payload = response.payload;
+//             if (response.success) {
+//                 showPasswordField.value = false;
+//             }
+//             //make frontend log in
+//             const tokenStore = useTokenStore();
+//             tokenStore.setToken(payload.access_token, payload.access_token);
+//             await authStore.setUser(payload.user);
+
+//             if (payload.hasSubscription) {
+//                 let hasSubscription = payload.hasSubscription;
+
+//                 if (hasSubscription.active) {
+//                     downloadReport()
+//                 } else {
+//                     navigateTo('payment/plans');
+//                 }
+//             } else {
+//                 navigateTo('payment/plans');
+//             }
+//             getFullReportY.value = "Get full report";
+//         }
+//     } catch (error) {
+//         getFullReportY.value = "Get full report";
+//         errorMessage.value = error?.data?.message || 'Something went wrong. Please try again!';
+//     }
+// };
+
+
 const handleLoginSubmit = async () => {
     getFullReportY.value = "Processing...";
 
@@ -201,22 +216,15 @@ const handleLoginSubmit = async () => {
             getFullReportY.value = "Get full report";
         } else {
             let payload = response.payload;
-            if (response.success) {
-                showPasswordField.value = false;
-            }
-            //make frontend log in
+            showPasswordField.value = false;
+
+            // Make frontend log in
             const tokenStore = useTokenStore();
             tokenStore.setToken(payload.access_token, payload.access_token);
             await authStore.setUser(payload.user);
 
-            if (payload.hasSubscription) {
-                let hasSubscription = payload.hasSubscription;
-
-                if (hasSubscription.active) {
-                    downloadReport()
-                } else {
-                    navigateTo('payment/plans');
-                }
+            if (payload.hasSubscription?.active) {
+                downloadReport();
             } else {
                 navigateTo('payment/plans');
             }

@@ -17,12 +17,11 @@ const moreFeatures = async () => {
       "id": 9, "title": "Technical data", "icon": "technical-data.svg"
     },
     {
-      "id": 10, "title": "Vehicle Valuation", "icon": "mileage-history-1.svg"
+      "id": 10, "title": "Vehicle Valuation", "icon": "mileage-history.svg"
     }
   );
   isAddMoreBtnHidden.value = true;
 }
-const baseURL = import.meta.env.VITE_BASE_URL;
 </script>
 
 <template>

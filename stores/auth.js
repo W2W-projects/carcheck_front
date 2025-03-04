@@ -69,6 +69,7 @@ export const useAuthStore = defineStore("auth", {
         localStorage.clear();
         sessionStorage.clear();
 
+        // Clear all cookies
         document.cookie.split(";").forEach((c) => {
           document.cookie = c
             .replace(/^ +/, "")
@@ -78,10 +79,29 @@ export const useAuthStore = defineStore("auth", {
             );
         });
 
+        // Clear all types of cache
         if ("caches" in window) {
+          // Clear Cache Storage API
           caches.keys().then((names) => {
             names.forEach((name) => caches.delete(name));
           });
+        }
+
+        // Clear Application Cache (if available)
+        if (window.applicationCache) {
+          window.applicationCache.abort();
+        }
+
+        // Clear Service Worker Cache
+        if (navigator.serviceWorker) {
+          navigator.serviceWorker.getRegistrations().then((registrations) => {
+            registrations.forEach((registration) => registration.unregister());
+          });
+        }
+
+        // Clear Memory Cache and Browser Cache
+        if (window.performance && window.performance.clearResourceTimings) {
+          window.performance.clearResourceTimings();
         }
 
         carRegistrationSearchStore.$reset();

@@ -4,13 +4,13 @@
             {
                 "id": 1,
                 "title": "Damage Check",
-                "icon": "damage-check-icon.svg",
+                "icon": "damage-check.svg",
                 "slug": "damage-check"
             },
             {
                 "id": 2,
                 "title": "Owners History",
-                "icon": "history-owner.svg",
+                "icon": "owner-history.svg",
                 "slug": "owners-history"
             },
             {
@@ -34,7 +34,7 @@
             {
                 "id": 6,
                 "title": "MOT History",
-                "icon": "check-Mot.svg",
+                "icon": "mot-history.svg",
                 "slug": "mot-history"
             }
         ],

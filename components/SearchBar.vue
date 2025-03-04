@@ -139,7 +139,7 @@ const searchForCarReg = async () => {
         class="bg-[#0F1829] py-1 px-2 rounded hover:bg-white md:hover:bg-transparent md:dark:hover:bg-transparent"
         :class="[props.buttonClass]">
         <template v-if="searchTxt">
-          <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+          <svg class="w-5 h-5 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"
             viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor"
@@ -151,12 +151,12 @@ const searchForCarReg = async () => {
       </button>
     </div>
     <div v-if="errors && errors.length && Array.isArray(errors)"
-      class="alert alert-danger absolute text-center bg-white rounded-b px-6 py-4 transition-all duration-300">
+      class="absolute px-6 py-4 text-center transition-all duration-300 bg-white rounded-b alert alert-danger">
       <ul v-if="Array.isArray(errors)">
         <li v-for="error in errors" :key="error">{{ error }}</li>
       </ul>
     </div>
-    <div class="alert alert-danger absolute text-center bg-white rounded-b px-6 py-4 transition-all duration-300"
+    <div class="absolute px-6 py-4 text-center transition-all duration-300 bg-white rounded-b alert alert-danger"
       style="line-height: 1rem;" v-if="errorMessage">
       <small>{{ errorMessage }}</small>
     </div>

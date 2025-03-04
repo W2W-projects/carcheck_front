@@ -30,9 +30,9 @@ let elements: StripeElements;
 let cardNumberElement: StripeCardNumberElement;
 let cardExpiryElement: StripeCardExpiryElement;
 let cardCvcElement: StripeCardCvcElement;
-const errorMessage = ref < string | null > (null);
-const successMessage = ref < string | null > (null);
-const formValidationMessage = ref < string | null > (null);
+const errorMessage = ref<string | null>(null);
+const successMessage = ref<string | null>(null);
+const formValidationMessage = ref<string | null>(null);
 const customerId = ref('');
 const paymentMethodId = ref('');
 
@@ -296,7 +296,7 @@ async function createSubscription(selectedPlan) {
         //     navigateTo('/vehicle/single-offer-report');
         // }
         setTimeout(() => {
-            successMessage.value = "Payment done successfully.";
+            successMessage.value = "Payment successful.";
             navigateTo('/report');
         }, 3000);
         buttonProcess.value = "REDIRECTING!";
@@ -334,34 +334,34 @@ watch(errorMessage, (newErrorMessage) => {
             <span class="alert alert-danger">{{ errorMessage }}</span>
         </div>
 
-        <div class="mb-4 w-full">
+        <div class="w-full mb-4">
             <label for="cardholder-name" class="block mb-2 text-sm">Cardholder's Name</label>
             <div class="flex items-center py-1 border-2 border-[#0F1829] rounded-lg w-full overflow-hidden ">
                 <div class="px-3 border-r border-black">
                     <img src="/assets/svg/cardName.svg" alt="" />
                 </div>
                 <input v-model="cardholderName" type="text" id="cardholder-name" placeholder="John Strawzen"
-                    class="w-full md:p-3 p-2  uppercase focus:border-none focus:outline-none bg-transparent active:border-none active:outline-none focus:ring-0 focus:ring-offset-0" />
+                    class="w-full p-2 uppercase bg-transparent md:p-3 focus:border-none focus:outline-none active:border-none active:outline-none focus:ring-0 focus:ring-offset-0" />
             </div>
         </div>
-        <div class="mb-4 w-full">
+        <div class="w-full mb-4">
             <label for="card-number-element" class="block mb-2 text-sm">Card Number</label>
             <div class="flex items-center py-2 border-2 border-[#0F1829] rounded-lg overflow-hidden ">
                 <div class="px-3 border-r border-black">
                     <img src="/assets/svg/cardNumber.svg" alt="" />
                 </div>
-                <div id="card-number-element" class="md:p-3 p-2  border-none w-full">
+                <div id="card-number-element" class="w-full p-2 border-none md:p-3">
                 </div>
             </div>
         </div>
-        <div class="flex mb-4 space-x-3 w-full">
+        <div class="flex w-full mb-4 space-x-3">
             <div class="w-1/2">
                 <label for="card-expiry-element" class="block mb-2 text-sm">Expiry</label>
                 <div class="flex items-center py-2 border-2 border-[#0F1829] rounded-lg overflow-hidden ">
                     <div class="px-5 border-r border-black">
                         <img src="/assets/svg/cardExpiry.svg" alt="" class="scale-150" />
                     </div>
-                    <div id="card-expiry-element" class="md:p-3 p-2  border-none w-full">
+                    <div id="card-expiry-element" class="w-full p-2 border-none md:p-3">
                     </div>
                 </div>
             </div>
@@ -373,7 +373,7 @@ watch(errorMessage, (newErrorMessage) => {
                         <img src="/assets/svg/cardCvv.svg" alt="" />
 
                     </div> -->
-                    <div id="card-cvc-element" class="md:p-3 p-2  border-none w-full">
+                    <div id="card-cvc-element" class="w-full p-2 border-none md:p-3">
                     </div>
                 </div>
             </div>
@@ -390,18 +390,18 @@ watch(errorMessage, (newErrorMessage) => {
             </label>
         </div>
 
-        <div v-if="formValidationMessage" class="text-red-500 mt-2">
+        <div v-if="formValidationMessage" class="mt-2 text-red-500">
             {{ formValidationMessage }}
         </div>
 
-        <div class="flex items-centder justify-dcenter h-12 mt-5">
+        <div class="flex items-center justify-center h-12 mt-5">
             <div v-if="successMessage"
-                class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                class="relative px-4 py-3 text-green-700 bg-green-100 border border-green-400 rounded" role="alert">
                 <span class="block sm:inline">{{ successMessage }}</span>
                 <br>
             </div>
-            <button type="submit" class="w-full px-3 py-3 text-lg font-bold text-center text-white rounded-lg hover:bg-primary/90
-                                    focus:ring-4 focus:outline-none focus:ring-blue-300 bg-primary">
+            <button v-else type="submit"
+                class="w-full px-3 py-3 text-lg font-bold text-center text-white rounded-lg hover:bg-primary/90 focus:ring-4 focus:outline-none focus:ring-blue-300 bg-primary">
                 {{ buttonProcess }}
             </button>
         </div>
@@ -410,7 +410,7 @@ watch(errorMessage, (newErrorMessage) => {
             class="absolute w-[25.5rem] h-[30.5rem] top-80 bg-white z-10 flex items-center justify-center p-5">
             <p class="text-red-500 ">{{ errorMessage }}</p>
             <span
-                class="absolute top-5 right-5 rounded-full  bg-red-500 h-7 w-7 flex items-center justify-center cursor-pointer hover:bg-red-600"
+                class="absolute flex items-center justify-center bg-red-500 rounded-full cursor-pointer top-5 right-5 h-7 w-7 hover:bg-red-600"
                 @click="resetError">
                 <font-awesome-icon :icon="faTimes" class="text-white" />
             </span>
