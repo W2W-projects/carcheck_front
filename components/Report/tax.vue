@@ -1,14 +1,6 @@
 <script lang="ts" setup>
-import Hashed from '@/components/Includes/Hashed.vue';
-import { useAuthStore } from '~/stores/auth';
-
-const authStore = useAuthStore();
-const user = computed(() => authStore.user);
-
 const isTableVisible = ref(true);
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
-const subscriptionStore = useSubscriptionStore();
-const hasSubscription = computed(() => subscriptionStore.hasSubscription);
 
 const MOTVed = computed(() => carRegistrationSearchStore.motVed);
 const vehicleRegistration = computed(() => carRegistrationSearchStore.vehicleRegistration);
@@ -38,7 +30,7 @@ const co2Bands = [
   { label: "L", min: 226, max: Infinity, color: "#E01E20", co2Value: 226 },
 ];
 
-function setco2label(value: number | null) {
+function setCo2label(value: number | null) {
   co2label.value = value;
 }
 
@@ -50,16 +42,16 @@ onMounted(async () => {
   const emissions = MOTVed.value?.VedCo2Emissions ?? vehicleRegistration.value?.Co2Emissions;
 
   if (emissions !== undefined && emissions !== null) {
-    setco2label(emissions);
+    setCo2label(emissions);
   }
 });
 </script>
 
 <template>
   <report-wrapper class="py-9">
-    <div class=" text-black flex items-center justify-between">
+    <div class="flex items-center justify-between text-black ">
       <div class="flex items-center space-x-4 cursor-pointer" @click.prevent="toggleTableVisibility">
-        <p class="text-2xl font-bold flex items-center justify-center">TAX CALCULATION</p>
+        <p class="flex items-center justify-center text-2xl font-bold">TAX CALCULATION</p>
         <span>
           <img v-if="isTableVisible" src="/svg/chev-down.svg" alt="">
           <img v-else src="/svg/chev-up.svg" alt="">
@@ -69,7 +61,7 @@ onMounted(async () => {
 
     <div v-show="isTableVisible" class="text-black space-y-14">
       <div>
-        <table class="w-full text-black mt-8">
+        <table class="w-full mt-8 text-black">
           <tbody>
             <tr>
               <th>Vehicle class</th>
@@ -83,19 +75,19 @@ onMounted(async () => {
         </table>
       </div>
 
-      <div v-if="co2label !== null" class="flex items-center justify-center relative lg:px-20 mt-20">
+      <div v-if="co2label !== null" class="relative flex items-center justify-center mt-20 lg:px-20">
         <div class="grid grid-cols-7 gap-0 relative w-[70rem]">
           <div v-for="band in co2Bands" :key="band.label" :class="getClass(band.min, band.max)"
             :style="{ backgroundColor: band.color }"
-            class="flex flex-col items-center text-center space-y-3 text-2xl relative"
-            @click="setco2label(band.co2Value)">
+            class="relative flex flex-col items-center space-y-3 text-2xl text-center"
+            @click="setCo2label(band.co2Value)">
 
             <div v-if="isClassActive(band.min, band.max)"
               class="hidden lg:block absolute -top-6 bg-black scale-[106%] text-white text-sm py-1 w-full text-center">
               YOUR LABEL
             </div>
 
-            <div class="text-white font-bold border-b w-full">{{ band.label }}</div>
+            <div class="w-full font-bold text-white border-b">{{ band.label }}</div>
             <div class="text-white">{{ band.min }}</div>
             <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M1 1L6 6" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />

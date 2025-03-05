@@ -20,13 +20,14 @@ const subscription = computed(() => subscriptionStore.subscription);
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
 const financeRecords = computed(() => carRegistrationSearchStore.financeRecords);
 
-const finRecordList = ref([]);
+
+const finance = ref([]);
 
 onMounted(async () => {
   try {
     await carRegistrationSearchStore.fetchFinanceRecords();
     if (financeRecords.value && financeRecords.value['FinanceRecordCount'] > 0) {
-      finRecordList.value = financeRecords.value['FinanceRecordList'];
+      finance.value = financeRecords.value['FinanceRecordList'];
     }
   } catch (error) {
     console.error('Error fetching finance records:', error);
@@ -130,63 +131,80 @@ function isShowable() {
         </thead>
         <tbody>
           <template v-if="isShowable()">
-            <tr>
+            <tr v-if="finance && finance.length > 0">
               <th>Agreement Date</th>
-              <td>{{ formatDate(finance.AgreementDate) }}</td>
+              <td>{{ finance[0]?.AgreementDate ? formatDate(finance[0].AgreementDate) : 'Not available' }}</td>
             </tr>
-            <tr>
+            <tr v-if="finance && finance.length > 0">
               <th>Agreement Type</th>
-              <td>{{ finance.AgreementType }}</td>
+              <td>{{ finance[0]?.AgreementType || 'Not available' }}</td>
             </tr>
-            <tr>
+            <tr v-if="finance && finance.length > 0">
               <th>Term (months)</th>
-              <td>{{ finance.AgreementTerm }}</td>
+              <td>{{ finance[0]?.AgreementTerm || 'Not available' }}</td>
             </tr>
-            <tr>
+            <tr v-if="finance && finance.length > 0">
               <th>Agreement Number</th>
-              <td>{{ finance.AgreementNumber }}</td>
+              <td>{{ finance[0]?.AgreementNumber || 'Not available' }}</td>
             </tr>
-            <tr>
+            <tr v-if="finance && finance.length > 0">
               <th>Finance Company</th>
-              <td>{{ finance.FinanceCompany }}</td>
+              <td>{{ finance[0]?.FinanceCompany || 'Not available' }}</td>
             </tr>
-            <tr>
+            <tr v-if="finance && finance.length > 0">
               <th>Contact Number</th>
-              <td>{{ finance.ContactNumber }}</td>
+              <td>{{ finance[0]?.ContactNumber || 'Not available' }}</td>
             </tr>
-            <tr>
+            <tr v-if="finance && finance.length > 0">
               <th>Vehicle Description</th>
-              <td>{{ finance.VehicleDescription }}</td>
+              <td>{{ finance[0]?.VehicleDescription || 'Not available' }}</td>
+            </tr>
+            <tr v-if="!finance || finance.length === 0">
+              <td colspan="2" class="w-full py-3 text-center">No finance information available</td>
             </tr>
           </template>
           <template v-else>
             <tr>
               <th>Agreement Date</th>
-              <td><hashed /></td>
+              <td>
+                <hashed />
+              </td>
             </tr>
             <tr>
               <th>Agreement Type</th>
-              <td><hashed /></td>
+              <td>
+                <hashed />
+              </td>
             </tr>
             <tr>
               <th>Term (months)</th>
-              <td><hashed /></td>
+              <td>
+                <hashed />
+              </td>
             </tr>
             <tr>
               <th>Agreement Number</th>
-              <td><hashed /></td>
+              <td>
+                <hashed />
+              </td>
             </tr>
             <tr>
               <th>Finance Company</th>
-              <td><hashed /></td>
+              <td>
+                <hashed />
+              </td>
             </tr>
             <tr>
               <th>Contact Number</th>
-              <td><hashed /></td>
+              <td>
+                <hashed />
+              </td>
             </tr>
             <tr>
               <th>Vehicle Description</th>
-              <td><hashed /></td>
+              <td>
+                <hashed />
+              </td>
             </tr>
           </template>
         </tbody>
