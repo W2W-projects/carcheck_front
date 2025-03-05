@@ -112,7 +112,7 @@ function isShowable() {
       <table class="w-full mt-6 text-black">
         <thead>
           <tr class="header-row">
-            <th colspan="7">
+            <th colspan="2">
               <div class="flex items-center justify-between w-full">
                 <p>FINANCE CHECK</p>
                 <svg width="24" height="23" viewBox="0 0 24 23" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -124,61 +124,76 @@ function isShowable() {
                     d="M12 8.11194C11.2309 8.11194 10.4791 8.34001 9.83957 8.7673C9.20008 9.19459 8.70166 9.80192 8.40734 10.5125C8.11301 11.223 8.036 12.0049 8.18605 12.7593C8.3361 13.5136 8.70646 14.2065 9.2503 14.7503C9.79414 15.2942 10.487 15.6645 11.2414 15.8146C11.9957 15.9646 12.7776 15.8876 13.4881 15.5933C14.1987 15.299 14.806 14.8005 15.2333 14.161C15.6606 13.5216 15.8887 12.7697 15.8887 12.0006C15.8874 10.9697 15.4774 9.98127 14.7484 9.25227C14.0193 8.52327 13.031 8.11317 12 8.11194V8.11194ZM12 14.3338C11.5385 14.3338 11.0874 14.197 10.7037 13.9406C10.3201 13.6842 10.021 13.3198 9.8444 12.8935C9.66781 12.4672 9.6216 11.998 9.71163 11.5454C9.80166 11.0928 10.0239 10.6771 10.3502 10.3508C10.6765 10.0245 11.0922 9.80227 11.5448 9.71224C11.9974 9.62221 12.4665 9.66842 12.8929 9.84501C13.3192 10.0216 13.6836 10.3207 13.94 10.7044C14.1964 11.088 14.3332 11.5391 14.3332 12.0006C14.3332 12.6194 14.0874 13.2129 13.6498 13.6504C13.2123 14.088 12.6188 14.3338 12 14.3338Z"
                     fill="white" />
                 </svg>
-
               </div>
-
             </th>
-          </tr>
-          <tr>
-            <th>Agreement Date</th>
-            <th>Agreement Type</th>
-            <th>Term (months)</th>
-            <th>Agreement Number</th>
-            <th>Finance Company</th>
-            <th>Contact Number</th>
-            <th>Vehicle Description</th>
           </tr>
         </thead>
         <tbody>
-
-          <tr v-for="(finance, key) in finRecordList" :key="key" v-if="isShowable()">
-            <td>{{ formatDate(finance.AgreementDate) }}</td>
-            <td>{{ finance.AgreementType }}</td>
-            <td>{{ finance.AgreementTerm }}</td>
-            <td>{{ finance.AgreementNumber }}</td>
-            <td>{{ finance.FinanceCompany }}</td>
-            <td>{{ finance.ContactNumber }}</td>
-            <td>{{ finance.VehicleDescription }}</td>
-          </tr>
-          <tr v-else>
-            <td>
-              <hashed />
-            </td>
-            <td>
-              <hashed />
-            </td>
-            <td>
-              <hashed />
-            </td>
-            <td>
-              <hashed />
-            </td>
-            <td>
-              <hashed />
-            </td>
-            <td>
-              <hashed />
-            </td>
-            <td>
-              <hashed />
-            </td>
-          </tr>
+          <template v-if="isShowable()">
+            <tr>
+              <th>Agreement Date</th>
+              <td>{{ formatDate(finance.AgreementDate) }}</td>
+            </tr>
+            <tr>
+              <th>Agreement Type</th>
+              <td>{{ finance.AgreementType }}</td>
+            </tr>
+            <tr>
+              <th>Term (months)</th>
+              <td>{{ finance.AgreementTerm }}</td>
+            </tr>
+            <tr>
+              <th>Agreement Number</th>
+              <td>{{ finance.AgreementNumber }}</td>
+            </tr>
+            <tr>
+              <th>Finance Company</th>
+              <td>{{ finance.FinanceCompany }}</td>
+            </tr>
+            <tr>
+              <th>Contact Number</th>
+              <td>{{ finance.ContactNumber }}</td>
+            </tr>
+            <tr>
+              <th>Vehicle Description</th>
+              <td>{{ finance.VehicleDescription }}</td>
+            </tr>
+          </template>
+          <template v-else>
+            <tr>
+              <th>Agreement Date</th>
+              <td><hashed /></td>
+            </tr>
+            <tr>
+              <th>Agreement Type</th>
+              <td><hashed /></td>
+            </tr>
+            <tr>
+              <th>Term (months)</th>
+              <td><hashed /></td>
+            </tr>
+            <tr>
+              <th>Agreement Number</th>
+              <td><hashed /></td>
+            </tr>
+            <tr>
+              <th>Finance Company</th>
+              <td><hashed /></td>
+            </tr>
+            <tr>
+              <th>Contact Number</th>
+              <td><hashed /></td>
+            </tr>
+            <tr>
+              <th>Vehicle Description</th>
+              <td><hashed /></td>
+            </tr>
+          </template>
         </tbody>
       </table>
-      <div class="bg-[#FF7400] w-full flex items-center justify-center py-2">
-        <h3 class="text-xl font-semibold">Lorem ipsum dolor sit amet.
-          <a href="#" class="underline">Check the full
-            report</a>
+      <div v-if="!hasSubscription" class="bg-[#FF7400] w-full flex items-center justify-center py-2">
+        <h3 class="text-xl font-semibold">Unlock finance data with the
+          <a href="#" class="underline">full report</a>
         </h3>
       </div>
     </div>

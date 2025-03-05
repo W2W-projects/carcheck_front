@@ -1,7 +1,6 @@
 <script setup>
 import { useCarRegistrationSearchStore } from "@/stores/carRegistrationSearch";
 import { useCarStore } from "~/stores/car";
-import { width } from "@fortawesome/free-solid-svg-icons/fa0";
 const router = useRouter();
 const carRegistrationSearch = useCarRegistrationSearchStore();
 const carStore = useCarStore();
@@ -125,8 +124,8 @@ const searchForCarReg = async () => {
 
   } catch (error) {
     if (!error?.data?.success) {
-// let sub = subscription.value;
-// if(hasSubscription.active==true){
+      // let sub = subscription.value;
+      // if(hasSubscription.active==true){
       // }
     }
 

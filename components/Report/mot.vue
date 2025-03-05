@@ -12,7 +12,7 @@ const subscriptionStore = useSubscriptionStore();
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
 
 const totalMotChecks = ref(0);
-const failPercentage = ref(null);
+const failPercentage = ref(0);
 const lastMotDate = ref(null);
 const expiryDate = ref(null);
 const totalAdviceItems = ref(0);
@@ -239,7 +239,6 @@ function setDefaultMotRecord() {
   mostRecentMOT.value = motHistory.value[motHistoryIndex.value];
   clickedMotHistory.value = motHistoryIndex.value;
 }
-
 </script>
 
 <template>
@@ -273,13 +272,13 @@ function setDefaultMotRecord() {
         <div>
           <p>Total MOT checks</p>
           <small><span class="font-extralight">Last MOT:</span> {{ mostRecentMOT ? mostRecentMOT['TestDate'] : ''
-          }}</small>
+            }}</small>
         </div>
         <h3 class="text-3xl">{{ totalMotChecks }}</h3>
       </div>
       <!-- ------------------------------- -->
       <div class="flex flex-col items-center justify-start flex-1 space-y-1">
-        <p>Lorem ipsum dolor sit amet.</p>
+        <p v-if="!hasSubscription">Unlock more MOT reports on the <a href="#" class="underline">full report</a></p>
         <Includes-get-full-report get-full-report="Get full report"></Includes-get-full-report>
       </div>
       <!-- ------------------------------- -->
@@ -300,7 +299,7 @@ function setDefaultMotRecord() {
           <table class="w-full mt-6 text-black">
             <thead>
               <tr class="header-row">
-                <th colspan="2" class="bg-[#f9f9f9]">
+                <th colspan="2">
                   OVERVIEW
                 </th>
               </tr>
@@ -468,7 +467,7 @@ td {
 }
 
 th {
-  font-weight: bold;
+  font-weight: 500;
   padding: 0.25rem 1.5rem;
 }
 
@@ -477,7 +476,7 @@ td {
   font-weight: 100;
 }
 
-tr:nth-child(even) {
+/* tr:nth-child(even) {
   background-color: #f9f9f9;
-}
+} */
 </style>

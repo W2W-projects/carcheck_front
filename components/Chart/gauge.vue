@@ -1,6 +1,18 @@
 <template>
-  <div :class="props.class">
+  <div :class="props.class" class="relative">
     <canvas ref="chartCanvas" :height="height" :width="width"></canvas>
+    <div class="absolute bottom-[10%] flex items-center justify-center w-full -translate-x-1/2 left-1/2">
+      <div class="flex items-center justify-center gap-4 mt-4 text-sm">
+        <div class="flex items-center">
+          <div class="w-3 h-3 rounded-full bg-[#FF9F29] mr-2"></div>
+          <small>Pass Rate ({{ passRate }})</small>
+        </div>
+        <div class="flex items-center">
+          <div class="w-3 h-3 rounded-full bg-[#FF4646] mr-2"></div>
+          <small>Fail Rate ({{ failRate }})</small>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -25,6 +37,8 @@ const width = computed(() => convertToNumber(props.width, 150));
 const failRate = computed(() => convertToNumber(props.failRate, 0));
 const passRate = computed(() => 100 - failRate.value);
 
+console.log(failRate.value, passRate.value);
+
 function convertToNumber(value: any, defaultValue: number) {
   if (typeof value === 'string' && value.includes('%')) {
     return value;
@@ -43,45 +57,28 @@ onMounted(() => {
     const data = {
       datasets: [
         {
-          data: [passRate.value, failRate.value, 100 - totalRate], // Data for the gauge
-          backgroundColor: ['#F2A03D', '#F94144', '#E5E7EB'], // Colors for pass, fail, and empty space
-          borderWidth: 0, // No border
-          circumference: 180, // Half circle
-          rotation: -90, // Rotate to start at the top
+          data: [passRate.value, failRate.value], // Two segments for pass and fail rates
+          backgroundColor: ['#FF9F29', '#FF4646'], // Orange for pass, red for fail
+          borderWidth: 0,
+          circumference: 180,
+          rotation: 270,
         },
       ],
     };
 
     const options = {
       responsive: true,
-      cutout: '70%', // Makes it look like a gauge
+      cutout: '65%',
       plugins: {
         legend: {
-          display: true,
-          position: 'bottom',
-          labels: {
-            usePointStyle: true, // Use dots instead of squares for legend items
-            pointStyle: 'circle',
-            generateLabels() {
-              return [
-                {
-                  text: `Fail rate (${failRate.value})`,
-                  fillStyle: '#F94144',
-                },
-                {
-                  text: `Pass rate (${passRate.value})`,
-                  fillStyle: '#F2A03D',
-                },
-              ];
-            },
-          },
+          display: false,
         },
         tooltip: {
-          enabled: false, // Disable tooltips
+          enabled: false,
         },
       },
       hover: {
-        mode: null,
+        mode: undefined,
       },
       animation: {
         onComplete() {
@@ -91,70 +88,81 @@ onMounted(() => {
 
           const ctx = chartInstance.ctx;
           const centerX = (chartInstance.chartArea.left + chartInstance.chartArea.right) / 2;
-          const centerY = chartInstance.chartArea.bottom - 100; // Adjusted position for needle pivot
-          const chartRadius = chartInstance.innerRadius || 100; // Fallback for innerRadius
+          const centerY = chartInstance.chartArea.bottom - 100;
+          const chartRadius = Math.min(chartInstance.chartArea.right - chartInstance.chartArea.left,
+            chartInstance.chartArea.bottom - chartInstance.chartArea.top) / 2;
 
-          // Corrected: Needle should point at the midpoint between passRate and failRate (relative to 180° half-circle)
-          const midpointRate = (passRate.value + 0.5) / 100; // Add 0.5 to place needle between passRate and failRate
-          const needleAngle = (-Math.PI / 2) + (Math.PI * midpointRate); // Proportionally calculate angle for the half-circle
-
-
-          const needleLength = chartRadius + 25; // Needle length relative to radius
-
-          // Needle endpoint coordinates
-          const needleX = centerX + needleLength * Math.cos(needleAngle - Math.PI / 2);
-          const needleY = centerY + needleLength * Math.sin(needleAngle - Math.PI / 2);
-
-          // Clear previous drawings
-          ctx.clearRect(0, 0, chartInstance.width, chartInstance.height);
-
-          // Redraw the gauge chart
+          // Clear and redraw
+          ctx.save();
           chartInstance.draw();
 
-          // Draw the needle
-          ctx.save();
-          ctx.beginPath();
-          ctx.moveTo(centerX, centerY); // Start from the center bottom
-          ctx.lineTo(needleX, needleY); // Draw to the needle's end point
-          ctx.lineWidth = 4; // Adjusted needle thickness
-          ctx.lineCap = 'round'; // Rounded needle tip
-          ctx.lineDashOffset = 1; // No dash offset
-          ctx.strokeStyle = '#000'; // Needle color
-          ctx.stroke();
-          ctx.restore();  // Draw the needle
+          // Draw percentage labels on the gauge
+          const fontSize = Math.max(16, Math.min(20, chartRadius / 4));
+          ctx.font = `bold ${fontSize}px Arial`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = '#FFFFFF'; // White text for better visibility on colored sections
 
-          // Draw the needle
-          ctx.save();
-          ctx.beginPath();
-          ctx.moveTo(centerX, centerY + 8); // Start from the center bottom
-          ctx.lineTo(needleX, needleY); // Draw to the needle's end point
-          ctx.lineWidth = 4; // Adjusted needle thickness
-          ctx.lineCap = 'round'; // Rounded needle tip
-          ctx.lineDashOffset = 1; // No dash offset
-          ctx.strokeStyle = '#000'; // Needle color
-          ctx.stroke();
-          ctx.restore();  // Draw the needle
+          // Calculate angles for label positioning
+          // For pass rate: center angle is at (passRate/2) degrees from left
+          const passCenter = Math.PI - (Math.PI * (passRate.value / 200)); // Divide by 200 to get midpoint
+          // For fail rate: center angle is at (failRate/2) degrees from right
+          const failCenter = Math.PI * (failRate.value / 200);
 
-          // Draw the needle
-          ctx.save();
-          ctx.beginPath();
-          ctx.moveTo(centerX, centerY - 8); // Start from the center bottom
-          ctx.lineTo(needleX, needleY); // Draw to the needle's end point
-          ctx.lineWidth = 4; // Adjusted needle thickness
-          ctx.lineCap = 'round'; // Rounded needle tip
-          ctx.lineDashOffset = 1; // No dash offset
-          ctx.strokeStyle = '#000'; // Needle color
-          ctx.stroke();
-          ctx.restore();  // Draw the needle
+          // Position labels in the middle of their sections
+          const labelRadius = chartRadius * 0.85;
 
-          // Draw the needle's pivot point (center circle)
+          // Draw pass rate label (in orange section)
+          const passLabelX = centerX + labelRadius * Math.cos(passCenter);
+          const passLabelY = centerY - labelRadius * Math.sin(passCenter);
+          ctx.fillText(passRate.value.toString() + '%', passLabelX, passLabelY);
+
+          // Draw fail rate label (in red section)
+          const failLabelX = centerX + labelRadius * Math.cos(failCenter);
+          const failLabelY = centerY - labelRadius * Math.sin(failCenter);
+          ctx.fillText(failRate.value.toString() + '%', failLabelX, failLabelY);
+
+          // Calculate needle angle based on the fail rate
+          const needleAngle = Math.PI * (failRate.value / 100);
+          const needleLength = chartRadius * 0.6;
+          const circleRadius = 8; // Base circle radius
+
+          // Calculate needle endpoint
+          const needleX = centerX + needleLength * Math.cos(needleAngle);
+          const needleY = centerY - needleLength * Math.sin(needleAngle);
+
+          // Draw the needle with triangular shape
           ctx.beginPath();
-          ctx.arc(centerX, centerY, 10, 0, Math.PI * 2); // Circle at the bottom
-          ctx.fillStyle = '#000'; // Circle color
+
+          // Calculate base points of the triangle
+          const baseAngle = needleAngle + Math.PI / 2; // Perpendicular to needle angle
+          const baseWidth = circleRadius; // Match circle radius
+          const baseX1 = centerX + baseWidth * Math.cos(baseAngle);
+          const baseY1 = centerY - baseWidth * Math.sin(baseAngle);
+          const baseX2 = centerX + baseWidth * Math.cos(baseAngle + Math.PI);
+          const baseY2 = centerY - baseWidth * Math.sin(baseAngle + Math.PI);
+
+          // Draw triangular needle
+          ctx.beginPath();
+          ctx.moveTo(baseX1, baseY1);
+          ctx.lineTo(needleX, needleY);
+          ctx.lineTo(baseX2, baseY2);
+          ctx.closePath();
+
+          // Fill with gradient for 3D effect
+          const needleGradient = ctx.createLinearGradient(centerX, centerY, needleX, needleY);
+          needleGradient.addColorStop(0, '#2B2B2B');
+          needleGradient.addColorStop(1, '#000000');
+          ctx.fillStyle = needleGradient;
           ctx.fill();
 
-          drawSegmentPercentage(ctx, centerX, centerY, chartRadius);
+          // Draw the center circle
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, circleRadius, 0, Math.PI * 2);
+          ctx.fillStyle = '#000000';
+          ctx.fill();
 
+          ctx.restore();
         },
       },
       events: [],
@@ -167,47 +175,6 @@ onMounted(() => {
     });
   }
 });
-
-function drawSegmentPercentage(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, chartRadius: number) {
-  ctx.font = 'bold 14px Arial'; // Set larger font for visibility
-  ctx.fillStyle = '#fff'; // Set text color to black for visibility
-  ctx.textAlign = 'center'; // Center align the text
-
-  // Calculate positions for pass and fail percentages
-  const passX = centerX - (chartRadius / 2 * 3.25); // Adjust X position for pass percentage
-  const passY = centerY - (chartRadius / 4); // Adjust Y position for pass percentage
-  ctx.fillText(`${passRate.value}%`, passX, passY);
-
-  const failX = centerX + (chartRadius / 2 * 3.25); // Adjust X position for fail percentage
-  const failY = centerY - (chartRadius / 4); // Adjust Y position for fail percentage
-  ctx.fillText(`${failRate.value}%`, failX, failY);
-}
-
-// function drawSegmentPercentage(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, chartRadius: number) {
-//   // Get the screen width
-//   const screenWidth = window.innerWidth;
-
-//   // Adjust font size dynamically based on the screen width
-//   let fontSize = screenWidth / 50; // Adjust font size based on the screen width
-//   if (fontSize < 12) fontSize = 12; // Minimum font size for small screens
-//   if (fontSize > 24) fontSize = 14; // Maximum font size for large screens
-
-//   ctx.font = `bold ${fontSize}px Arial`;
-//   ctx.fillStyle = '#fff'; // Set text color to white for visibility
-//   ctx.textAlign = 'center'; // Center align the text
-
-//   // Dynamically calculate the horizontal (X) offset based on the screen size
-//   const dynamicOffset = screenWidth / 9; // Dynamic offset for positioning the text
-
-//   // Calculate positions for pass and fail percentages with dynamic X adjustment
-//   const passX = centerX - dynamicOffset; // Dynamically adjust X position for pass percentage
-//   const passY = centerY - (chartRadius / 4); // Adjust Y position for pass percentage
-//   ctx.fillText(`${passRate.value}%`, passX, passY);
-
-//   const failX = centerX + dynamicOffset; // Dynamically adjust X position for fail percentage
-//   const failY = centerY - (chartRadius / 4); // Adjust Y position for fail percentage
-//   ctx.fillText(`${failRate.value}%`, failX, failY);
-// }
 
 </script>
 

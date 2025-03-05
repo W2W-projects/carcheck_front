@@ -112,7 +112,7 @@ watch(vehicleHistory, (newHistory) => {
     </div>
     <div v-show="isTableVisible" class="space-y-4 text-black">
       <div class="grid grid-cols-1 mt-10 lg:grid-cols-3 gap-x-5 gap-y-5 lg:gap-y-0">
-        <div class="bg-[#EEEEEE] rounded flex items-center overflow-hidden h-[10.5rem]">
+        <div class="bg-white rounded flex items-center overflow-hidden h-[10.5rem]">
           <div class="flex flex-col items-center w-1/2">
             <h2 class="text-7xl font-bold text-[#FFA500]">
               <span v-if="isShowable()">{{ numberOfPreviousKeepers > 9 ? numberOfPreviousKeepers : '0' +
@@ -149,7 +149,7 @@ watch(vehicleHistory, (newHistory) => {
             </svg>
           </div>
         </div>
-        <div class="bg-[#EEEEEE] rounded flex items-center overflow-hidden h-[10.5rem]">
+        <div class="bg-white rounded flex items-center overflow-hidden h-[10.5rem]">
           <div class="flex flex-col items-center w-1/2">
             <h2 class="text-7xl font-bold text-[#EF343A]">
               <span v-if="isShowable()">{{ theftReports > 9 ? theftReports : '0' + theftReports }}</span>
@@ -179,7 +179,7 @@ watch(vehicleHistory, (newHistory) => {
             </svg>
           </div>
         </div>
-        <div class="bg-[#EEEEEE] rounded flex items-center overflow-hidden h-[10.5rem]">
+        <div class="bg-white rounded flex items-center overflow-hidden h-[10.5rem]">
           <div class="flex flex-col items-center w-1/2">
             <h2 class="text-7xl font-bold text-[#FF7400]">
               <span v-if="isShowable()">{{ plateChangesCount > 9 ? plateChangesCount : '0' + plateChangesCount }}</span>

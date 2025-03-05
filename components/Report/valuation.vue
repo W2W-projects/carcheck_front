@@ -85,7 +85,7 @@ function isShowable() {
 <template>
   <report-wrapper>
     <!-- Toggle table visibility -->
-    <div class="flex flex-col items-center justify-between text-black  md:flex-row">
+    <div class="flex flex-col items-center justify-between text-black md:flex-row">
       <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
         <p class="flex items-center justify-center text-2xl font-bold">VALUATION DETAILS</p>
         <span>
@@ -94,7 +94,7 @@ function isShowable() {
         </span>
       </div>
 
-      <small>Unlock all valuation details on the full report</small>
+      <small v-if="!hasSubscription">Unlock all valuation details on the full report</small>
       <button class="bg-[#FF7400] text-white text-xl w-72 rounded-lg py-2">Get full report</button>
     </div>
 

@@ -77,7 +77,7 @@ function isShowable() {
 
 <template>
   <report-wrapper class="py-9">
-    <div class=" text-black flex items-center justify-between">
+    <div class="flex items-center justify-between text-black ">
       <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
         <svg width="27" height="23" viewBox="0 0 27 23" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -86,7 +86,7 @@ function isShowable() {
         </svg>
 
 
-        <p class="text-2xl font-bold flex items-center justify-center">
+        <p class="flex items-center justify-center text-2xl font-bold">
           RISK ASSESSMENTS
         </p>
         <span>
@@ -102,10 +102,10 @@ function isShowable() {
         <rect x="6.66602" y="2.66663" width="2.66667" height="2.66667" rx="1.33333" fill="white" />
       </svg>
     </div>
-    <div v-show="isTableVisible" class="text-black space-y-4">
-      <div class="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-5 lg:gap-y-0">
+    <div v-show="isTableVisible" class="space-y-4 text-black">
+      <div class="grid grid-cols-1 mt-10 lg:grid-cols-3 gap-x-5 gap-y-5 lg:gap-y-0">
         <div class="bg-[#EEEEEE] rounded py-3 flex items-center">
-          <div class="w-1/2 flex items-center justify-center">
+          <div class="flex items-center justify-center w-1/2">
             <svg width="149" height="76" viewBox="0 0 149 76" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M140.498 66.2628H137.028C137.028 66.2628 137.076 63.2115 137.076 61.5883C137.076 52.3957 129.568 44.8383 120.435 44.8383C111.303 44.8383 103.795 52.3523 103.795 61.5883C103.795 63.2115 103.831 66.2628 103.831 66.2628L38.0117 66.1713C38.0117 66.1713 37.9926 63.2115 37.9926 61.5883C37.9926 52.3523 30.5276 44.8383 21.3519 44.8383C12.1761 44.8383 4.71115 52.362 4.71115 61.5883C4.71115 63.2115 4.68962 66.2628 4.68962 66.2628H3.43109C0.655646 66.2628 2.14147 62.8069 0.205832 57.2557C-0.717722 54.6041 1.7754 51.7912 1.61509 50.1391C1.54331 49.4045 0.921228 48.3039 1.41411 47.7572C1.90699 47.2105 2.81619 47.4466 2.81619 47.4466C2.81619 47.4466 5.55335 34.8101 8.31445 33.5914C9.90076 32.893 12.9442 35.9251 15.1621 35.2243C17.4327 34.509 20.2345 29.2805 22.7276 28.6255C25.0892 28.0065 25.3667 31.802 27.5368 31.2915C29.1829 30.9037 31.4583 26.9613 32.8006 26.6651C35.9325 25.9715 38.0189 25.5524 38.0189 25.5524C44.8977 19.351 58.3754 8.32083 70.1591 3.37653C81.5743 -1.41123 117.995 -1.8086 136.382 6.80358C138.686 7.88252 144.199 29.2709 145.687 41.8279C146.919 41.8279 147.807 42.0904 148.302 43.5306C148.843 45.096 149.769 66.2628 140.498 66.2628ZM70.5802 4.58792C65.8356 6.5772 52.5422 16.0781 44.6752 22.2362C44.0124 22.754 43.7516 23.6402 44.0244 24.4374C44.2972 25.2369 45.0437 25.7716 45.8835 25.7716H82.7586C83.6726 25.7716 84.4646 25.1382 84.6704 24.2423L89.8217 1.87373C81.3063 2.27352 73.7672 3.2513 70.5826 4.58792H70.5802ZM93.681 1.85447C93.6666 1.85447 93.5111 3.10921 93.5111 3.12366L91.3888 23.5921C91.3314 24.1484 91.5109 24.7047 91.8841 25.1189C92.2574 25.5356 92.7861 25.7716 93.3436 25.7716H128.451C128.546 25.7716 128.623 25.6945 128.623 25.5982C128.623 7.37918 128.226 5.65481 126.036 5.21409C116.093 2.77926 101.325 1.65458 93.6834 1.85206L93.681 1.85447Z"
@@ -127,7 +127,7 @@ function isShowable() {
           </div>
         </div>
         <div class="bg-[#EEEEEE] rounded py-3 flex items-center">
-          <div class="w-1/2 flex items-center justify-center">
+          <div class="flex items-center justify-center w-1/2">
             <svg width="113" height="100" viewBox="0 0 113 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M111.403 88.1479L63.3027 4.86471C59.5609 -1.60785 53.4425 -1.62841 49.7008 4.84415L1.59677 88.1582C-2.14495 94.6308 0.917708 100 8.39773 100H104.602C112.082 100 115.145 94.6205 111.403 88.1479ZM18.3539 86.4861L56.5017 20.4756L94.6461 86.4861H18.3539ZM56.5326 71.1733C53.103 71.1733 50.7056 73.5478 50.7056 77.0394C50.7056 80.5309 53.0378 82.9055 56.4023 82.9055H56.5326C60.0274 82.9055 62.2944 80.4007 62.2944 77.0394C62.2292 73.5478 59.9656 71.1733 56.5326 71.1733ZM52.8423 66.2118H60.2229L61.6462 36.7958H51.419L52.8423 66.2118Z"
@@ -159,7 +159,7 @@ function isShowable() {
           </div>
         </div>
       </div>
-      <div class="flex flex-col lg:flex-row items-center justify-between">
+      <div class="flex flex-col items-center justify-between lg:flex-row">
         <p class="text-2xl font-extralight">Read more about this car’s risks by unlocking the full report</p>
         <Includes-get-full-report :show-form="isAuthenticated"
           get-full-report="Get full report"></Includes-get-full-report>
