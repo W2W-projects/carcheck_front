@@ -1,21 +1,3 @@
-<template>
-  <div :class="props.class" class="relative">
-    <canvas ref="chartCanvas" :height="height" :width="width"></canvas>
-    <div class="absolute bottom-[10%] flex items-center justify-center w-full -translate-x-1/2 left-1/2">
-      <div class="flex items-center justify-center gap-4 mt-4 text-sm">
-        <div class="flex items-center">
-          <div class="w-3 h-3 rounded-full bg-[#FF9F29] mr-2"></div>
-          <small>Pass Rate ({{ passRate }})</small>
-        </div>
-        <div class="flex items-center">
-          <div class="w-3 h-3 rounded-full bg-[#FF4646] mr-2"></div>
-          <small>Fail Rate ({{ failRate }})</small>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
 import { Chart, ArcElement, DoughnutController, Tooltip, Legend } from 'chart.js';
@@ -37,8 +19,6 @@ const width = computed(() => convertToNumber(props.width, 150));
 const failRate = computed(() => convertToNumber(props.failRate, 0));
 const passRate = computed(() => 100 - failRate.value);
 
-console.log(failRate.value, passRate.value);
-
 function convertToNumber(value: any, defaultValue: number) {
   if (typeof value === 'string' && value.includes('%')) {
     return value;
@@ -52,8 +32,6 @@ const chartCanvas = ref<HTMLCanvasElement | null>(null);
 // Function to create gauge chart
 onMounted(() => {
   if (chartCanvas.value) {
-    const totalRate = passRate.value + failRate.value; // The sum of passRate and failRate
-
     const data = {
       datasets: [
         {
@@ -177,5 +155,21 @@ onMounted(() => {
 });
 
 </script>
-
+<template>
+  <div :class="props.class" class="relative">
+    <canvas ref="chartCanvas" :height="height" :width="width"></canvas>
+    <div class="absolute bottom-[10%] flex items-center justify-center w-full -translate-x-1/2 left-1/2">
+      <div class="flex items-center justify-center gap-4 mt-4 text-sm">
+        <div class="flex items-center">
+          <div class="w-3 h-3 rounded-full bg-[#FF9F29] mr-2"></div>
+          <small>Pass Rate ({{ passRate }})</small>
+        </div>
+        <div class="flex items-center">
+          <div class="w-3 h-3 rounded-full bg-[#FF4646] mr-2"></div>
+          <small>Fail Rate ({{ failRate }})</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 <style scoped></style>

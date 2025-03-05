@@ -361,8 +361,8 @@ function setDefaultMotRecord() {
                 </svg>
               </span>
 
-              <span v-else class="flex items-center justify-center w-8 h-8 border border-orange-300 rounded "
-                :class="(clickedMotHistory + 1 === index + 1) ? 'bg-[#FF7400] text-white' : 'text-primary bg-white'">
+              <span v-else class="flex items-center justify-center w-8 h-8 text-sm border border-orange-300 rounded"
+                :class="(clickedMotHistory + 1 === index + 1) ? 'bg-[#FF7400] text-white' : 'text-primary'">
                 <!-- 🔓 Unlock Icon -->
                 #{{ index + 1 }}
               </span>
