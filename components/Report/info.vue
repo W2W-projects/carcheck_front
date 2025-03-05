@@ -31,7 +31,7 @@ watch(vehicleRegistration, (newValue) => {
 
 <template>
   <report-wrapper class="py-7">
-    <div class=" text-black flex items-center justify-between">
+    <div class="flex items-center justify-between text-black ">
       <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
         <svg width="31" height="21" viewBox="0 0 31 21" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -39,7 +39,7 @@ watch(vehicleRegistration, (newValue) => {
             fill="#0F1829" />
         </svg>
 
-        <p class="text-2xl font-bold flex items-center justify-center">
+        <p class="flex items-center justify-center text-2xl font-bold">
           VEHICLE INFOS
         </p>
         <span>
@@ -59,7 +59,7 @@ watch(vehicleRegistration, (newValue) => {
 
     <transition name="collapse">
       <div v-show="isTableVisible">
-        <table class="w-full text-black mt-4">
+        <table class="w-full mt-4 text-black">
           <thead>
             <tr class="header-row">
               <th colspan="2">General Informations</th>
@@ -94,7 +94,7 @@ watch(vehicleRegistration, (newValue) => {
           </tbody>
         </table>
 
-        <div class="items-center justify-center flex space-x-1 bg-[#FF7400] text-xl py-2">
+        <div class="items-center justify-center flex space-x-1 bg-[#FF7400] text-xl py-2" v-if="!hasSubscription">
           <p>Unlock 87 more rows with the</p>
           <a href="#" class="underline">full report</a>
         </div>
@@ -131,9 +131,9 @@ th {
   font-weight: bold;
 }
 
-tr:nth-child(even) {
+/* tr:nth-child(even) {
   background-color: #f9f9f9;
-}
+} */
 
 .header-row th {
   text-transform: uppercase;

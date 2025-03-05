@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useSubscriptionStore } from '@/stores/subscription';
 import Hashed from '@/components/Includes/Hashed.vue';
 
+
 // Toggle table visibility
 const isTableVisible = ref(true);
 const toggleTableVisibility = () => {
@@ -62,7 +63,7 @@ function getFailureType(annotationList) {
 
 <template>
   <report-wrapper class="py-11">
-    <div class="text-black flex items-center justify-between">
+    <div class="flex items-center justify-between text-black">
       <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
         <svg width="34" height="16" viewBox="0 0 34 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g clip-path="url(#clip0_245_136)">
@@ -81,7 +82,7 @@ function getFailureType(annotationList) {
         </svg>
 
 
-        <p class="text-2xl font-bold flex items-center justify-center">
+        <p class="flex items-center justify-center text-2xl font-bold">
           DAMAGE HISTORY
         </p>
         <span>
@@ -100,7 +101,7 @@ function getFailureType(annotationList) {
       <div class="lg:w-2/3">
 
         <template v-if="subscription?.plan?.plan_code === '48h-basic-subscription' && hasSubscription?.onTrial">
-          <table class="w-full text-black mt-8">
+          <table class="w-full text-black">
             <thead>
               <tr class="header-row">
                 <th colspan="2">DAMAGE 1</th>
@@ -110,47 +111,47 @@ function getFailureType(annotationList) {
               <tr>
                 <th>Date</th>
                 <td>
-                  <Hashed />
+                  <Hashed contain="stars" />
                 </td>
               </tr>
               <tr>
                 <th>Category</th>
                 <td>
-                  <Hashed />
+                  <Hashed contain="stars" />
                 </td>
               </tr>
               <tr>
                 <th>Type</th>
                 <td>
-                  <Hashed />
+                  <Hashed contain="stars" />
                 </td>
               </tr>
 
             </tbody>
           </table>
-          <table class="w-full text-black mt-8 mb-2">
+          <table class="w-full mt-8 mb-2 text-black">
             <thead>
               <tr class="header-row">
-                <th colspan="2">DAMAGE 1</th>
+                <th colspan="2">DAMAGE 2</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <th>Date</th>
                 <td>
-                  <Hashed />
+                  <Hashed contain="stars" />
                 </td>
               </tr>
               <tr>
                 <th>Category</th>
                 <td>
-                  <Hashed />
+                  <Hashed contain="stars" />
                 </td>
               </tr>
               <tr>
                 <th>Type</th>
                 <td>
-                  <Hashed />
+                  <Hashed contain="stars" />
                 </td>
               </tr>
 
@@ -159,7 +160,7 @@ function getFailureType(annotationList) {
         </template>
 
         <template v-for="(test, index) in failedTests" :key="index" v-else-if="hasSubscription?.active">
-          <table class="w-full text-black mt-8">
+          <table class="w-full mt-8 text-black">
             <thead>
               <tr class="header-row">
                 <th colspan="2">DAMAGE {{ index + 1 }}</th>
@@ -171,7 +172,7 @@ function getFailureType(annotationList) {
                 <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{
                   test.TestDate }}</td>
                 <td v-else>
-                  <Hashed />
+                  <Hashed contain="stars" />
                 </td>
               </tr>
               <tr>
@@ -179,7 +180,7 @@ function getFailureType(annotationList) {
                 <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{
                   getFailureCategory(test.FailureReasonList) }}</td>
                 <td v-else>
-                  <Hashed />
+                  <Hashed contain="stars" />
                 </td>
               </tr>
               <tr>
@@ -187,7 +188,7 @@ function getFailureType(annotationList) {
                 <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{
                   getFailureType(test.AnnotationDetailsList) }}</td>
                 <td v-else>
-                  <Hashed />
+                  <Hashed contain="stars" />
                 </td>
               </tr>
             </tbody>
@@ -195,7 +196,7 @@ function getFailureType(annotationList) {
         </template>
 
         <template v-else>
-          <table class="w-full text-black mt-8">
+          <table class="w-full text-black">
             <thead>
               <tr class="header-row">
                 <th colspan="2">DAMAGE 1</th>
@@ -205,47 +206,47 @@ function getFailureType(annotationList) {
               <tr>
                 <th>Date</th>
                 <td>
-                  <Hashed />
+                  <Hashed contain="stars" />
                 </td>
               </tr>
               <tr>
                 <th>Category</th>
                 <td>
-                  <Hashed />
+                  <Hashed contain="stars" />
                 </td>
               </tr>
               <tr>
                 <th>Type</th>
                 <td>
-                  <Hashed />
+                  <Hashed contain="stars" />
                 </td>
               </tr>
 
             </tbody>
           </table>
-          <table class="w-full text-black mt-8 mb-2">
+          <table class="w-full mt-8 mb-2 text-black">
             <thead>
               <tr class="header-row">
-                <th colspan="2">DAMAGE 1</th>
+                <th colspan="2">DAMAGE 2</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <th>Date</th>
                 <td>
-                  <Hashed />
+                  <Hashed contain="stars" />
                 </td>
               </tr>
               <tr>
                 <th>Category</th>
                 <td>
-                  <Hashed />
+                  <Hashed contain="stars" />
                 </td>
               </tr>
               <tr>
                 <th>Type</th>
                 <td>
-                  <Hashed />
+                  <Hashed contain="stars" />
                 </td>
               </tr>
 
@@ -253,12 +254,13 @@ function getFailureType(annotationList) {
           </table>
         </template>
 
-        <div class="bg-[#EF343A] w-full flex items-center justify-center py-2">
-          <h3 class="text-xl font-semibold">Lorem ipsum dolor sit amet.
+        <div class="bg-[#EF343A] w-full flex items-center justify-center py-2" v-if="!hasSubscription?.active">
+          <h3 class="text-xl font-semibold">
+            This vehicle could have damages, <span class="underline">check the full report</span>
           </h3>
         </div>
       </div>
-      <div class="hidden h-full w-1/3 md:flex justify-center">
+      <div class="justify-center hidden w-1/3 h-full md:flex">
         <img src="/images/png/report/damage.png" alt="">
       </div>
     </div>
@@ -285,9 +287,9 @@ td {
   padding: 0.68rem 1.5rem;
 }
 
-tr:nth-child(even) {
+/* tr:nth-child(even) {
   background-color: #f9f9f9;
-}
+} */
 
 .header-row th {
   text-transform: uppercase;

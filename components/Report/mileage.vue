@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
 import { useAuthStore } from '~/stores/auth';
+import { useSubscriptionStore } from '@/stores/subscription';
 
 const isTableVisible = ref(true);
 const totalRegistrations = ref(0);
@@ -8,10 +9,13 @@ const totalOdometerReading = ref(0);
 const first_date = ref("");
 const last_date = ref("");
 const chartLoaded = ref(false);
+const subscriptionStore = useSubscriptionStore();
 
 const isAuthenticated = computed(() => {
   return useAuthStore().isAuthenticated;
 });
+
+const hasSubscription = computed(() => subscriptionStore.hasSubscription);
 
 const toggleTableVisibility = () => {
   isTableVisible.value = !isTableVisible.value;
@@ -72,8 +76,8 @@ function getChartHeight() {
 </script>
 
 <template>
-  <report-wrapper class="pt-7 text-black">
-    <div class=" text-black flex items-center justify-between">
+  <report-wrapper class="text-black pt-7">
+    <div class="flex items-center justify-between text-black ">
       <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
         <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g clip-path="url(#clip0_230_6081)">
@@ -103,7 +107,7 @@ function getChartHeight() {
           </defs>
         </svg>
 
-        <p class="text-2xl font-bold flex items-center justify-center">
+        <p class="flex items-center justify-center text-2xl font-bold">
           MILEAGE
         </p>
         <span>
@@ -121,7 +125,7 @@ function getChartHeight() {
     </div>
 
     <div v-show="isTableVisible" class="space-y-3">
-      <div class="flex flex-col md:flex-row md:space-x-12 lg:px-8 mt-11 pb-3">
+      <div class="flex flex-col pb-3 md:flex-row md:space-x-12 lg:px-8 mt-11">
         <div class="text-black">
           <h4 class="text-xl font-bold">
             Current <br /> Mileage
@@ -153,7 +157,7 @@ function getChartHeight() {
         <!-- ---------------------------------------------------- -->
 
         <div class="flex flex-col items-center justify-center flex-1 space-y-2">
-          <p class="text-gray-500 font-thin">Check for mileage anomalies in full report</p>
+          <p class="font-thin text-gray-500" v-if="!hasSubscription">Check for mileage anomalies in full report</p>
           <Includes-get-full-report :show-form="isAuthenticated"
             get-full-report="Get full report"></Includes-get-full-report>
         </div>
