@@ -213,9 +213,9 @@ td {
   padding: 0.68rem 1.5rem;
 }
 
-tr:nth-child(even) {
+/* tr:nth-child(even) {
   background-color: #f9f9f9;
-}
+} */
 
 .header-row th {
   text-transform: uppercase;
