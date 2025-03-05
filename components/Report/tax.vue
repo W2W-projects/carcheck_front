@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import Hashed from '../Includes/Hashed.vue';
+
 const isTableVisible = ref(true);
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
 
@@ -34,6 +36,16 @@ function setCo2label(value: number | null) {
   co2label.value = value;
 }
 
+const getCo2LabelBand = (value: number) => {
+  if (value >= 0 && value <= 100) return 'A';
+  if (value >= 101 && value <= 120) return 'B-C';
+  if (value >= 121 && value <= 140) return 'D-E';
+  if (value >= 141 && value <= 165) return 'F-G';
+  if (value >= 166 && value <= 185) return 'H-I';
+  if (value >= 186 && value <= 225) return 'J-K';
+  if (value >= 226) return 'L';
+};
+
 onMounted(async () => {
   await carRegistrationSearchStore.fetchVehicleMotVed();
   await carRegistrationSearchStore.fetchVehicleRegistration();
@@ -45,9 +57,34 @@ onMounted(async () => {
     setCo2label(emissions);
   }
 });
+
+function getPrice(priceType: string = '12month'): string {
+  if (!MOTVed.value?.VedRate?.Standard) return 'N/A';
+
+  switch (priceType.toLowerCase()) {
+    case '12month':
+      return MOTVed.value.VedRate.Standard.TwelveMonth || 'N/A';
+    case '6month':
+      return MOTVed.value.VedRate?.Standard?.SixMonth || 'N/A';
+    case 'monthly':
+      return MOTVed.value.VedRate?.Standard?.TwelveMonth
+        ? (MOTVed.value.VedRate.Standard.TwelveMonth * 1.05 / 12).toFixed(2)
+        : 'N/A';
+    case 'total':
+      return MOTVed.value.VedRate?.Standard?.TwelveMonth
+        ? (MOTVed.value.VedRate.Standard.TwelveMonth * 1.05).toFixed(2)
+        : 'N/A';
+    default:
+      return 'N/A';
+  }
+}
+const { isShowAble } = useIsShowAble();
+
+
 </script>
 
 <template>
+
   <report-wrapper class="py-9">
     <div class="flex items-center justify-between text-black ">
       <div class="flex items-center space-x-4 cursor-pointer" @click.prevent="toggleTableVisibility">
@@ -69,7 +106,32 @@ onMounted(async () => {
             </tr>
             <tr>
               <th>Band</th>
-              <td>{{ MOTVed?.VedCo2Band || 'N/A' }}</td>
+              <td>{{ MOTVed?.VedRate?.VedCo2Band || 'N/A' }}</td>
+            </tr>
+            <tr>
+              <th>Single payment (12 months)</th>
+              <td>
+                <p v-if="isShowAble">
+                  {{ getPrice('12month') }}
+                </p>
+                <Hashed contain="stars" v-else />
+              </td>
+            </tr>
+            <tr>
+              <th>Single six month payment</th>
+
+              <td>
+                <p v-if="isShowAble">{{ getPrice('6month') }}
+                </p>
+                <Hashed contain="stars" v-else />
+              </td>
+            </tr>
+            <tr>
+              <th>Total payable by 12 monthly installments</th>
+              <td>
+                <p v-if="isShowAble">{{ getPrice('total') }}</p>
+                <Hashed contain="stars" v-else />
+              </td>
             </tr>
           </tbody>
         </table>
@@ -120,7 +182,7 @@ onMounted(async () => {
             <tr>
               <th>CO2 Label</th>
               <td v-if="MOTVed?.VedCo2Band">{{ MOTVed?.VedCo2Band }}</td>
-              <td v-else>N/A</td>
+              <td v-else>{{ co2label ? getCo2LabelBand(co2label) : 'N/A' }}</td>
             </tr>
           </tbody>
         </table>
@@ -142,9 +204,9 @@ td {
   padding: 0.68rem 1.5rem;
 }
 
-tr:nth-child(even) {
+/* tr:nth-child(even) {
   background-color: #f9f9f9;
-}
+} */
 
 .header-row th {
   text-transform: uppercase;

@@ -5,8 +5,6 @@ import { ref, computed, onMounted } from 'vue';
 const isTableVisible = ref(true);
 
 import { useAuthStore } from '~/stores/auth'
-const authStore = useAuthStore();
-const user = computed(() => authStore.user);
 
 const toggleTableVisibility = () => {
   isTableVisible.value = !isTableVisible.value;
@@ -14,7 +12,6 @@ const toggleTableVisibility = () => {
 
 const subscriptionStore = useSubscriptionStore();
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
-const subscription = computed(() => subscriptionStore.subscription);
 
 
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
@@ -39,30 +36,7 @@ const formatDate = (dateString: string) => {
   return date.toISOString().split('T')[0];
 };
 
-function isShowable() {
-  if (
-    !subscription.value ||
-    !subscription.value.plan ||
-    !hasSubscription.value ||
-    !user.value
-  ) {
-    return false;
-  }
-
-  if (
-    !(
-      subscription.value.plan.plan_code === "48h-basic-subscription" &&
-      hasSubscription.value.onTrial
-    )
-  ) {
-    return (
-      (user.value.request_count || 0) > 0 ||
-      (user.value.one_off_request_count || 0) > 0
-    );
-  }
-
-  return false;
-}
+const { isShowAble } = useIsShowAble();
 </script>
 
 
@@ -130,7 +104,7 @@ function isShowable() {
           </tr>
         </thead>
         <tbody>
-          <template v-if="isShowable()">
+          <template v-if="isShowAble">
             <tr v-if="finance && finance.length > 0">
               <th>Agreement Date</th>
               <td>{{ finance[0]?.AgreementDate ? formatDate(finance[0].AgreementDate) : 'Not available' }}</td>
