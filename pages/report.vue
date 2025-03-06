@@ -1,15 +1,10 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue';
 
-const tokenStore = useTokenStore();
-const authStore = useAuthStore();
-
 import { useSubscriptionStore } from '@/stores/subscription';
 const subscriptionStore = useSubscriptionStore();
-const subscription = computed(() => subscriptionStore.subscription);
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
 
-const refreshToken = computed(() => tokenStore.refreshToken);
 
 onMounted(async () => {
   // if (tokenStore.isTokenExpired) {
@@ -61,6 +56,8 @@ definePageMeta({
 
     <!-- Section 10 -->
     <ReportRisk />
+
+    <ReportFixedBottomBar />
 
     <section class="mt-16">
       <img src="/svg/plan-end-track.svg" alt="Plan End Track" class="w-full" />
