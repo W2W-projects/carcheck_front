@@ -6,14 +6,22 @@ const features = featureData.features.index;
 const props = defineProps({
     moreFeatures: Array,
     addedMoreFeatures: Array,
+    textSize: {
+        type: String,
+        default: 'text-xl'
+    },
+    alignment: {
+        type: String,
+        default: 'grid md:grid-cols-2 grid-cols-1 gap-x-[2.1rem] gap-y-[0.35rem]'
+    }
 });
 </script>
 
 <template>
-    <div class="grid md:grid-cols-2 grid-cols-1 gap-x-[2.1rem] gap-y-[0.35rem] mt-[1.9rem] text-black pl-1">
+    <div class="pl-1 text-black " :class="props.alignment">
         <div v-for="(feature, index) in features" :key="feature.id" class="flex items-center space-x-4">
             <img :src="`/assets/svg/${feature.icon}`" class="w-5" :alt="`Feature Icon ${index + 1}`">
-            <p class="text-xl tracking-wider font-extralight">{{ feature.title }}</p>
+            <p class="tracking-wider font-extralight" :class="props.textSize">{{ feature.title }}</p>
         </div>
 
         <!-- <div class="flex items-center space-x-2">

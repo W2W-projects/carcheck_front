@@ -41,7 +41,7 @@ const moreFeatures = async () => {
       report for <span class="font-bold">any car</span></p>
     <!--  features      -->
     <div>
-      <Features :addedMoreFeatures="addedMoreFeatures"></Features>
+      <Features :addedMoreFeatures="addedMoreFeatures" class="mt-[1.9rem]"></Features>
       <div class="flex flex-row items-center justify-center w-full mt-5" v-if="isAddMoreBtnHidden == false">
         <button class="bg-none" @click="moreFeatures">
           <p class="text-[#FF7400] text-[1.3rem] tracking-widest font-bold">And more ...</p>

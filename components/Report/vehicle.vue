@@ -33,12 +33,13 @@ watch(vehicleHistory, (newHistory) => {
     theftReports.value = newHistory?.TheftReports || 0;
   }
 });
+
 </script>
 
 
 
 <template>
-  <report-wrapper class="py-8">
+  <report-wrapper class="py-8" >
     <div class="flex items-center justify-between text-black ">
       <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
         <svg width="24" height="26" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg">
