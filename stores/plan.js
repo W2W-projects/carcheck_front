@@ -46,7 +46,6 @@ export const usePlanStore = defineStore('plan', {
             try {
                 const response = await ApiService.get(`plans`);
                 if (response.data) {
-                    console.log("response.data", response.data);
                     this.plans = response.data.sort((a, b) => a.amount_trial - b.amount_trial);
                 }
                 return response;

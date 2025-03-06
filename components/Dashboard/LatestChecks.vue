@@ -25,13 +25,11 @@ onMounted(async () => {
 
 const userCarsList = computed<UserCars[]>(() => carStore.userCarsList);
 
-console.log(userCarsList.value);
-
 </script>
 
 <template>
     <div v-if="userCarsList?.length" class="grid grid-cols-3 text-black gap-x-5">
-        <div v-for="(car, index) in userCarsList" :key="index" v-show="index < 3"
+        <div v-for="(car, index) in userCarsList" :key="index" v-show="index < 3 && car?.image && car?.reg_number"
             class="h-[12.5rem] rounded-xl bg-white flex flex-col items-center justify-between px-[1.7rem] py-[1.25rem]">
             <div class="flex w-full">
                 <div class="flex items-center flex-1 space-x-1">

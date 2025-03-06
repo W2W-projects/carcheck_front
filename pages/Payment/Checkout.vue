@@ -60,13 +60,26 @@ const startTimer = () => {
 
   onUnmounted(() => clearInterval(interval));
 };
+
+const planStore = usePlanStore();
+
+const planPrice = computed(() => {
+  const selectedPlan = planStore?.getSelectedPlan || 'basic';
+  if (!selectedPlan) return '0';
+  return selectedPlan.plan_code !== 'single-offer'
+    ? selectedPlan.amount_trial
+    : selectedPlan.amount_premium;
+});
+
+const subsPrice = computed(() => planStore?.getSubsPrice);
+
 </script>
 
 <template>
 
   <section class="relative p-0 m-0 overflow-hidden">
     <div class="flex lg:flex-row flex-col-reverse mx-auto lg:px-[9.12rem] lg:py-10 py-4 px-8 lg:space-x-5">
-      <div class="flex-1 h-full md:mt-0 mt-10">
+      <div class="flex-1 h-full mt-10 md:mt-0">
         <OrderSummary />
       </div>
       <div class="lg:w-[26.8rem] space-y-6">
@@ -95,8 +108,11 @@ const startTimer = () => {
     </div>
 
     <div class="mx-auto lg:px-[9.12rem] px-8 space-x-5 text-black leading-4 pt-4 pb-14">
-      <small>Get your CarCheck report and full access to CarCheck for just £0.49 with a 2-day trial. After the trial,
-        unless you cancel, the subscription will automatically renew at £39.95 per month. You can cancel anytime. Feel
+      <small>Get your CarCheck report and full access to CarCheck for just £{{ planPrice }} with a 2-day trial. After
+        the
+        trial,
+        unless you cancel, the subscription will automatically renew at {{ subsPrice }} per month. You can
+        cancel anytime. Feel
         free to contact us with any questions.</small>
     </div>
   </section>
