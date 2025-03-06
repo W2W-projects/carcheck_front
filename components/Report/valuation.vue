@@ -1,10 +1,7 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted, watch } from "vue";
-import { useAuthStore } from '~/stores/auth'
+import { computed, onMounted, ref, watch } from "vue";
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
 const subscriptionStore = useSubscriptionStore();
-const authStore = useAuthStore();
-
 
 const isTableVisible = ref(true);
 const toggleTableVisibility = () => {
@@ -13,8 +10,6 @@ const toggleTableVisibility = () => {
 
 const valuationLists = computed(() => carRegistrationSearchStore.vehicleValuationsList);
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
-const subscription = computed(() => subscriptionStore.subscription);
-const user = computed(() => authStore.user);
 
 const chartData = ref([]);
 const isClient = ref(false);
@@ -54,30 +49,7 @@ function getChartHeight() {
   return 50;
 }
 
-function isShowable() {
-  if (
-    !subscription.value ||
-    !subscription.value.plan ||
-    !hasSubscription.value ||
-    !user.value
-  ) {
-    return false;
-  }
-
-  if (
-    !(
-      subscription.value.plan.plan_code === "48h-basic-subscription" &&
-      hasSubscription.value.onTrial
-    )
-  ) {
-    return (
-      (user.value.request_count || 0) > 0 ||
-      (user.value.one_off_request_count || 0) > 0
-    );
-  }
-
-  return false;
-}
+const { isShowAble } = useIsShowAble();
 </script>
 
 
@@ -102,7 +74,7 @@ function isShowable() {
       <!-- v-if="isClient && " -->
       <!-- v-if="!(subscription?.plan?.plan_code ==='48h-basic-subscription' && hasSubscription?.onTrial) && (user.request_count > 0 || user.one_off_request_count > 0)" -->
       <div v-if="isClient">
-        <chart-bar v-if="chartData.length > 0" :data="chartData" :hasSubscription="isShowable()"
+        <chart-bar v-if="chartData.length > 0" :data="chartData" :hasSubscription="isShowAble"
           :height="getChartHeight()" width="100%" />
       </div>
       <div v-else>

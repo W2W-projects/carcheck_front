@@ -1,16 +1,25 @@
 import { computed } from "vue";
 import { useAuthStore } from "~/stores/auth";
 import { useSubscriptionStore } from "~/stores/subscription";
+import { useCarRegistrationSearchStore } from "~/stores/carRegistrationSearch";
 
 export function useIsShowAble() {
   const authStore = useAuthStore();
   const subscriptionStore = useSubscriptionStore();
+  const carRegistrationSearchStore = useCarRegistrationSearchStore();
 
   const user = computed(() => authStore.user);
   const subscription = computed(() => subscriptionStore.subscription);
   const hasSubscription = computed(() => subscriptionStore.hasSubscription);
+  const allowFullReport = computed(
+    () => carRegistrationSearchStore.allowFullReport
+  );
 
   const isShowAble = computed(() => {
+    if (allowFullReport.value) {
+      return true;
+    }
+
     if (
       !subscription.value ||
       !subscription.value.plan ||

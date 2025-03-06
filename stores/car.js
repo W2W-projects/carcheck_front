@@ -14,7 +14,7 @@ export const useCarStore = defineStore('car', {
         paths: ["car_reg_number", "requestCounts", "userCarsList", "userReports"]
     },
     getters: {
-        getCarRegNumber(){
+        getCarRegNumber(state){
             return state.car_reg_number;
         }
     },
@@ -86,7 +86,7 @@ export const useCarStore = defineStore('car', {
             try {
                 const response = await ApiService.post(`buy-custom-plan`, {
                     plan_code: custom_plan.plan_code
-                });
+                });                
                 return response;
             } catch (error) {
                 console.error("Failed to buy custom plan", error);

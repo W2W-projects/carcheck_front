@@ -58,6 +58,8 @@ function getFailureType(annotationList) {
   }
   return "No specific type";
 }
+
+const { isShowAble } = useIsShowAble();
 </script>
 
 
@@ -99,7 +101,7 @@ function getFailureType(annotationList) {
     </div>
     <div v-show="isTableVisible" class="flex flex-row w-full pt-4 space-x-8">
       <div class="lg:w-2/3">
-
+        <!-- 
         <template v-if="subscription?.plan?.plan_code === '48h-basic-subscription' && hasSubscription?.onTrial">
           <table class="w-full text-black">
             <thead>
@@ -157,10 +159,15 @@ function getFailureType(annotationList) {
 
             </tbody>
           </table>
-        </template>
+        </template> -->
 
-        <template v-for="(test, index) in failedTests" :key="index" v-else-if="hasSubscription?.active">
-          <table class="w-full mt-8 text-black">
+        <!-- <template v-for="(test, index) in failedTests" :key="index" v-else-if="hasSubscription?.active"> -->
+        <template v-if="isShowAble">
+          <div v-if="failedTests && failedTests.length <= 0"
+            class="flex justify-center h-full text-center text-gray-400">
+            <p class="mt-40">No damage history found</p>
+          </div>
+          <table v-for="(test, index) in failedTests" :key="index" v-else class="w-full mt-8 text-black">
             <thead>
               <tr class="header-row">
                 <th colspan="2">DAMAGE {{ index + 1 }}</th>
@@ -194,6 +201,7 @@ function getFailureType(annotationList) {
             </tbody>
           </table>
         </template>
+
 
         <template v-else>
           <table class="w-full text-black">
