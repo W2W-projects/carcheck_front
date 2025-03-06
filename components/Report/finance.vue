@@ -1,10 +1,9 @@
 <script lang="ts" setup>
-import { useSubscriptionStore } from '@/stores/subscription';
 import Hashed from '@/components/Includes/Hashed.vue';
-import { ref, computed, onMounted } from 'vue';
+import { useSubscriptionStore } from '@/stores/subscription';
+import { computed, onMounted, ref } from 'vue';
 const isTableVisible = ref(true);
 
-import { useAuthStore } from '~/stores/auth'
 
 const toggleTableVisibility = () => {
   isTableVisible.value = !isTableVisible.value;
