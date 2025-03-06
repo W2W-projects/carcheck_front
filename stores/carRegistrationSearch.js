@@ -36,6 +36,7 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
             riskRecords: null,
             financeRecords: null,
             totalNumberOfLooksUp: 0,
+            allowFullReport: false,
         }
     },
     getters: {
@@ -314,7 +315,6 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                 const response = token
                     ? await ApiService.get(`v1/car-check/${this.reg_number}`, token)
                     : await ApiService.get(`v1/car-check/${this.reg_number}`);
-
                 if(response.success){
                     await this.cleanupLocalStorage();
                 }
@@ -336,6 +336,7 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                     await this.setClassificationDetails(combinedPayload);
                     await this.setMOTHistory(combinedPayload);
                     await this.setMOTAdditionalInfo(combinedPayload);
+                    await this.setAllowFullReport(combinedPayload);
                     
                     //assignment of checkout count
                     if(authStore.user){
@@ -460,6 +461,12 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
+        async setAllowFullReport(combinedPayload) {
+            if (combinedPayload.allow_full_report) {
+                this.allowFullReport = combinedPayload.allow_full_report;
+            }
+        }
+        ,
         async setFullReportText(text) {
             this.getFullReportText = text;
         },
