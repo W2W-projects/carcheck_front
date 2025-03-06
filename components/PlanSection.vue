@@ -109,12 +109,19 @@ onMounted(async () => {
         </div>
 
         <div class="flex flex-col justify-end leading-tight translate-y-1">
-          <span class="text-[0.8rem] font-thin">per user</span>
-          <span class="text-[0.8rem] font-thin">per month</span>
+          <span class="text-[0.8rem] font-thin">48H</span>
+          <span class="text-[0.8rem] font-thin">ACCESS</span>
         </div>
       </div>
-      <h1 class="text-sm font-thin mt-7">Get
-        <span class="font-bold"> {{ plan.reports_count }}</span> checks on this offer
+      <h1 class="text-sm font-thin mt-7" v-if="plan.plan_code === '48h-expert-subscription'">
+        Get premium reports on
+        <span class="font-bold"> {{ plan.reports_count_trial }}</span> checks
+      </h1>
+      <h1 class="text-sm font-thin mt-7" v-else-if="plan.plan_code === 'premium'">
+        Get a premium report for one check
+      </h1>
+      <h1 class="text-sm font-thin mt-7" v-else>
+        Get a basic report for one check
       </h1>
       <button @click.stop="startChecking(plan)"
         class="bg-[#0F1829] text-lg  px-4 py-2 rounded-lg mt-6 block w-full text-white" :class="{

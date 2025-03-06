@@ -1,9 +1,7 @@
 <script setup>
 import { useCarRegistrationSearchStore } from "@/stores/carRegistrationSearch";
-import { useCarStore } from "~/stores/car";
 const router = useRouter();
 const carRegistrationSearch = useCarRegistrationSearchStore();
-const carStore = useCarStore();
 const searchInput = ref(null);
 
 const props = defineProps({

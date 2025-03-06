@@ -45,13 +45,13 @@ definePageMeta({
     <section>
       <div class="bg-[#EEEEEE] lg:px-[10.7rem] md:px-44 px-10">
         <div class="flex flex-row items-center justify-between mt-[6.75rem]">
-          <div>
-            <h3 class="text-4xl text-gray-800 text-start">We have the best <br />
-              <b> plans aro<span class="border-t-orange-500 border-t-4">un</span>d</b>
+          <div class="mx-auto">
+            <h3 class="text-4xl text-gray-800 text-start">We have the best
+              <b> plans arou<span class="upper-border">nd</span></b>
             </h3>
           </div>
 
-          <div class="border-2 rounded-lg p-0.5 border-[#0F1829] text-xl tracking-wider ">
+          <!-- <div class="border-2 rounded-lg p-0.5 border-[#0F1829] text-xl tracking-wider ">
             <button :class="{ 'bg-[#0F1829] text-white': isMonthlyActive, 'text-[#0F1829]': !isMonthlyActive }"
               class="px-[1.1rem] py-2 rounded" @click="toggleBilling('monthly')">
               Monthly billing
@@ -60,14 +60,14 @@ definePageMeta({
               class="px-[1.1rem] py-2" @click="toggleBilling('yearly')">
               Yearly billing
             </button>
-          </div>
+          </div> -->
         </div>
         <div class="mt-14">
           <PlanSection />
         </div>
         <div
           class="w-full h-[23.5rem] bg-[#0F1829] mt-14 rounded-t-[27px] px-[4rem] flex flex-col justify-center text-white">
-          <p class="text-center text-3xl font-bold">Pick your <span class="text-[#FF7400]">ideal trial plan</span>
+          <p class="text-3xl font-bold text-center">Pick your <span class="text-[#FF7400]">ideal trial plan</span>
             above.
           </p>
           <p class="mt-8 text-xl font-extralight">After the 48-hour trial period expires, unless you cancel, you'll be
@@ -106,5 +106,20 @@ definePageMeta({
   border: 1px solid #f5c6cb;
   color: #721c24;
   border-radius: 0.25rem;
+}
+
+.upper-border {
+  position: relative;
+}
+
+.upper-border::before {
+  content: "";
+  height: 5px;
+  width: 30px;
+  background: #FF7400;
+  position: absolute;
+  top: 0.5rem;
+  right: 9px;
+  border-radius: 999px;
 }
 </style>
