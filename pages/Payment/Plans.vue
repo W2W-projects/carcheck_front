@@ -1,5 +1,5 @@
 <script setup>
-import featureData from '@/features.json';
+import featureData from '@/static/features.json';
 import { usePlanStore } from '@/stores/plan';
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -69,7 +69,7 @@ onMounted(async () => {
 <template>
     <div class="bg-[#D9D9D9] py-20">
         <UtilitiesLoadingSpinner v-if="showLoader" />
-        <div class="flex flex-row items-center justify-between md:px-40 px-10" v-else>
+        <div class="flex flex-row items-center justify-between px-10 md:px-40" v-else>
             <div>
                 <h3 class="text-2xl text-gray-800 w-52 text-start">We have the best</h3>
                 <h3 class="text-2xl font-bold text-gray-800 w-52 text-start">Plans around</h3>
@@ -82,16 +82,16 @@ onMounted(async () => {
             </div>
         </div>
 
-        <div class="flex md:flex-row flex-col items-center justify-center mt-10 gap-4 md:gap-8 px-32">
+        <div class="flex flex-col items-center justify-center gap-4 px-32 mt-10 md:flex-row md:gap-8">
             <!-- single offer payment  -->
             <div v-if="hasSubscription?.active" v-for="plan in planInactive" :key="plan.plan_code"
                 @click="selectPlan(plan)" :class="{
                     'bg-[#0F1829] text-white': selectedPlan === plan.plan_code,
                     'border-2 border-[#0F1829] text-[#0F1829]': selectedPlan !== plan.plan_code
-                }" class="rounded-xl px-8 py-6 cursor-pointer transition duration-300 ease-in-out">
+                }" class="px-8 py-6 transition duration-300 ease-in-out cursor-pointer rounded-xl">
 
                 <div class="flex flex-row items-center justify-between">
-                    <h1 class="text-lg font-bold px-2">{{ plan.name }}</h1>
+                    <h1 class="px-2 text-lg font-bold">{{ plan.name }}</h1>
                     <span class="text-[#0F1829] text-xs rounded bg-[#FF7400] px-2 py-0.5"
                         v-if="plan.plan_code === '48h-expert-subscription'">Most Popular</span>
                 </div>
@@ -101,21 +101,22 @@ onMounted(async () => {
                     }}
                     </h3>
                     <div class="flex flex-col items-center justify-center ml-4">
-                        <span class="text-sm font-thin -ml-2">Per User</span>
+                        <span class="-ml-2 text-sm font-thin">Per User</span>
                         <span class="text-sm font-thin">Per Month</span>
                     </div>
                 </div>
-                <h1 class="text-sm font-thin mt-8">Generate up to <span class="font-bold">{{ plan.reports_count }}
+                <h1 class="mt-8 text-sm font-thin">Generate up to <span class="font-bold">{{ plan.reports_count }}
                         reports</span></h1>
                 <button @click.stop="startChecking(plan)"
                     class="bg-[#ffac1c] text-lg text-white px-4 py-2 rounded mt-2 block w-64">Start Checking</button>
-                <button class="text-lg px-4 py-2 rounded dark:bg-gray-800 dark:text-gray-400 mt-2 border border-gray-200 
-                block w-64 focus:outline-none">Read More</button>
-                <h2 class="text-xl mt-8">Included</h2>
+                <button
+                    class="block w-64 px-4 py-2 mt-2 text-lg border border-gray-200 rounded dark:bg-gray-800 dark:text-gray-400 focus:outline-none">Read
+                    More</button>
+                <h2 class="mt-8 text-xl">Included</h2>
                 <p class="text-sm font-thin">What’s included with our plan</p>
 
                 <!-- premium plan  -->
-                <div class="flex flex-col items-start justify-start mt-2 gap-2">
+                <div class="flex flex-col items-start justify-start gap-2 mt-2">
                     <div v-for="premium_feature in premium_features" :key="premium_feature.id"
                         class="flex flex-row items-center justify-start">
                         <img :src="getFeatureIcon(premium_feature.icon)" :alt="premium_feature.title"
@@ -132,9 +133,9 @@ onMounted(async () => {
             <div v-else v-for="plan in plans" :key="plan.plan_code" @click="selectPlan(plan)" :class="{
                 'bg-[#0F1829] text-white': selectedPlan === plan.plan_code,
                 'border-2 border-[#0F1829] text-[#0F1829]': selectedPlan !== plan.plan_code
-            }" class="rounded-xl px-8 py-6 cursor-pointer transition duration-300 ease-in-out">
+            }" class="px-8 py-6 transition duration-300 ease-in-out cursor-pointer rounded-xl">
                 <div class="flex flex-row items-center justify-between">
-                    <h1 class="text-lg font-bold px-2">{{ plan.name }}</h1>
+                    <h1 class="px-2 text-lg font-bold">{{ plan.name }}</h1>
                     <span class="text-[#0F1829] text-xs rounded bg-[#FF7400] px-2 py-0.5"
                         v-if="plan.plan_code === '48h-expert-subscription'">Most Popular</span>
                 </div>
@@ -144,21 +145,22 @@ onMounted(async () => {
                     }}
                     </h3>
                     <div class="flex flex-col items-center justify-center ml-4">
-                        <span class="text-sm font-thin -ml-2">Per User</span>
+                        <span class="-ml-2 text-sm font-thin">Per User</span>
                         <span class="text-sm font-thin">Per Month</span>
                     </div>
                 </div>
-                <h1 class="text-sm font-thin mt-8">Generate up to <span class="font-bold">{{ plan.reports_count }}
+                <h1 class="mt-8 text-sm font-thin">Generate up to <span class="font-bold">{{ plan.reports_count }}
                         reports</span></h1>
                 <button @click.stop="startChecking(plan)"
                     class="bg-[#ffac1c] text-lg text-white px-4 py-2 rounded mt-2 block w-64">Start Checking</button>
-                <button class="text-lg px-4 py-2 rounded dark:bg-gray-800 dark:text-gray-400 mt-2 border border-gray-200 
-                block w-64 focus:outline-none">Read More</button>
-                <h2 class="text-xl mt-8">Included</h2>
+                <button
+                    class="block w-64 px-4 py-2 mt-2 text-lg border border-gray-200 rounded dark:bg-gray-800 dark:text-gray-400 focus:outline-none">Read
+                    More</button>
+                <h2 class="mt-8 text-xl">Included</h2>
                 <p class="text-sm font-thin">What’s included with our plan</p>
 
                 <!-- basic feature -->
-                <div class="flex flex-col items-start justify-start mt-2 gap-2"
+                <div class="flex flex-col items-start justify-start gap-2 mt-2"
                     v-if="plan.plan_code == '48h-basic-subscription'">
                     <div v-for="b_feature in basic_features" :key="b_feature.id"
                         class="flex flex-row items-center justify-start">
@@ -171,7 +173,7 @@ onMounted(async () => {
                 </div>
 
                 <!-- standard plan  -->
-                <div class="flex flex-col items-start justify-start mt-2 gap-2"
+                <div class="flex flex-col items-start justify-start gap-2 mt-2"
                     v-if="plan.plan_code == '48h-expert-subscription'">
                     <div v-for="b_feature in standard_features" :key="b_feature.id"
                         class="flex flex-row items-center justify-start">
@@ -183,7 +185,7 @@ onMounted(async () => {
                     </div>
                 </div>
                 <!-- premium plan  -->
-                <div class="flex flex-col items-start justify-start mt-2 gap-2" v-if="plan.plan_code == 'premium'">
+                <div class="flex flex-col items-start justify-start gap-2 mt-2" v-if="plan.plan_code == 'premium'">
                     <div v-for="premium_feature in premium_features" :key="premium_feature.id"
                         class="flex flex-row items-center justify-start">
                         <img :src="getFeatureIcon(premium_feature.icon)" :alt="premium_feature.title"
@@ -249,11 +251,11 @@ const plans = ref(
 
 <template>
     <div class="bg-[#D9D9D9] py-20">
-        <div class="flex flex-row items-center justify-between md:px-40 px-10">
+        <div class="flex flex-row items-center justify-between px-10 md:px-40">
             <div>
                 <h3 class="text-2xl text-gray-800 w-52 text-start">We have the best</h3>
                 <h3 class="text-2xl font-bold text-gray-800 w-52 text-start">Plans aro<span
-                        class="border-t-orange-500 border-t-4">un</span>d</h3>
+                        class="border-t-4 border-t-orange-500">un</span>d</h3>
             </div>
             <div class="border-2 rounded p-0.5 border-[#0F1829]">
                 <button :class="{ 'bg-[#0F1829] text-white': isMonthlyActive, 'text-[#0F1829]': !isMonthlyActive }"
@@ -267,12 +269,12 @@ const plans = ref(
             </div>
         </div>
 
-        <div class="flex md:flex-row flex-col items-center justify-center mt-10 gap-4 md:gap-8 px-32">
+        <div class="flex flex-col items-center justify-center gap-4 px-32 mt-10 md:flex-row md:gap-8">
 
             <div @click="selectPlan('basic')" :class="{
                     'bg-[#0F1829] text-white': selectedPlan === 'basic',
                     'border-2 border-[#0F1829] text-[#0F1829]': selectedPlan !== 'basic'
-                }" class="rounded-xl px-8 py-6 cursor-pointer transition duration-300 ease-in-out">
+                }" class="px-8 py-6 transition duration-300 ease-in-out cursor-pointer rounded-xl">
                 <h1 class="text-lg font-bold text-[#0F1829] px-2">Basic Plan</h1>
                 <div class="flex flex-row items-center justify-start mt-6">
                     <div class="flex flex-row items-start justify-center">
@@ -291,7 +293,7 @@ const plans = ref(
                     More</button>
                 <h2 class="text-[#0F1829] text-xl mt-8">Included</h2>
                 <p class="text-[#0F1829] text-sm font-thin">What’s included with our plan</p>
-                <div class="flex flex-col items-start justify-start mt-2 gap-2">
+                <div class="flex flex-col items-start justify-start gap-2 mt-2">
                     <div class="flex flex-row items-center justify-start">
                         <img src="~/assets/svg/damage-check-icon.svg" alt="Check Mark" class="w-6" />
                         <h3 class="text-[#0F1829] text-sm ml-2">Damage Check</h3>
@@ -319,7 +321,7 @@ const plans = ref(
                     'bg-[#0F1829] text-white': selectedPlan === 'standard',
                     'border-2 border-[#0F1829]': selectedPlan !== 'standard',
                     'text-[#0F1829]': selectedPlan !== 'standard'
-                }" class="rounded-xl px-8 py-6 cursor-pointer transition duration-300 ease-in-out">
+                }" class="px-8 py-6 transition duration-300 ease-in-out cursor-pointer rounded-xl">
                 <div class="flex flex-row items-center justify-between">
                     <h1 class="text-lg font-bold text-[#ffffff] px-2">Standard Plan</h1>
                     <span class="text-[#0F1829] text-xs rounded bg-[#FF7400] px-2 py-0.5">Most Popular</span>
@@ -341,7 +343,7 @@ const plans = ref(
                     More</button>
                 <h2 class="text-[#ffffff] text-xl mt-8">Included</h2>
                 <p class="text-[#ffffff] text-sm font-thin">What’s included with our plan</p>
-                <div class="flex flex-col items-start justify-start mt-4 gap-2">
+                <div class="flex flex-col items-start justify-start gap-2 mt-4">
                     <div class="flex flex-row items-center justify-start">
                         <img src="~/assets/svg/damage-check-icon.svg" alt="Check Mark" class="w-6" />
                         <h3 class="text-[#ffffff] text-sm ml-2">Damage Check</h3>
@@ -369,7 +371,7 @@ const plans = ref(
                     'bg-[#0F1829] text-white': selectedPlan === 'premium',
                     'border-2 border-[#0F1829]': selectedPlan !== 'premium',
                     'text-[#d8dce3]': selectedPlan !== 'premium'
-                }" class="rounded-xl px-8 py-6 cursor-pointer transition duration-300 ease-in-out">
+                }" class="px-8 py-6 transition duration-300 ease-in-out cursor-pointer rounded-xl">
 
                 <h1 class="text-lg font-bold text-[#0F1829] px-2">Premium Plan</h1>
                 <div class="flex flex-row items-center justify-start mt-6">
@@ -389,7 +391,7 @@ const plans = ref(
                     More</button>
                 <h2 class="text-[#0F1829] text-xl mt-8">Included</h2>
                 <p class="text-[#0F1829] text-sm font-thin">What’s included with our plan</p>
-                <div class="flex flex-col items-start justify-start mt-2 gap-2">
+                <div class="flex flex-col items-start justify-start gap-2 mt-2">
                     <div class="flex flex-row items-center justify-start">
                         <img src="~/assets/svg/damage-check-icon.svg" alt="Check Mark" class="w-6" />
                         <h3 class="text-[#0F1829] text-sm ml-2">Damage Check</h3>
