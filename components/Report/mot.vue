@@ -7,7 +7,9 @@ import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 const modules = [Autoplay, Pagination, Navigation];
 
+import { useAuthStore } from '~/stores/auth';
 import { useSubscriptionStore } from '@/stores/subscription';
+
 const subscriptionStore = useSubscriptionStore();
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
 
@@ -24,6 +26,7 @@ const longestPeriodOutOfMot = ref(0);
 const slidesPerView = ref(0);
 const errorMessage = ref("");
 const isTableVisible = ref(true);
+const isAuthenticated = useAuthStore().isAuthenticated;
 
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
 
@@ -279,7 +282,8 @@ function setDefaultMotRecord() {
       <!-- ------------------------------- -->
       <div class="flex flex-col items-center justify-start flex-1 space-y-1">
         <p v-if="!hasSubscription">Unlock more MOT reports on the <a href="#" class="underline">full report</a></p>
-        <Includes-get-full-report get-full-report="Get full report"></Includes-get-full-report>
+        <Includes-get-full-report :show-form="isAuthenticated"
+          get-full-report="Get full report"></Includes-get-full-report>
       </div>
       <!-- ------------------------------- -->
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
