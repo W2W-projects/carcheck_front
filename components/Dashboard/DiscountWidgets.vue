@@ -106,13 +106,13 @@ async function buyCustomPlan(plan) {
     <div class="flex flex-col justify-between pt-4 pb-6 text-black px-9">
       <div class="pr-8 space-y-1">
         <p class="text-2xl font-bold">
-          You are running out of checks ?
+          Running out of <br /> checks ?
         </p>
         <p class="text-[0.9rem]">These offers are for you</p>
       </div>
       <div class="flex items-center space-x-1 font-bold">
         <small>
-          Get a new plan instead
+          Member-only discounts
         </small>
         <span>
           <img src="/public/images/svg/icon-chev-right.svg" alt="">
@@ -124,13 +124,25 @@ async function buyCustomPlan(plan) {
         class="h-[9.4rem] w-[10.35rem] rounded-lg px-[0.8rem] pt-[1.2rem] pb-[0.6rem] flex flex-col"
         :style="{ backgroundColor: `rgba(${parseInt(check_colors[index].slice(1, 3), 16)}, ${parseInt(check_colors[index].slice(3, 5), 16)}, ${parseInt(check_colors[index].slice(5, 7), 16)}, 0.30)` }">
         <div class="flex-1 space-y-2 text-center text-black">
-          <div class="leading-[0.8rem]">
-            <p class="text-[1.2rem] font-bold">{{ pln.name }}</p>
-            <p class="text-[0.7rem]">Full Report</p>
+          <div class="flex items-center justify-between">
+            <div class="leading-[0.9rem] text-start">
+              <p class="text-[0.95rem] font-extrabold">{{ pln.name }}</p>
+              <p class="text-[0.7rem]">Full Report</p>
+            </div>
+            <p class="text-xl text-white outlined-text"
+              style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">
+              -{{ pln.discount_percentage }}%
+            </p>
           </div>
-          <div class="leading-[0.2rem]">
-            <p class="text-3xl font-bold outlined-text">-{{ pln.discount_percentage }}%</p>
-            <p class="text-[0.6rem]"> £{{ pln.pricePerCheck }} per check</p>
+          <div class="leading-[0.4rem]">
+            <small class="text-[0.7rem]">
+              <span class="text-2xl"> £{{ pln.pricePerCheck }}</span>
+              per check
+            </small>
+            <br />
+            <small>
+              You pay £{{ pln.price_after_discount }}
+            </small>
           </div>
         </div>
         <button v-if="awaitingPayment && selectedPlan === pln" disabled class="w-full h-[1.95rem] transition-all duration-300 bg-green-500 text-white rounded-[0.4rem] text-[0.8rem] font-semibold

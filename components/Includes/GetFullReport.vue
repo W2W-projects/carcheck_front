@@ -8,6 +8,7 @@ const carRegistrationSearchStore = useCarRegistrationSearchStore();
 const tokenStore = useTokenStore();
 const subscriptionStore = useSubscriptionStore();
 const authStore = useAuthStore();
+const carStore = useCarStore();
 
 const errorMessage = ref<string | null>(null);
 const showPasswordField = ref(false);
@@ -71,7 +72,7 @@ const downloadReport = async () => {
         await carRegistrationSearchStore.fetchPerformance();
 
 
-        if (hasSubscription?.active || hasSubscription?.request_count > 0 || user.request_count > 0) {
+        if (hasSubscription?.active || hasSubscription?.request_count > 0 || user.request_count > 0 || user.one_off_request_count > 0 || carStore?.requestCounts?.one_off_request_count > 0) {
             let car_data = [
                 { vehicleStatus: carRegistrationSearchStore.vehicleStatus },
                 { vehicleDetails: carRegistrationSearchStore.vehicleDetails },
