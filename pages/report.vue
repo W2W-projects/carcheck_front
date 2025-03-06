@@ -61,6 +61,10 @@ definePageMeta({
 
     <!-- Section 10 -->
     <ReportRisk />
+
+    <section class="mt-16">
+      <img src="/svg/plan-end-track.svg" alt="Plan End Track" class="w-full" />
+    </section>
   </div>
 
 </template>

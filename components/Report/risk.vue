@@ -1,76 +1,28 @@
 <script lang="ts" setup>
 import Hashed from '../Includes/Hashed.vue';
-import { useSubscriptionStore } from '@/stores/subscription';
 import { useAuthStore } from '~/stores/auth';
 
 const isTableVisible = ref(true);
-const writeOffCount = ref(0);
-const highRiskRecords = ref(0);
-const financeRecords = ref(0);
 const isAuthenticated = computed(() => authStore.isAuthenticated);
 
 const carRegistrationSearch = useCarRegistrationSearchStore();
-const subscriptionStore = useSubscriptionStore();
 const authStore = useAuthStore();
 
 const toggleTableVisibility = () => {
   isTableVisible.value = !isTableVisible.value
 }
-onMounted(async () => {
-  await carRegistrationSearch.fetchVehicleHistory();
-  await carRegistrationSearch.fetchWriteOffRecords();
-  await carRegistrationSearch.fetchRiskRecords();
-  await carRegistrationSearch.fetchFinanceRecords();
-});
-const user = computed(() => authStore.user);
+// onMounted(async () => {
+//   await carRegistrationSearch.fetchVehicleHistory();
+//   await carRegistrationSearch.fetchWriteOffRecords();
+//   await carRegistrationSearch.fetchRiskRecords();
+//   await carRegistrationSearch.fetchFinanceRecords();
+// });
 
-const hasSubscription = computed(() => subscriptionStore.hasSubscription);
-const subscription = computed(() => subscriptionStore.subscription);
-const vehicleHistory = computed(() => carRegistrationSearch.vehicleHistory);
 const writeOff = computed(() => carRegistrationSearch.writeOff);
 const riskRecords = computed(() => carRegistrationSearch.riskRecords);
 const finances = computed(() => carRegistrationSearch.financeRecords);
 
-watch(vehicleHistory, (newHistory) => {
-  if (newHistory) {
-    // if (newHistory.VicCount && newHistory.VicCount) {
-    //   writeOffCount.value = newHistory.VicCount || 0;
-    // }
-
-    // if (newHistory && newHistory.PlateChangeCount) {
-    //   highRiskRecords.value = newHistory.PlateChangeCount || 0;
-    // }
-
-    // if (newHistory.V5CCertificateCount && newHistory.V5CCertificateCount) {
-    //   financeRecords.value = newHistory.V5CCertificateCount || 0;
-    // }
-  }
-});
-
-function isShowable() {
-  if (
-    !subscription.value ||
-    !subscription.value.plan ||
-    !hasSubscription.value ||
-    !user.value
-  ) {
-    return false;
-  }
-
-  if (
-    !(
-      subscription.value.plan.plan_code === "48h-basic-subscription" &&
-      hasSubscription.value.onTrial
-    )
-  ) {
-    return (
-      (user.value.request_count || 0) > 0 ||
-      (user.value.one_off_request_count || 0) > 0
-    );
-  }
-
-  return false;
-}
+const { isShowAble } = useIsShowAble();
 
 </script>
 
@@ -104,7 +56,7 @@ function isShowable() {
     </div>
     <div v-show="isTableVisible" class="space-y-4 text-black">
       <div class="grid grid-cols-1 mt-10 lg:grid-cols-3 gap-x-5 gap-y-5 lg:gap-y-0">
-        <div class="bg-[#EEEEEE] rounded py-3 flex items-center">
+        <div class="flex items-center py-3 bg-white rounded">
           <div class="flex items-center justify-center w-1/2">
             <svg width="149" height="76" viewBox="0 0 149 76" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -120,13 +72,13 @@ function isShowable() {
           </div>
           <div class="w-1/2">
             <h2 class="text-7xl font-bold text-[#FFA500]">
-              <span v-if="false">{{ writeOff ? writeOff['WriteOffRecordCount'] : 0 }}</span>
+              <span v-if="isShowAble">{{ writeOff ? writeOff['WriteOffRecordCount'] : 0 }}</span>
               <hashed contain="zero" v-else></hashed>
             </h2>
             <p class="text-3xl font-light"> WRITE-OFF <br /> RECORD</p>
           </div>
         </div>
-        <div class="bg-[#EEEEEE] rounded py-3 flex items-center">
+        <div class="flex items-center py-3 bg-white rounded">
           <div class="flex items-center justify-center w-1/2">
             <svg width="113" height="100" viewBox="0 0 113 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -136,13 +88,13 @@ function isShowable() {
           </div>
           <div class="w-1/2">
             <h2 class="text-7xl font-bold text-[#EF343A]">
-              <span v-if="false">{{ riskRecords ? riskRecords['HighRiskRecordCount'] : 0 }}</span>
+              <span v-if="isShowAble">{{ riskRecords ? riskRecords['HighRiskRecordCount'] : 0 }}</span>
               <hashed contain="zero" v-else></hashed>
             </h2>
             <p class="text-3xl font-light"> HIGH RISK <br /> RECORD</p>
           </div>
         </div>
-        <div class="bg-[#EEEEEE] rounded py-3 flex items-center">
+        <div class="flex items-center py-3 bg-white rounded">
           <div class="w-1/2 ">
             <svg width="167" height="118" viewBox="0 0 167 118" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" clip-rule="evenodd"
@@ -152,7 +104,7 @@ function isShowable() {
           </div>
           <div class="w-1/2">
             <h2 class="text-7xl font-bold text-[#FF7400]">
-              <span v-if="false">{{ finances ? finances['FinanceRecordCount'] : 0 }}</span>
+              <span v-if="isShowAble">{{ finances ? finances['FinanceRecordCount'] : 0 }}</span>
               <hashed contain="zero" type="X" v-else></hashed>
             </h2>
             <p class="text-3xl font-light">FINANCE <br /> RECORD</p>

@@ -1,10 +1,10 @@
 <script lang="ts" setup>
+import { differenceInCalendarDays, parse } from 'date-fns';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/vue';
-import { format, differenceInCalendarDays, parse } from 'date-fns';
 const modules = [Autoplay, Pagination, Navigation];
 
 import { useSubscriptionStore } from '@/stores/subscription';
@@ -272,7 +272,7 @@ function setDefaultMotRecord() {
         <div>
           <p>Total MOT checks</p>
           <small><span class="font-extralight">Last MOT:</span> {{ mostRecentMOT ? mostRecentMOT['TestDate'] : ''
-            }}</small>
+          }}</small>
         </div>
         <h3 class="text-3xl">{{ totalMotChecks }}</h3>
       </div>
@@ -361,8 +361,8 @@ function setDefaultMotRecord() {
                 </svg>
               </span>
 
-              <span v-else class="flex items-center justify-center w-8 h-8 border border-orange-300 rounded "
-                :class="(clickedMotHistory + 1 === index + 1) ? 'bg-[#FF7400] text-white' : 'text-primary bg-white'">
+              <span v-else class="flex items-center justify-center w-8 h-8 text-sm border border-orange-300 rounded"
+                :class="(clickedMotHistory + 1 === index + 1) ? 'bg-[#FF7400] text-white' : 'text-primary'">
                 <!-- 🔓 Unlock Icon -->
                 #{{ index + 1 }}
               </span>
