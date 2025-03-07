@@ -29,12 +29,18 @@ export function useIsShowAble() {
       return false;
     }
 
-    if (
-      !(
-        subscription.value.plan.plan_code === "48h-basic-subscription" &&
-        hasSubscription.value.onTrial
-      )
-    ) {
+    // if (
+    //   !(
+    //     subscription.value.plan.plan_code === "48h-basic-subscription" &&
+    //     hasSubscription.value.onTrial
+    //   )
+    // ) {
+    //   return (
+    //     (user.value.request_count || 0) > 0 ||
+    //     (user.value.one_off_request_count || 0) > 0
+    //   );
+    // }
+    if (!(subscription.value.plan.plan_code === "48h-basic-subscription")) {
       return (
         (user.value.request_count || 0) > 0 ||
         (user.value.one_off_request_count || 0) > 0
@@ -43,6 +49,5 @@ export function useIsShowAble() {
 
     return false;
   });
-
   return { isShowAble };
 }

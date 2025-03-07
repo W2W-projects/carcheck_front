@@ -141,8 +141,7 @@ const { isShowAble } = useIsShowAble();
         <div class="grid grid-cols-7 gap-0 relative w-[70rem]">
           <div v-for="band in co2Bands" :key="band.label" :class="getClass(band.min, band.max)"
             :style="{ backgroundColor: band.color }"
-            class="relative flex flex-col items-center space-y-3 text-2xl text-center"
-            @click="setCo2label(band.co2Value)">
+            class="relative flex flex-col items-center space-y-3 text-2xl text-center">
 
             <div v-if="isClassActive(band.min, band.max)"
               class="hidden lg:block absolute -top-6 bg-black scale-[106%] text-white text-sm py-1 w-full text-center">

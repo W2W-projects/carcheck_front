@@ -201,6 +201,10 @@ async function createSubscription(selectedPlan) {
         }
 
         if (payload?.car_data) {
+
+
+            console.log("payload.car_data", payload.car_data);
+
             // vehicle MOT History
             const vehicleMotHistoryObj = payload.car_data.find(item => item.MotHistory);
 
@@ -286,6 +290,17 @@ async function createSubscription(selectedPlan) {
             } else {
                 console.error("Vehicle status not found in car data");
             }
+
+
+            const allowFullReportObj = payload.car_data.find(item => item.allow_full_report);
+            if (allowFullReportObj && allowFullReportObj.allow_full_report) {
+                await registrationSearchStore.setAllowFullReport({
+                    allow_full_report: allowFullReportObj.allow_full_report
+                });
+            } else {
+                console.error("allowFullReport not found in car data");
+            }
+
         }
 
         // if (selectedPlan.plan_code === '48h-basic-subscription') {
