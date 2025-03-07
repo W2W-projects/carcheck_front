@@ -56,7 +56,7 @@ export const useAuthStore = defineStore("auth", {
       const tokenStore = useTokenStore();
       const carRegistrationSearchStore = useCarRegistrationSearchStore();
       try {
-        await ApiService.post("logout", null, tokenStore.token);
+         ApiService.post("logout", null, tokenStore.token);
         this.removeUser();
         tokenStore.removeToken();
         const subscription = useSubscriptionStore();
