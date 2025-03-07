@@ -25,7 +25,7 @@ definePageMeta({
     { hid: 'Car check payment checkout', name: 'Car check payment checkout', content: 'Car check payment checkout' }
   ],
   layout: 'checkout',
-  // middleware: ['plan-check', 'auth'],
+  middleware: ['plan-check', 'auth'],
 });
 
 const handlePayment = async () => {
