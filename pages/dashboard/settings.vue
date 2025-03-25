@@ -1,0 +1,117 @@
+<script setup>
+import { computed, ref } from 'vue';
+import AccountSettingsForm from '~/components/Dashboard/Settings/AccountSettingsForm.vue';
+
+const activeTab = ref(0);
+const tabs = [
+  { label: 'Account settings', icon: 'dash-settings.svg', component: AccountSettingsForm },
+  { label: 'Reset password', icon: 'dash-password.svg', component: AccountSettingsForm },
+  { label: 'Subscription', icon: 'dash-subscription.svg', component: AccountSettingsForm },
+];
+
+const activeComponent = computed(() => tabs[activeTab.value].component);
+
+function changeTab(index) {
+  activeTab.value = index;
+}
+
+// Mock user data
+const user = {
+  name: 'Yazid Nait L',
+  email: 'User@gmail.com',
+  phone: '+1 434 454 343',
+  address: 'Bath srt, UK',
+};
+
+definePageMeta({
+  title: 'Car Check Settings',
+  layout: 'dashboard',
+
+  // middleware: ['auth'],
+});
+
+</script>
+
+<template>
+  <div class="min-h-[50vh] h-[40rem] flex space-x-4">
+    <!-- Left Sidebar -->
+    <div class="bg-panoramic bg-white rounded-lg w-[17.5rem] shadow-sm flex flex-col justify-between p-4">
+      <!-- Profile Section -->
+      <div class="space-y-6">
+        <!-- Profile Image with Half Circle -->
+        <div class="relative">
+          <!-- Half Circle -->
+          <div
+            class="absolute -top-2 left-1/2 transform -translate-x-1/2 w-[11rem] h-[11rem]  rounded-b-full overflow-hidden">
+            <div class="w-full h-1/2"></div>
+            <div class="w-full bg-primary h-1/2"></div>
+          </div>
+          <!-- Profile Image -->
+          <div
+            class="relative w-[10rem] h-[10rem] flex items-center justify-center mx-auto rounded-full overflow-hidden bg-white shadow-md">
+            <img src="/images/webp/user.webp" class="object-cover w-full" alt="User profile">
+          </div>
+        </div>
+
+        <!-- User Info -->
+        <div class="space-y-2 text-center">
+          <h2 class="text-xl font-bold text-gray-800">{{ user.name }}</h2>
+          <p class="text-sm text-gray-600">{{ user.email }}</p>
+          <p class="text-sm text-gray-600">{{ user.phone }}</p>
+          <p class="text-sm text-gray-500">{{ user.address }}</p>
+        </div>
+
+      </div>
+
+      <!-- Delete Account Button -->
+      <div>
+        <div class="flex justify-center">
+          <img src="/images/webp/front-facing-car.webp" alt="Car" class="w-full">
+        </div>
+        <button
+          class="flex items-center justify-center px-4 py-1 mx-auto space-x-2 font-medium text-black transition-colors bg-white border rounded-lg border-primary hover:bg-red-50">
+          <span>Delete account</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex flex-col flex-1 w-full h-auto overflow-auto bg-white rounded-lg shadow-sm">
+      <!-- Tabs -->
+      <div class="flex items-start justify-start">
+        <div v-for="(tab, index) in tabs" :key="tab.label" class="flex items-end px-6 cursor-pointer gap-x-2"
+          @click="changeTab(index)">
+          <span class="flex items-center justify-center px-1 pt-10 pb-1 rounded-b"
+            :class="{ 'text-black bg-primary': activeTab === index, 'text-gray-400': activeTab !== index }">
+            <img :src="`/assets/svg/${tab.icon}`" alt="" class="w-5 h-5">
+          </span>
+
+          <p class="pb-1 font-medium transition-colors" :class="{
+            'text-black': activeTab === index,
+            'text-gray-400 hover:text-gray-700': activeTab !== index
+          }">
+            {{ tab.label }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="flex-1 p-6">
+        <component :is="activeComponent" class="h-full" />
+      </div>
+
+      <!-- Footer Accent -->
+      <div class="w-full h-2 rounded-b-lg bg-primary"></div>
+    </div>
+  </div>
+</template>
+
+
+<style>
+.bg-panoramic {
+  background-image: url('/images/webp/panoramic-city.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+</style>
