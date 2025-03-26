@@ -1,113 +1,143 @@
 <script setup>
-import InputError from '@/Components/InputError.vue';
-import { useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
-import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue";
+import { ref, reactive } from 'vue';
+
 const emit = defineEmits(['close-modal']);
 
-const passwordInput = ref(null);
-const currentPasswordInput = ref(null);
-
-const form = useForm({
+const form = reactive({
     current_password: '',
     password: '',
     password_confirmation: '',
 });
 
-const updatePassword = () => {
-    form.put(route('password.update'), {
-        preserveScroll: true,
-        onSuccess: () => {
-            form.reset();
-            emit('close-modal');
-        },
-        onError: () => {
-            if (form.errors.current_password) {
-                form.reset('current_password', 'current_password');
-                passwordInput.value.focus();
-            }
-            if (form.errors.password_confirmation) {
-                form.reset('password_confirmation');
-                currentPasswordInput.value.focus();
-            }
-        },
-    });
+const errors = reactive({});
+const processing = ref(false);
+const formSuccess = ref(false);
+
+const updatePassword = async () => {
+    processing.value = true;
+    formSuccess.value = false;
+
+    try {
+        await $fetch('/api/password/update', {
+            method: 'PATCH',
+            body: form,
+        });
+
+        formSuccess.value = true;
+
+        Object.keys(form).forEach(key => {
+            form[key] = '';
+        });
+
+        emit('close-modal');
+
+        setTimeout(() => {
+            formSuccess.value = false;
+        }, 5000);
+
+        Object.keys(errors).forEach(key => {
+            errors[key] = null;
+        });
+    } catch (error) {
+        if (error.response?.data?.errors) {
+            Object.assign(errors, error.response.data.errors);
+        }
+    } finally {
+        processing.value = false;
+    }
 };
 </script>
 
 <template>
     <form @submit.prevent="updatePassword" class="flex flex-col h-full">
-        <Transition v-if="form.recentlySuccessful" enter-active-class="transition-transform duration-500 ease-in-out"
-            enter-from-class="translate-x-full" enter-to-class="translate-x-0"
-            leave-active-class="transition-transform duration-500 ease-in-out" leave-from-class="translate-x-0"
-            leave-to-class="translate-x-full" class=" right-0 bg-green-400 px-4 py-2">
-            <p class="text-lg font-bold text-white text-center">Password updated successfully.</p>
-        </Transition>
-        <div class="px-8 flex-1 flex flex-col w-96 space-y-5 justify-center items-center md:py-0 py-10">
-            <div class="space-y-4 w-full">
-                <InputLabel for="postcode" :value="$t('dashboard.help.reset.current-password')" />
-                <span class="flex space-x-2">
-                    <!-- <span class="bg-[#3983DC] p-2 py-0 flex items-center justify-center rounded-sm">
-                            <img src="/assets/svg/lock.svg" alt="" class="w-6">
-                        </span> -->
-                    <TextInput id="old-password" type="password" class=" block w-full rounded-lg bg-gray-50"
-                        autocomplete="old-password" v-model="form.current_password" required />
-                </span>
-                <InputError :message="form.errors.current_password" class="mt-2" />
-            </div>
-            <div class="space-y-4 w-full">
-                <InputLabel for="postcode" :value="$t('dashboard.help.reset.new-password')" />
-                <span class="flex space-x-2">
-                    <!-- <span class="bg-primary-blue p-2 flex items-center justify-center rounded-sm">
-                            <img src="/assets/svg/lock.svg" alt="" class="w-6">
-                        </span> -->
-                    <TextInput id="new-password" type="password" class=" block w-full rounded-lg bg-gray-50"
-                        autocomplete="password" v-model="form.password" required />
-                </span>
-                <InputError :message="form.errors.password" class="mt-2" />
-            </div>
-            <div class="space-y-4 w-full">
-                <InputLabel for="postcode" :value="$t('dashboard.help.reset.confirm-password')" />
+        <div class="flex items-center justify-center flex-1 text-black md:py-0">
+            <div class="grid w-full grid-cols-1 px-6 gap-y-8">
+                <!-- Current Password -->
+                <div>
+                    <label for="current-password" class="block text-sm font-medium text-gray-700">Current
+                        Password</label>
+                    <div class="flex items-center justify-around gap-x-2">
+                        <div class="flex items-center justify-center w-10 h-10 my-auto rounded-md bg-primary">
 
-                <span class="flex space-x-2">
-                    <!-- <span class="bg-primary-blue p-2 flex items-center justify-center rounded-sm">
-                            <img src="/assets/svg/lock.svg" alt="" class="w-6">
-                        </span> -->
-                    <TextInput id="password_confirmation" type="password" class=" block w-full rounded-lg bg-gray-50"
-                        autocomplete="password_confirmation" v-model="form.password_confirmation" required />
-                </span>
-                <InputError :message="form.errors.password" class="mt-2" />
+                            <img src="/assets/svg/lock-closed.svg" alt="">
+
+                        </div> <!-- Space for SVG -->
+                        <input id="current-password" type="password" class="block w-full mt-1 rounded"
+                            v-model="form.current_password" required />
+                    </div>
+                    <div v-if="errors.current_password" class="mt-2 text-sm text-red-600">{{ errors.current_password }}
+                    </div>
+                </div>
+
+                <!-- New Password -->
+                <div>
+                    <label for="new-password" class="block text-sm font-medium text-gray-700">New Password</label>
+                    <div class="flex items-center justify-around gap-x-2">
+                        <div class="flex items-center justify-center w-10 h-10 my-auto rounded-md bg-primary">
+
+                            <img src="/assets/svg/lock-closed.svg" alt="">
+
+                        </div> <!-- Space for SVG -->
+                        <input id="new-password" type="password" class="block w-full mt-1 rounded"
+                            v-model="form.password" required />
+                    </div>
+                    <div v-if="errors.password" class="mt-2 text-sm text-red-600">{{ errors.password }}</div>
+                </div>
+
+                <!-- Confirm Password -->
+                <div>
+                    <label for="password-confirmation" class="block text-sm font-medium text-gray-700">Confirm
+                        Password</label>
+                    <div class="flex items-center justify-around gap-x-2">
+                        <div class="flex items-center justify-center w-10 h-10 my-auto rounded-md bg-primary">
+
+                            <img src="/assets/svg/lock-closed.svg" alt="">
+
+                        </div> <!-- Space for SVG -->
+                        <input id="password-confirmation" type="password" class="block w-full mt-1 rounded"
+                            v-model="form.password_confirmation" required />
+                    </div>
+                    <div v-if="errors.password_confirmation" class="mt-2 text-sm text-red-600">{{
+                        errors.password_confirmation }}</div>
+                </div>
             </div>
-            <!-- <p class="text-[#C9DAED]">Last reset on 12.12.23</p> -->
         </div>
-        <div class="flex items-center justify-between bg-primary-blue py-6 px-8 text-white">
-            <!-- <p>Update your information's</p> -->
-            <button class="bg-primary text-white rounded px-4 py-2 flex items-center justify-center space-x-2"
-                :disabled="form.processing">
+
+        <div class="flex items-center justify-between px-8 mb-4 text-black bg-primary-blue">
+            <p>Update your password</p>
+            <button
+                class="flex items-center justify-center space-x-2 text-white rounded bg-primary w-[7.3125rem] h-[2.1875rem]"
+                :disabled="processing">
                 <span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="18" viewBox="0 0 24 24" fill="none">
-                        <g clip-path="url(#clip0_395_4645)">
-                            <path
-                                d="M12.0012 1.99997C13.3277 2.00432 14.6402 2.27171 15.8626 2.78666C17.0851 3.30161 18.1934 4.05389 19.1232 4.99997H16.0012C15.736 4.99997 15.4816 5.10533 15.2941 5.29286C15.1065 5.4804 15.0012 5.73476 15.0012 5.99997C15.0012 6.26519 15.1065 6.51954 15.2941 6.70708C15.4816 6.89461 15.736 6.99997 16.0012 6.99997H20.1442C20.6366 6.99971 21.1088 6.80397 21.457 6.45578C21.8052 6.10758 22.0009 5.6354 22.0012 5.14297V0.999971C22.0012 0.734754 21.8958 0.4804 21.7083 0.292864C21.5208 0.105328 21.2664 -2.92115e-05 21.0012 -2.92115e-05C20.736 -2.92115e-05 20.4816 0.105328 20.2941 0.292864C20.1065 0.4804 20.0012 0.734754 20.0012 0.999971V3.07797C18.3483 1.58942 16.3138 0.590381 14.1253 0.19272C11.9368 -0.204941 9.68081 0.0144827 7.60996 0.826418C5.53912 1.63835 3.73519 3.01074 2.40019 4.7899C1.06519 6.56905 0.251821 8.68471 0.0511791 10.9C0.0382624 11.0392 0.0544948 11.1797 0.098842 11.3123C0.143189 11.4449 0.214679 11.5669 0.308755 11.6704C0.402832 11.7738 0.517433 11.8566 0.645257 11.9133C0.773081 11.9701 0.911324 11.9996 1.05118 12C1.29577 12.0031 1.53271 11.9148 1.71564 11.7524C1.89856 11.59 2.01429 11.3652 2.04018 11.122C2.26279 8.63272 3.40815 6.31667 5.25126 4.62881C7.09437 2.94094 9.502 2.00326 12.0012 1.99997Z"
-                                fill="white" />
-                            <path
-                                d="M22.951 12.0002C22.7064 11.9971 22.4695 12.0854 22.2865 12.2478C22.1036 12.4102 21.9879 12.635 21.962 12.8782C21.7967 14.7814 21.0889 16.5973 19.9227 18.1104C18.7564 19.6235 17.1806 20.7703 15.3821 21.4148C13.5837 22.0592 11.6382 22.1743 9.77635 21.7463C7.91451 21.3183 6.21449 20.3653 4.878 19.0002H8C8.26522 19.0002 8.51957 18.8949 8.70711 18.7073C8.89464 18.5198 9 18.2654 9 18.0002C9 17.735 8.89464 17.4806 8.70711 17.2931C8.51957 17.1056 8.26522 17.0002 8 17.0002H3.857C3.6131 17.0001 3.37156 17.048 3.1462 17.1413C2.92084 17.2346 2.71607 17.3714 2.54361 17.5438C2.37115 17.7163 2.23436 17.9211 2.14109 18.1464C2.04781 18.3718 1.99987 18.6133 2 18.8572V23.0002C2 23.2654 2.10536 23.5198 2.29289 23.7073C2.48043 23.8949 2.73478 24.0002 3 24.0002C3.26522 24.0002 3.51957 23.8949 3.70711 23.7073C3.89464 23.5198 4 23.2654 4 23.0002V20.9222C5.65283 22.4108 7.68741 23.4098 9.8759 23.8075C12.0644 24.2051 14.3204 23.9857 16.3912 23.1738C18.4621 22.3618 20.266 20.9895 21.601 19.2103C22.936 17.4311 23.7494 15.3155 23.95 13.1002C23.9629 12.9609 23.9467 12.8205 23.9023 12.6879C23.858 12.5552 23.7865 12.4333 23.6924 12.3298C23.5983 12.2263 23.4837 12.1436 23.3559 12.0868C23.2281 12.0301 23.0899 12.0006 22.95 12.0002H22.951Z"
-                                fill="white" />
-                        </g>
-                        <defs>
-                            <clipPath id="clip0_395_4645">
-                                <rect width="24" height="24" fill="white" />
-                            </clipPath>
-                        </defs>
-                    </svg>
+
+
+                    <img src="/assets/svg/update.svg" alt="">
+
                 </span>
-                <span>{{ $t('dashboard.help.reset.current-password') }}</span>
+                <span>Update</span>
             </button>
-            <Transition enter-active-class="transition ease-in-out" enter-from-class="opacity-0"
-                leave-active-class="transition ease-in-out" leave-to-class="opacity-0">
-                <p v-if="form.recentlySuccessful" class="text-sm text-gray-600">Saved.</p>
-            </Transition>
+        </div>
+
+        <div v-if="formSuccess" class="px-8 py-4 text-center text-white bg-green-500">
+            Password updated successfully.
         </div>
     </form>
 </template>
+
+<style scoped>
+input:focus,
+select:focus,
+input:active,
+select:active {
+    border: 1px solid #FF7400 !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+input,
+select {
+    height: 3.1875rem;
+    background-color: rgba(255, 165, 0, 0.06);
+    border: 1px solid rgba(140, 140, 140, 0.2);
+}
+</style>

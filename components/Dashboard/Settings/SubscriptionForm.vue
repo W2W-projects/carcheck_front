@@ -1,238 +1,93 @@
 <script setup>
-import { useForm, usePage } from '@inertiajs/vue3';
-import axios from "axios";
-import { onBeforeMount, onMounted, ref } from "vue";
+import { ref, reactive, onMounted } from "vue";
 
-const currentCancelSectionView = ref('index');
-const user = usePage().props.auth.user;
 const subsInfo = ref({});
-const feedbacks = ref([]);
-const offerInfo = ref({});
-const lang=usePage().props.lang.current;
-
-const form = useForm({
-    name: user.name ?? '',
-    card: '',
-    expiration: '',
-    cvv: '',
-    errors: {}
-});
-
-const feedbackForm = useForm({
-    id: '',
-    custom_message: '',
-});
-
+const processing = ref(false);
+const formSuccess = ref(false);
 
 async function getSubscriptionInfo() {
     try {
-        const { data } = await axios.get(route('customer.subscription.info'));
-        subsInfo.value = data.subsInfo;
+        // Simulated data for now
+        subsInfo.value = {
+            subscription_id: 1,
+            subscription_type: "Basic Plan 10 Checks",
+            status: "active",
+            ends_at: "12 Feb 2024",
+            next_price: "8.50$",
+            checks_remaining: 5,
+        };
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching subscription info:", error);
     }
 }
 
 function cancelSubscription(subscription_id) {
-    axios.post(route('payment.subscription.cancel'), { subscription_id,lang })
-        .then(response => {
-            getSubscriptionInfo();
-            changeCancelSectionView('index');
-        })
-        .catch(error => {
-            console.error(error);
-        });
+    processing.value = true;
+    // Simulated API call
+    setTimeout(() => {
+        console.log(`Subscription ${subscription_id} canceled.`);
+        processing.value = false;
+        formSuccess.value = true;
 
+        // Hide success message after 5 seconds
+        setTimeout(() => {
+            formSuccess.value = false;
+        }, 5000);
+    }, 2000);
 }
-
-function changeCancelSectionView(key) {
-    currentCancelSectionView.value = key;
-}
-
-function submitFeedbackForm() {
-    feedbackForm.post(route('user.feedbacks.store'), {
-        onSuccess: async () => {
-            feedbackForm.reset();
-            await getSubscriptionInfo();
-            changeCancelSectionView('offer');
-        },
-        onError: () => {
-            console.error(feedbackForm.errors);
-        },
-    });
-
-}
-
-function fetchFeedbackReasons() {
-    axios.get(route('feedback.reasons.fetch'))
-        .then(response => {
-            feedbacks.value = response.data;
-        })
-        .catch(error => {
-            console.error(error);
-        });
-}
-
-function fetchOfferAmount() {
-    axios.get(route('payment.offer'))
-        .then(response => {
-            console.log(response.data);
-        })
-        .catch(error => {
-            console.error(error);
-        });
-}
-
-async function acceptOffer() {
-    await axios.post(route('payment.discount'),{lang}).then(response => {
-        getSubscriptionInfo();
-        changeCancelSectionView('index');
-    }).catch(error => {
-        console.error(error);
-    });
-}
-
-function fetchOfferPrice() {
-    axios.get(route('payment.discount.fetch'))
-        .then(response => {
-            offerInfo.value = response.data.data;
-        })
-        .catch(error => {
-            console.error(error);
-        });
-}
-
-onBeforeMount(() => {
-    fetchFeedbackReasons();
-});
 
 onMounted(() => {
     getSubscriptionInfo();
-    fetchOfferPrice();
 });
 </script>
 
 <template>
-    <!-- section feedback -->
-    <div v-if="currentCancelSectionView === 'feedback'">
-        <form @submit.prevent="submitFeedbackForm" class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg px-6 py-5">
-            <h2 class="text-2xl font-bold text-gray-800 border-b pb-2">
-                {{ $t('dashboard.help.subscription.feedback.heading') }}
-            </h2>
-            <p class="text-gray-600 mt-2">
-                {{ $t('dashboard.help.subscription.feedback.sub-heading') }}
-            </p>
+    <div class="flex flex-col h-full">
+        <div class="flex items-center justify-center flex-1 py-0 text-black">
+            <div>
+                <div class="space-y-5">
+                    <div class="text-gray-700 ">
+                        <div class="flex items-center space-x-2 space-y-1">
+                            <div>
+                                <svg width="22" height="23" viewBox="0 0 22 23" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M11.9592 0.559035L11 1.09524L10.0408 0.559035C10.2356 0.213749 10.6023 0 11 0C11.3977 0 11.7644 0.213749 11.9592 0.559035ZM12.1 7.43883C13.0712 7.01631 13.75 6.05136 13.75 4.92857C13.75 4.47472 13.5703 3.94707 13.4193 3.55491C13.2485 3.11096 13.0269 2.6283 12.8143 2.19284C12.6002 1.75418 12.3871 1.34716 12.2282 1.05079C12.1485 0.902214 12.082 0.780513 12.035 0.695437C12.0115 0.652879 11.9929 0.61943 11.98 0.596303L11.965 0.569489L11.9597 0.560066C11.9597 0.560066 11.9592 0.559035 11 1.09524C10.0408 0.559035 10.0408 0.559035 10.0408 0.559035L10.035 0.569489L10.02 0.596303C10.0071 0.61943 9.98846 0.652879 9.96498 0.695437C9.91804 0.780513 9.85148 0.902214 9.77182 1.05079C9.61291 1.34716 9.39985 1.75418 9.18569 2.19284C8.97309 2.6283 8.75152 3.11096 8.58065 3.55491C8.42972 3.94707 8.25 4.47472 8.25 4.92857C8.25 6.05137 8.92875 7.01631 9.9 7.43883V10.9524H6.05V9.62931C7.02125 9.20679 7.7 8.24184 7.7 7.11905C7.7 6.6652 7.52028 6.13754 7.36935 5.74539C7.19848 5.30144 6.97691 4.81878 6.76431 4.38331C6.55015 3.94465 6.33709 3.53763 6.17818 3.24127C6.09852 3.09269 6.03196 2.97099 5.98502 2.88591C5.96154 2.84336 5.94294 2.80991 5.93003 2.78678L5.91503 2.75996L5.90974 2.75054C5.90974 2.75054 5.90916 2.74951 4.95 3.28571L5.90916 2.74951C5.71445 2.40423 5.34771 2.19048 4.95 2.19048C4.55229 2.19048 4.18555 2.40423 3.99084 2.74951L4.95 3.28571C3.99084 2.74951 3.99084 2.74951 3.99084 2.74951L3.98497 2.75996L3.96996 2.78678C3.95706 2.80991 3.93846 2.84336 3.91498 2.88591C3.86804 2.97099 3.80148 3.09269 3.72182 3.24127C3.56291 3.53763 3.34985 3.94465 3.13569 4.38331C2.92309 4.81878 2.70152 5.30144 2.53065 5.74539C2.37972 6.13754 2.2 6.6652 2.2 7.11905C2.2 8.24184 2.87875 9.20679 3.85 9.62931V10.9524H3.3C1.47746 10.9524 0 12.4234 0 14.2381V19.7143C0 21.5289 1.47746 23 3.3 23H18.7C20.5225 23 22 21.5289 22 19.7143V14.2381C22 12.4234 20.5225 10.9524 18.7 10.9524H18.15V9.62931C19.1212 9.20679 19.8 8.24184 19.8 7.11905C19.8 6.6652 19.6203 6.13754 19.4693 5.74539C19.2985 5.30144 19.0769 4.81878 18.8643 4.38331C18.6502 3.94465 18.4371 3.53763 18.2782 3.24127C18.1985 3.09269 18.132 2.97099 18.085 2.88591C18.0615 2.84336 18.0429 2.80991 18.03 2.78678L18.015 2.75996L18.0097 2.75054C18.0097 2.75054 18.0092 2.74951 17.05 3.28571L18.0092 2.74951C17.8144 2.40423 17.4477 2.19048 17.05 2.19048C16.6523 2.19048 16.2856 2.40423 16.0908 2.74951L17.05 3.28571C16.0908 2.74951 16.0908 2.74951 16.0908 2.74951L16.085 2.75996L16.07 2.78678C16.0571 2.80991 16.0385 2.84336 16.015 2.88591C15.968 2.97099 15.9015 3.09269 15.8218 3.24127C15.6629 3.53763 15.4499 3.94465 15.2357 4.38331C15.0231 4.81878 14.8015 5.30144 14.6307 5.74539C14.4797 6.13754 14.3 6.6652 14.3 7.11905C14.3 8.24184 14.9788 9.20679 15.95 9.62931L15.95 10.9524H12.1V7.43883ZM6.73972 13.1429C6.79097 13.3405 6.85614 13.5347 6.93493 13.7241C7.15605 14.2557 7.48015 14.7386 7.88873 15.1454C8.05821 15.3142 8.24085 15.4684 8.43467 15.6069C8.70811 15.8023 9.0038 15.9663 9.31619 16.0951C9.85003 16.3153 10.4222 16.4286 11 16.4286C11.5778 16.4286 12.15 16.3153 12.6838 16.0951C12.9962 15.9663 13.2919 15.8023 13.5653 15.6069C13.7591 15.4684 13.9418 15.3142 14.1113 15.1454C14.5198 14.7386 14.844 14.2557 15.0651 13.7241C15.1439 13.5347 15.209 13.3405 15.2603 13.1429H6.73972ZM17.5077 13.1429C17.4252 13.6287 17.2879 14.105 17.0976 14.5624C16.8426 15.1753 16.4963 15.7452 16.0713 16.2533C16.1427 16.2674 16.2168 16.2808 16.2931 16.2932C16.964 16.4024 17.6317 16.4086 18.0465 16.298C18.7177 16.1189 19.3217 15.764 19.8 15.278V14.2381C19.8 13.6332 19.3075 13.1429 18.7 13.1429H17.5077ZM19.8 17.9608C19.4252 18.1513 19.0286 18.3037 18.6159 18.4138C17.7625 18.6415 16.7363 18.5849 15.9382 18.455C15.5243 18.3876 15.1267 18.2932 14.7909 18.1817C14.6235 18.1261 14.4559 18.0611 14.3025 17.9856C14.2381 17.9538 14.1604 17.9127 14.0784 17.8605C13.8986 17.9549 13.7142 18.0411 13.5257 18.1188C12.725 18.4491 11.8667 18.619 11 18.619C10.1333 18.619 9.27504 18.4491 8.47429 18.1188C8.28583 18.0411 8.10142 17.9549 7.92161 17.8605C7.83964 17.9127 7.76195 17.9538 7.69754 17.9856C7.54405 18.0611 7.37652 18.1261 7.20909 18.1817C6.87329 18.2932 6.47573 18.3876 6.06178 18.455C5.26369 18.5849 4.23749 18.6415 3.38414 18.4138C2.97139 18.3037 2.57485 18.1513 2.2 17.9608V19.7143C2.2 20.3192 2.69249 20.8095 3.3 20.8095H18.7C19.3075 20.8095 19.8 20.3192 19.8 19.7143V17.9608ZM2.2 15.278C2.67829 15.764 3.28227 16.1189 3.95355 16.298C4.36829 16.4086 5.036 16.4024 5.70688 16.2932C5.78323 16.2808 5.85732 16.2674 5.92866 16.2533C5.50368 15.7452 5.15739 15.1753 4.9024 14.5624C4.71211 14.105 4.5748 13.6287 4.49231 13.1429H3.3C2.69249 13.1429 2.2 13.6332 2.2 14.2381V15.278ZM17.05 5.68447C16.9119 5.97963 16.7848 6.26979 16.685 6.52923C16.5293 6.93368 16.501 7.11292 16.5 7.11889C16.5 7.42134 16.7462 7.66667 17.05 7.66667C17.3538 7.66667 17.6 7.42149 17.6 7.11905C17.5991 7.11307 17.5707 6.93368 17.415 6.52923C17.3152 6.26979 17.1881 5.97963 17.05 5.68447ZM4.95 5.68447C4.81193 5.97963 4.68483 6.26979 4.58497 6.52923C4.42931 6.93368 4.40097 7.11292 4.40003 7.11889C4.40003 7.42134 4.64624 7.66667 4.95 7.66667C5.25376 7.66667 5.5 7.42149 5.5 7.11905C5.49906 7.11307 5.47069 6.93368 5.31503 6.52923C5.21517 6.26979 5.08807 5.97963 4.95 5.68447ZM11 3.49399C10.8619 3.78916 10.7348 4.07932 10.635 4.33876C10.4793 4.74321 10.451 4.92244 10.45 4.92842C10.45 5.23086 10.6962 5.47619 11 5.47619C11.3038 5.47619 11.55 5.23101 11.55 4.92857C11.5491 4.9226 11.5207 4.74321 11.365 4.33876C11.2652 4.07932 11.1381 3.78916 11 3.49399Z"
+                                        fill="#FF7400" />
+                                </svg>
+                            </div>
+                            <p class="font-bold text-gray-800">
+                                Current Plan
+                            </p>
+                        </div>
+                        <span class="text-gray-900">{{ subsInfo.subscription_type }}</span>
+                    </div>
 
-            <div class="mt-1 space-y-2">
-                <label v-for="(feedback, index) in feedbacks" :key="index" class="block">
-                    <input type="radio" name="feedback" v-model="feedbackForm.id" :value="feedback?.id" class="mr-2">
-                    <span class="text-gray-700">{{ $t('dashboard.help.subscription.feedback.reasons.' +
-                        feedback?.reason) }}</span>
-                </label>
-
-                <div>
-                    <label for="custom_message" class="block text-gray-700 font-semibold">
-                        {{ $t('dashboard.help.subscription.feedback.reasons.other') }}
-                    </label>
-                    <textarea id="custom_message" v-model="feedbackForm.custom_message" rows="2"
-                        class="w-full mt-2 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                    <div class="space-y-1 text-gray-700 ">
+                        <p class="font-bold">Next payment due</p>
+                        <p class="text-gray-900">{{ subsInfo.next_price }} on {{ subsInfo.ends_at }}</p>
+                    </div>
+                    <div class="space-y-1 text-gray-700 ">
+                        <p>Checks remaining: {{ subsInfo.checks_remaining }}</p>
+                    </div>
                 </div>
-            </div>
 
-            <button type="submit"
-                class="mt-2 w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-purple-700 transition">Next</button>
-        </form>
-    </div>
-
-    <!-- section offer -->
-    <div class="3xl:max-w-4xl max-w-2xl mx-auto mt-1 bg-white shadow-lg rounded-lg p-6"
-        v-else-if="currentCancelSectionView === 'offer'">
-        <div v-if="subsInfo?.discount_applied" class="flex flex-col space-y-2">
-            <h2 class="text-xl font-bold text-gray-800">
-                {{
-                    $t('dashboard.help.subscription.cancel.p')
-                }}
-            </h2>
-            <button @click="cancelSubscription(subsInfo.subscription_id)"
-                class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition">
-                {{ $t('dashboard.help.subscription.offer.cta-cancel-2') }}
-            </button>
-        </div>
-        <div v-else>
-            <h2 class="text-xl font-bold text-gray-800">
-                {{
-                    $t('dashboard.help.subscription.offer.heading')
-                }}
-            </h2>
-            <p class="text-gray-600 mt-2"
-                v-html="$t('dashboard.help.subscription.offer.p', { price: offerInfo?.discounted_price })">
-
-            </p>
-            <div class="mt-6 flex justify-between">
-                <button @click="acceptOffer"
-                    class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-700 transition">
-                    {{ $t('dashboard.help.subscription.offer.cta') }}
+                <button @click="cancelSubscription(subsInfo.subscription_id)" :disabled="processing"
+                    class="flex items-center justify-center w-full px-4 py-2 mt-6 space-x-2 text-white bg-orange-500 rounded-lg shadow-md hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg width="25" height="27" viewBox="0 0 25 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M14.5331 2.93559C12.4067 2.36582 10.1677 2.36582 8.04124 2.93559C7.37221 3.11486 6.68452 2.71783 6.50526 2.04879C6.32599 1.37975 6.72302 0.692069 7.39206 0.512801C9.94379 -0.170934 12.6306 -0.170934 15.1823 0.512801C15.8513 0.692069 16.2484 1.37975 16.0691 2.04879C15.8898 2.71783 15.2021 3.11486 14.5331 2.93559ZM18.6314 3.30438C19.0503 2.75276 19.837 2.64516 20.3886 3.06404C21.9829 4.27466 23.3196 5.79117 24.3205 7.52478C24.6668 8.12462 24.4613 8.89163 23.8614 9.23795C23.2616 9.58427 22.4946 9.37875 22.1483 8.77891C21.3142 7.33423 20.2003 6.07048 18.8717 5.06163C18.3201 4.64274 18.2125 3.856 18.6314 3.30438ZM11.2872 6.27065C6.43871 6.27065 2.50826 10.2011 2.50826 15.0496C2.50826 19.898 6.43871 23.8285 11.2872 23.8285C16.1356 23.8285 20.0661 19.898 20.0661 15.0496C20.0661 10.2011 16.1356 6.27065 11.2872 6.27065ZM0 15.0496C0 8.81583 5.05344 3.76239 11.2872 3.76239C17.5209 3.76239 22.5743 8.81583 22.5743 15.0496C22.5743 21.2833 17.5209 26.3367 11.2872 26.3367C5.05344 26.3367 0 21.2833 0 15.0496ZM6.85315 10.6155C7.34292 10.1258 8.13699 10.1258 8.62676 10.6155L11.2872 13.276L13.9476 10.6155C14.4374 10.1258 15.2314 10.1258 15.7212 10.6155C16.211 11.1053 16.211 11.8994 15.7212 12.3892L13.0608 15.0496L15.7212 17.71C16.211 18.1997 16.211 18.9938 15.7212 19.4836C15.2314 19.9734 14.4374 19.9734 13.9476 19.4836L11.2872 16.8232L8.62676 19.4836C8.13699 19.9734 7.34292 19.9734 6.85315 19.4836C6.36338 18.9938 6.36338 18.1997 6.85315 17.71L9.51357 15.0496L6.85315 12.3892C6.36338 11.8994 6.36338 11.1053 6.85315 10.6155Z"
+                            fill="white" />
+                    </svg>
+                    <p>
+                        Cancel Subscription
+                    </p>
                 </button>
-                <button @click="cancelSubscription(subsInfo.subscription_id)"
-                    class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition">{{
-                        $t('dashboard.help.subscription.offer.cta-2') }}</button>
             </div>
         </div>
 
-
-    </div>
-
-    <!-- section index -->
-    <div v-else class="flex flex-col">
-        <div class="max-w-4xl min-w-[25rem] mx-auto bg-white shadow-lg rounded-lg p-6">
-            <h2 class="text-xl font-bold text-gray-800 border-b pb-4">
-                {{ $t('dashboard.help.subscription.current-plan') }}
-            </h2>
-
-            <div class="mt-4">
-                <p class="text-gray-700 font-semibold">
-                    Plan: <span class="text-gray-900 font-extralight text-sm">{{ subsInfo.subscription_type }}</span>
-                </p>
-                <p class="text-gray-700 font-semibold">
-
-                    {{ $t('dashboard.help.subscription.sub-status') }}
-
-                    <span :class="subsInfo.status === 'active' ? 'text-green-600' : 'text-red-600'"
-                        class="text-sm font-extralight">
-                        {{ subsInfo.status }}
-                    </span>
-                </p>
-                <p class="text-gray-700 font-semibold">
-                    <span>
-                        {{ $t(`dashboard.help.subscription.${subsInfo.status === 'active' ? 'next-due' :
-                            'access-until'}`) }}
-                    </span>
-                    <span class="text-gray-900 font-extralight text-sm">{{ subsInfo.ends_at }}</span>
-                </p>
-                <p class="text-gray-700 font-semibold" v-if="subsInfo.status === 'active'">
-
-                    {{ $t('dashboard.help.subscription.amount') }}
-                    <span class="text-gray-900 font-extralight text-sm">{{ subsInfo.next_price }}</span>
-                </p>
-            </div>
-
-            <button @click="changeCancelSectionView('feedback')" v-if="subsInfo.status === 'active'"
-                class="mt-6 w-full bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition">
-                {{
-                    $t('dashboard.help.subscription.cta')
-                }}
-            </button>
-            <!-- <button @click="acceptOffer" v-if="subsInfo.status === 'active'"
-                class="mt-6 w-full bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition">
-                Start Cancellation Process
-            </button> -->
-
-        </div>
-        <div class="flex items-center justify-between bg-primary-blue py-6 px-8 text-white">
-            <Transition enter-active-class="transition ease-in-out" enter-from-class="opacity-0"
-                leave-active-class="transition ease-in-out" leave-to-class="opacity-0">
-                <p v-if="form.recentlySuccessful" class="text-sm text-gray-600">Saved.</p>
-            </Transition>
+        <div class="flex items-center justify-between px-8 mb-5 text-black bg-primary-blue">
+            <p>Update your subscriptions</p>
         </div>
     </div>
 </template>
