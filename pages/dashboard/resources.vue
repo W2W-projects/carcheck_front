@@ -70,6 +70,12 @@ const articles = [
     image: '/images/webp/demo-car.webp',
     description: 'Learn practical driving techniques and maintenance habits that can significantly improve your vehicle\'s fuel efficiency. Small changes in how you drive and maintain your car can lead to substantial savings at the pump.',
     category: 'Tips'
+  },
+  {
+    title: 'Maximizing Fuel Economy: Driving Habits That Save Money',
+    image: '/images/webp/demo-car.webp',
+    description: 'Learn practical driving techniques and maintenance habits that can significantly improve your vehicle\'s fuel efficiency. Small changes in how you drive and maintain your car can lead to substantial savings at the pump.',
+    category: 'Tips'
   }
 ];
 
@@ -103,17 +109,138 @@ const articleCategories = computed(() => {
             <p class="text-lg font-bold text-gray-400">{{ category }}</p>
           </template>
 
-        </div>
-        <p class="mr-10 text-lg font-bold text-gray-400">See all</p>
-      </div>
-      <div class="flex w-full gap-x-6">
-        <DashboardResourcesArticles :data="articles" />
-      </div>
+</div>
+<p class="mr-10 text-lg font-bold text-gray-400">See all</p>
+</div>
+<div class="flex w-full gap-x-6">
+  <DashboardResourcesArticles :data="articles" />
+</div>
 
-    </div>
+</div>
+</div>
+</template>
+
+<template>
+  <div class="relative w-full min-h-[16.625rem] overflow-hidden">
+    <swiper :slides-per-view="'auto'" :space-between="25" :free-mode="true" :modules="modules"
+      class="w-full articles-swiper" @slideChange="handleSlideChange" @init="handleSwiperInit"
+      @reachEnd="handleReachEnd" @fromEdge="handleFromEdge" @transitionEnd="updateLastVisibleSlide">
+      <swiper-slide v-for="(_, index) in data" :key="index" class="article-slide"
+        :class="shouldBeTransparent(index) ? 'semi-transparent' : ''">
+        <div class="w-[14.9375rem] h-[16.625rem]">
+          <div class="h-[9.3125rem] w-full rounded-2xl" :style="{
+            backgroundImage: `url('${data[index].image}')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }"></div>
+          <p class="h-[3rem] line-clamp-2 overflow-hidden text-ellipsis text-justify leading-5 mt-2">
+            {{ data[index].title }}
+          </p>
+          <small class="h-[3.69rem] line-clamp-3 overflow-hidden text-ellipsis text-start text-gray-500">
+            {{ data[index].description }}
+          </small>
+        </div>
+      </swiper-slide>
+    </swiper>
   </div>
 </template>
 
+<script lang="ts" setup>
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import { FreeMode } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/free-mode';
+import { ref, onMounted, watch } from 'vue';
 
+const modules = [FreeMode];
+const { data } = defineProps<{
+  data: any[];
+}>();
 
-<style scoped></style>
+// Track swiper state
+const isAtEnd = ref(false);
+const lastVisibleIndex = ref(-1);
+let swiperInstance = null;
+
+const handleSwiperInit = (swiper) => {
+  swiperInstance = swiper;
+  // Initial update with a delay to ensure DOM is ready
+  setTimeout(() => {
+    updateLastVisibleSlide();
+  }, 200);
+};
+
+const handleSlideChange = () => {
+  // Update whenever slides change, with a small delay
+  setTimeout(() => {
+    updateLastVisibleSlide();
+  }, 200);
+};
+
+// Track when we reach the last slide
+const handleReachEnd = () => {
+  isAtEnd.value = true;
+  updateLastVisibleSlide(); // Update immediately
+};
+
+// Track when we move away from the last slide
+const handleFromEdge = () => {
+  isAtEnd.value = false;
+  updateLastVisibleSlide(); // Update immediately
+};
+
+const updateLastVisibleSlide = () => {
+  if (!swiperInstance) return;
+  
+  // When we're at the end of the swiper, no slides should be transparent
+  if (isAtEnd.value) {
+    lastVisibleIndex.value = -1;
+    return;
+  }
+  
+  const container = swiperInstance.el;
+  const containerRect = container.getBoundingClientRect();
+  const containerRight = containerRect.right;
+  
+  let candidateIndex = -1;
+  
+  // Loop through all slides
+  Array.from(swiperInstance.slides).forEach((slide, index) => {
+    const slideRect = slide.getBoundingClientRect();
+    
+    // If this slide extends beyond the container's right edge
+    // and we haven't found a candidate yet
+    if (slideRect.right > containerRight && candidateIndex === -1) {
+      candidateIndex = index;
+    }
+  });
+  
+  lastVisibleIndex.value = candidateIndex;
+};
+
+const shouldBeTransparent = (index) => {
+  // If we're at the last slide, nothing should be transparent
+  if (isAtEnd.value) {
+    return false;
+  }
+  
+  // Only make it semi-transparent if:
+  // 1. It's the last visible slide AND 
+  // 2. It's NOT the last data item
+  return index === lastVisibleIndex.value && index !== data.length - 1;
+};
+
+// Update on various events
+onMounted(() => {
+  window.addEventListener('resize', updateLastVisibleSlide);
+  
+  // Set up an interval to periodically check for changes
+  const checkInterval = setInterval(updateLastVisibleSlide, 500);
+  
+  return () => {
+    window.removeEventListener('resize', updateLastVisibleSlide);
+    clearInterval(checkInterval);
+  };
+});
+</script>

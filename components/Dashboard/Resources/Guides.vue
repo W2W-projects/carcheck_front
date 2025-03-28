@@ -1,10 +1,11 @@
 <template>
   <div class="relative w-full min-h-[19.625rem] overflow-hidden">
     <swiper :slides-per-view="'auto'" :space-between="25" :free-mode="true" :modules="modules"
-      class="w-full guides-swiper" @slideChange="handleSlideChange" @init="handleSwiperInit">
-      <swiper-slide v-for="(_, index) in 4" :key="index" :class="[
+      class="w-full guides-swiper" @slideChange="handleSlideChange" @init="handleSwiperInit" @reachEnd="handleReachEnd"
+      @fromEdge="handleFromEdge" @transitionEnd="updateLastVisibleSlide">
+      <swiper-slide v-for="(_, index) in data" :key="index" :class="[
         index === 0 ? 'first-slide' : 'other-slide',
-        isLastVisible(index) ? 'semi-transparent' : ''
+        shouldBeTransparent(index) ? 'semi-transparent' : ''
       ]">
         <div class="h-[19.625rem] rounded-xl w-full" :style="{
           backgroundImage: `url('${data[index].image}')`,
@@ -36,53 +37,91 @@ import { Swiper, SwiperSlide } from 'swiper/vue';
 import { FreeMode } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/free-mode';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const modules = [FreeMode];
 const { data } = defineProps<{
   data: any[];
 }>();
 
+const isAtEnd = ref(false);
 const lastVisibleIndex = ref(-1);
-let swiperInstance = null;
+let swiperInstance: any = null;
 
-const handleSwiperInit = (swiper) => {
+const handleSwiperInit = (swiper: any) => {
   swiperInstance = swiper;
-  updateLastVisibleSlide();
+  setTimeout(() => {
+    updateLastVisibleSlide();
+  }, 200);
 };
 
 const handleSlideChange = () => {
+  setTimeout(() => {
+    updateLastVisibleSlide();
+  }, 200);
+};
+
+const handleReachEnd = () => {
+  isAtEnd.value = true;
+  updateLastVisibleSlide();
+};
+
+const handleFromEdge = () => {
+  isAtEnd.value = false;
   updateLastVisibleSlide();
 };
 
 const updateLastVisibleSlide = () => {
   if (!swiperInstance) return;
 
-  const swiperWidth = swiperInstance.width;
-  const slides = swiperInstance.slides;
-
-  for (let i = 0; i < slides.length; i++) {
-    const slide = slides[i];
-    const slideLeft = slide.offsetLeft;
-    const slideWidth = slide.offsetWidth;
-    const slideRight = slideLeft + slideWidth;
-
-    if (slideLeft < swiperWidth && slideRight > swiperWidth - 200) {
-      lastVisibleIndex.value = i;
-      break;
-    }
+  if (isAtEnd.value) {
+    lastVisibleIndex.value = -1;
+    return;
   }
+
+  const container = swiperInstance.el;
+  const containerRect = container.getBoundingClientRect();
+  const containerRight = containerRect.right;
+
+  let candidateIndex = -1;
+
+  Array.from(swiperInstance.slides).forEach((slide, index) => {
+    const slideRect = slide.getBoundingClientRect();
+
+    if (slideRect.right > containerRight && candidateIndex === -1) {
+      candidateIndex = index;
+    }
+  });
+
+  lastVisibleIndex.value = candidateIndex;
 };
 
-const isLastVisible = (index) => {
+const shouldBeTransparent = (index) => {
+  if (isAtEnd.value) {
+    return false;
+  }
+
   return index === lastVisibleIndex.value && index !== data.length - 1;
 };
+
+onMounted(() => {
+  window.addEventListener('resize', updateLastVisibleSlide);
+
+  const checkInterval = setInterval(updateLastVisibleSlide, 500);
+
+  return () => {
+    window.removeEventListener('resize', updateLastVisibleSlide);
+    clearInterval(checkInterval);
+  };
+});
 </script>
 
 <style scoped>
 .guides-swiper {
   width: 100%;
   height: auto;
+  padding: 0;
+  margin: 0;
 }
 
 .swiper-slide {
@@ -92,6 +131,12 @@ const isLastVisible = (index) => {
   width: auto !important;
   height: auto !important;
   transition: opacity 0.3s ease;
+  margin-left: 0 !important;
+}
+
+.swiper-wrapper {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
 }
 
 .first-slide {
