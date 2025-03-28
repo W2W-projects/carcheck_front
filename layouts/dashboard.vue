@@ -41,14 +41,23 @@ const sideBarData = [
     icon: 'icon-resources.svg',
     target: '/dashboard/resources',
     route_name: 'dashboard-resources'
+  },
+  {
+    title: 'Settings',
+    icon: 'icon-resources.svg',
+    target: '/dashboard/settings',
+    route_name: 'dashboard-settings'
   }
 ]
 
 const isRouteActive = (routeName: string) => route.name === routeName;
+
+const isRouteResource = () => route.name === 'dashboard-resources';
 </script>
 
 <template>
-  <div class="flex w-full h-screen px-10 py-5 space-x-12 bg-white/90 ">
+  <div class="flex w-full h-screen py-5 space-x-12 overflow-hidden bg-white/90"
+    :class="[isRouteResource() ? 'pl-10' : 'px-10']">
     <!-- sidebar -->
     <div class="bg-[#0F1829] w-[4.25rem] flex-shrink-0 rounded-lg flex flex-col items-center justify-between">
       <div class="flex flex-col w-full mt-[3.75rem] gap-y-10">
@@ -70,7 +79,7 @@ const isRouteActive = (routeName: string) => route.name === routeName;
     <!-- body -->
     <div class="flex flex-col flex-1 space-y-6">
       <!-- body-header -->
-      <div class="w-ful h-[3.5rem] flex">
+      <div class="w-full h-[3.5rem] flex" :class="{ 'pr-10': isRouteResource() }">
         <div class="flex pl-1">
           <AppLogo class="w-[9rem]" />
         </div>
@@ -92,7 +101,7 @@ const isRouteActive = (routeName: string) => route.name === routeName;
 
       </div>
       <!-- body -->
-      <div class="flex-1">
+      <div class="flex-1 max-w-screen-xl">
         <slot />
       </div>
     </div>
