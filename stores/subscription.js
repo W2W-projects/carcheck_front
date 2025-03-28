@@ -17,6 +17,8 @@ export const useSubscriptionStore = defineStore("subscription", {
   getters: {
     // getHasSubscription: (state) => state.hasSubscription,
     getSubscriptionStatus: (state) => state.hasSubscription.active,
+    getSubscriptionDetails: (state) => state.subscription
+    
   },
   actions: {
     async setHasSubscription(hasSubscription) {

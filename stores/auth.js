@@ -168,5 +168,18 @@ export const useAuthStore = defineStore("auth", {
         throw error;
       }
     },
+
+    async fetchUserDetails() {
+      try {
+        const res = await ApiService.get("users/details");
+
+        if (res && res.data) {
+            this.setUser({ ...this.user, ...res.data });
+        }
+        
+      } catch (error) {
+        throw error;
+      }
+    }
   },
 });

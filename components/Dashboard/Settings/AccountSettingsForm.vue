@@ -2,42 +2,18 @@
 import { ref, reactive } from 'vue';
 import countries from "~/static/countryData.json";
 
-const user = ref({});
-const profile = ref({});
-
 const authStore = useAuthStore();
-const { name, email } = authStore.user;
-
-const fetchUserData = async () => {
-    // try {
-    //     const response = await $fetch('/api/user-profile');
-    //     user.value = response.user;
-    //     profile.value = response.profile;
-
-    //     form.first_name = profile.value.first_name || '';
-    //     form.last_name = profile.value.last_name || '';
-    //     form.email = user.value.email || '';
-    //     form.country = profile.value.country || '';
-    //     form.telephone = profile.value.telephone || '';
-    //     form.postcode = profile.value.postcode || '';
-    //     form.city = profile.value.city || '';
-    //     form.user_id = profile.value.id;
-    // } catch (error) {
-    //     console.error('Error fetching user data:', error);
-    // }
-};
-
-onMounted(fetchUserData);
+const user = computed(() => authStore.getCurrentUser);
 
 const form = reactive({
-    first_name: '',
-    last_name: '',
-    email: email || null,
-    country: '',
-    telephone: '',
-    postcode: '',
-    city: '',
-    user_id: '',
+    first_name: user.value?.first_name || '',
+    last_name: user.value?.last_name || '',
+    email: user.value?.email || null,
+    country: user.value?.country || null,
+    telephone: user.value?.telephone || '',
+    postcode: user.value?.postcode || '',
+    city: user.value?.city || '',
+    username: user.value?.username || null,
 });
 
 const errors = reactive({});
@@ -75,6 +51,7 @@ const submitForm = async () => {
         processing.value = false;
     }
 };
+
 </script>
 
 <template>
@@ -99,8 +76,8 @@ const submitForm = async () => {
                 <div class="col-span-1">
                     <label for="email" class="block text-sm font-medium text-gray-700">Username</label>
                     <input id="username" disabled type="text" class="block w-full mt-1 text-gray-400 rounded disabled"
-                        v-model="form.email" />
-                    <div v-if="errors.email" class="mt-2 text-sm text-red-600">{{ errors.email }}</div>
+                        v-model="form.username" />
+                    <div v-if="errors.username" class="mt-2 text-sm text-red-600">{{ errors.username }}</div>
                 </div>
 
                 <!-- Email -->

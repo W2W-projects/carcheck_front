@@ -1,25 +1,9 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 
-const subsInfo = ref({});
 const processing = ref(false);
 const formSuccess = ref(false);
 
-async function getSubscriptionInfo() {
-    try {
-        // Simulated data for now
-        subsInfo.value = {
-            subscription_id: 1,
-            subscription_type: "Basic Plan 10 Checks",
-            status: "active",
-            ends_at: "12 Feb 2024",
-            next_price: "8.50$",
-            checks_remaining: 5,
-        };
-    } catch (error) {
-        console.error("Error fetching subscription info:", error);
-    }
-}
 
 function cancelSubscription(subscription_id) {
     processing.value = true;
@@ -36,8 +20,23 @@ function cancelSubscription(subscription_id) {
     }, 2000);
 }
 
+const subscriptionStore = useSubscriptionStore();
+const subscription = computed(() => subscriptionStore.getSubscriptionDetails);
+
+const authStore = useAuthStore();
+const user = computed(() => authStore.getCurrentUser);
+console.log("Subscription Store:", subscription.value);
+
+function formatData(date) {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    const formattedDate = new Date(date).toLocaleDateString('en-GB', options);
+    return formattedDate;
+}
+
 onMounted(() => {
-    getSubscriptionInfo();
+    if (!subscription.value?.id) {
+        subscriptionStore.getUserSubscription();
+    }
 });
 </script>
 
@@ -60,19 +59,21 @@ onMounted(() => {
                                 Current Plan
                             </p>
                         </div>
-                        <span class="text-gray-900">{{ subsInfo.subscription_type }}</span>
+                        <span class="text-gray-900">{{ subscription?.plan?.name }}</span>
                     </div>
 
                     <div class="space-y-1 text-gray-700 ">
                         <p class="font-bold">Next payment due</p>
-                        <p class="text-gray-900">{{ subsInfo.next_price }} on {{ subsInfo.ends_at }}</p>
+                        <p class="text-gray-900">{{ subscription?.price }} on {{
+                            subscription?.ends_at && formatData(subscription?.ends_at)
+                        }}</p>
                     </div>
                     <div class="space-y-1 text-gray-700 ">
-                        <p>Checks remaining: {{ subsInfo.checks_remaining }}</p>
+                        <p>Checks remaining: {{ user?.request_count }}</p>
                     </div>
                 </div>
 
-                <button @click="cancelSubscription(subsInfo.subscription_id)" :disabled="processing"
+                <button @click="cancelSubscription(subscription?.id)" :disabled="processing"
                     class="flex items-center justify-center w-full px-4 py-2 mt-6 space-x-2 text-white bg-orange-500 rounded-lg shadow-md hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed">
                     <svg width="25" height="27" viewBox="0 0 25 27" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"

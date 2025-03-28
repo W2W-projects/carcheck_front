@@ -17,19 +17,21 @@ function changeTab(index) {
   activeTab.value = index;
 }
 
-// Mock user data
-const user = {
-  name: 'Yazid Nait L',
-  email: 'User@gmail.com',
-  phone: '+1 434 454 343',
-  address: 'Bath srt, UK',
-};
 
 definePageMeta({
   title: 'Car Check Settings',
   layout: 'dashboard',
 
   // middleware: ['auth'],
+});
+
+const authStore = useAuthStore();
+const user = computed(() => authStore.user);
+
+onMounted(() => {
+  if (!user.value?.first_name) {
+    authStore.fetchUserDetails();
+  }
 });
 
 </script>
