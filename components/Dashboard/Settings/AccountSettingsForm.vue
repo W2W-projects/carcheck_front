@@ -5,6 +5,9 @@ import countries from "~/static/countryData.json";
 const user = ref({});
 const profile = ref({});
 
+const authStore = useAuthStore();
+const { name, email } = authStore.user;
+
 const fetchUserData = async () => {
     // try {
     //     const response = await $fetch('/api/user-profile');
@@ -26,11 +29,10 @@ const fetchUserData = async () => {
 
 onMounted(fetchUserData);
 
-// Form state
 const form = reactive({
     first_name: '',
     last_name: '',
-    email: '',
+    email: email || null,
     country: '',
     telephone: '',
     postcode: '',
@@ -96,7 +98,7 @@ const submitForm = async () => {
                 <!-- Username -->
                 <div class="col-span-1">
                     <label for="email" class="block text-sm font-medium text-gray-700">Username</label>
-                    <input id="username" disabled type="text" class="block w-full mt-1 rounded disabled"
+                    <input id="username" disabled type="text" class="block w-full mt-1 text-gray-400 rounded disabled"
                         v-model="form.email" />
                     <div v-if="errors.email" class="mt-2 text-sm text-red-600">{{ errors.email }}</div>
                 </div>
@@ -104,7 +106,7 @@ const submitForm = async () => {
                 <!-- Email -->
                 <div class="col-span-1">
                     <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                    <input id="email" disabled type="email" class="block w-full mt-1 rounded disabled"
+                    <input id="email" disabled type="email" class="block w-full mt-1 text-gray-400 rounded disabled"
                         v-model="form.email" />
                     <div v-if="errors.email" class="mt-2 text-sm text-red-600">{{ errors.email }}</div>
                 </div>

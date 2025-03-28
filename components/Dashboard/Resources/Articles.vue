@@ -29,7 +29,7 @@ import { Swiper, SwiperSlide } from 'swiper/vue';
 import { FreeMode } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/free-mode';
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 
 const modules = [FreeMode];
 const { data } = defineProps<{
@@ -39,6 +39,7 @@ const { data } = defineProps<{
 const isAtEnd = ref(false);
 const lastVisibleIndex = ref(-1);
 let swiperInstance: any = null;
+let checkIntervalId: any = null;
 
 const handleSwiperInit = (swiper: any) => {
   swiperInstance = swiper;
@@ -64,28 +65,42 @@ const handleFromEdge = () => {
 };
 
 const updateLastVisibleSlide = () => {
-  if (!swiperInstance) return;
+  if (!swiperInstance || !swiperInstance.el || !swiperInstance.slides) return;
 
-  if (isAtEnd.value) {
-    lastVisibleIndex.value = -1;
-    return;
-  }
-
-  const container = swiperInstance.el;
-  const containerRect = container.getBoundingClientRect();
-  const containerRight = containerRect.right;
-
-  let candidateIndex = -1;
-
-  Array.from(swiperInstance.slides).forEach((slide, index) => {
-    const slideRect = slide.getBoundingClientRect();
-
-    if (slideRect.right > containerRight && candidateIndex === -1) {
-      candidateIndex = index;
+  try {
+    if (isAtEnd.value) {
+      lastVisibleIndex.value = -1;
+      return;
     }
-  });
 
-  lastVisibleIndex.value = candidateIndex;
+    const container = swiperInstance.el;
+
+    if (!container || !document.body.contains(container)) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const containerRight = containerRect.right;
+
+    let candidateIndex = -1;
+
+    const slides = Array.from(swiperInstance.slides || []);
+
+    for (let index = 0; index < slides.length; index++) {
+      const slide = slides[index];
+
+      if (!slide || !document.body.contains(slide)) continue;
+
+      const slideRect = slide.getBoundingClientRect();
+
+      if (slideRect.right > containerRight && candidateIndex === -1) {
+        candidateIndex = index;
+        break;
+      }
+    }
+
+    lastVisibleIndex.value = candidateIndex;
+  } catch (error) {
+    console.error('Error updating last visible slide:', error);
+  }
 };
 
 const shouldBeTransparent = (index) => {
@@ -99,12 +114,21 @@ const shouldBeTransparent = (index) => {
 onMounted(() => {
   window.addEventListener('resize', updateLastVisibleSlide);
 
-  const checkInterval = setInterval(updateLastVisibleSlide, 500);
+  checkIntervalId = setInterval(updateLastVisibleSlide, 500);
+});
 
-  return () => {
-    window.removeEventListener('resize', updateLastVisibleSlide);
-    clearInterval(checkInterval);
-  };
+onUnmounted(() => {
+  if (checkIntervalId !== null) {
+    clearInterval(checkIntervalId);
+    checkIntervalId = null;
+  }
+
+  window.removeEventListener('resize', updateLastVisibleSlide);
+
+  if (swiperInstance) {
+    swiperInstance.destroy();
+    swiperInstance = null;
+  }
 });
 </script>
 
