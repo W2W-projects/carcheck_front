@@ -10,7 +10,7 @@ const form = reactive({
     last_name: user.value?.last_name || '',
     email: user.value?.email || null,
     country: user.value?.country || null,
-    telephone: user.value?.telephone || '',
+    phone: user.value?.phone || '',
     postcode: user.value?.postcode || '',
     city: user.value?.city || '',
     username: user.value?.username || null,
@@ -25,21 +25,8 @@ const submitForm = async () => {
     formSuccess.value = false;
 
     try {
-        // Replace with your API endpoint
-        // await $fetch('/api/profile/update', {
-        //     method: 'PATCH',
-        //     body: form
-        // });
-
-        // Show success message
+        await authStore.updateUserDetails(form);
         formSuccess.value = true;
-
-        // Hide success message after 5 seconds
-        setTimeout(() => {
-            formSuccess.value = false;
-        }, 5000);
-
-        // Clear any previous errors
         Object.keys(errors).forEach(key => {
             errors[key] = null;
         });
@@ -88,11 +75,11 @@ const submitForm = async () => {
                     <div v-if="errors.email" class="mt-2 text-sm text-red-600">{{ errors.email }}</div>
                 </div>
 
-                <!-- Telephone -->
+                <!-- phone -->
                 <div class="col-span-1">
-                    <label for="telephone" class="block text-sm font-medium text-gray-700">Telephone</label>
-                    <input id="telephone" type="tel" class="block w-full mt-1 rounded" v-model="form.telephone" />
-                    <div v-if="errors.telephone" class="mt-2 text-sm text-red-600">{{ errors.telephone }}</div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                    <input id="phone" type="tel" class="block w-full mt-1 rounded" v-model="form.phone" />
+                    <div v-if="errors.phone" class="mt-2 text-sm text-red-600">{{ errors.phone }}</div>
                 </div>
 
                 <!-- Country -->

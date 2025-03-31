@@ -1,4 +1,5 @@
 <script setup>
+import { data } from 'autoprefixer';
 import { ref, reactive } from 'vue';
 
 const emit = defineEmits(['close-modal']);
@@ -14,14 +15,18 @@ const processing = ref(false);
 const formSuccess = ref(false);
 
 const updatePassword = async () => {
+
+    if (form.password !== form.password_confirmation) {
+        errors.password_confirmation = 'Passwords do not match';
+        return;
+    }
+
     processing.value = true;
     formSuccess.value = false;
 
     try {
-        await $fetch('/api/password/update', {
-            method: 'PATCH',
-            body: form,
-        });
+
+        await useAuthStore().updatePassword(form);
 
         formSuccess.value = true;
 
@@ -30,10 +35,6 @@ const updatePassword = async () => {
         });
 
         emit('close-modal');
-
-        setTimeout(() => {
-            formSuccess.value = false;
-        }, 5000);
 
         Object.keys(errors).forEach(key => {
             errors[key] = null;

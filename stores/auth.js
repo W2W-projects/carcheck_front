@@ -180,6 +180,28 @@ export const useAuthStore = defineStore("auth", {
       } catch (error) {
         throw error;
       }
+    },
+    async updateUserDetails(form) {
+      try {
+        const username = this.user.username;
+      const res = await ApiService.put(`users/${username}`, form);
+      if (res && res.data) {
+        this.setUser({ ...this.user, ...res.data });
+      }
+      return res;
+      } catch (error) {
+      throw error;
+      }
+    },
+    async updatePassword(form) {
+      try {
+
+      form.email = this.user.email;
+        return await ApiService.post("users/change-password", form);
+      } catch (error) {
+        throw error;
+      }
+
     }
   },
 });

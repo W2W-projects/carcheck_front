@@ -1,31 +1,13 @@
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { onMounted, ref } from "vue";
 
 const processing = ref(false);
-const formSuccess = ref(false);
-
-
-function cancelSubscription(subscription_id) {
-    processing.value = true;
-    // Simulated API call
-    setTimeout(() => {
-        console.log(`Subscription ${subscription_id} canceled.`);
-        processing.value = false;
-        formSuccess.value = true;
-
-        // Hide success message after 5 seconds
-        setTimeout(() => {
-            formSuccess.value = false;
-        }, 5000);
-    }, 2000);
-}
 
 const subscriptionStore = useSubscriptionStore();
 const subscription = computed(() => subscriptionStore.getSubscriptionDetails);
 
 const authStore = useAuthStore();
 const user = computed(() => authStore.getCurrentUser);
-console.log("Subscription Store:", subscription.value);
 
 function formatData(date) {
     const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -33,9 +15,24 @@ function formatData(date) {
     return formattedDate;
 }
 
+function cancelSubscription(id) {
+    const email = user.value?.email;
+    useSubscriptionStore().cancelSubscription(id)
+        .then(() => {
+            subscriptionStore.fetchUserSubscription(email);
+        })
+        .catch((error) => {
+            console.error("Error canceling subscription:", error);
+        });
+}
+
+const isSubscriptionActive = computed(() => subscription?.status === 'active');
+
 onMounted(() => {
+    subscriptionStore.getUserSubscription();
     if (!subscription.value?.id) {
-        subscriptionStore.getUserSubscription();
+        let email = user.value?.email;
+        subscriptionStore.fetchUserSubscription(email);
     }
 });
 </script>
@@ -63,17 +60,32 @@ onMounted(() => {
                     </div>
 
                     <div class="space-y-1 text-gray-700 ">
-                        <p class="font-bold">Next payment due</p>
-                        <p class="text-gray-900">{{ subscription?.price }} on {{
-                            subscription?.ends_at && formatData(subscription?.ends_at)
-                        }}</p>
+                        <span v-if="isSubscriptionActive">
+                            <p class="font-bold">Next payment due</p>
+                            <p class="text-gray-900">{{ subscription?.price }} on {{
+                                subscription?.ends_at && formatData(subscription?.ends_at)
+                                }}</p>
+                        </span>
+
+                        <span v-else>
+                            <p class="font-bold">You have access until</p>
+                            <p class="text-gray-900"> {{
+                                subscription?.ends_at && formatData(subscription?.ends_at)
+                                }}</p>
+                        </span>
+
                     </div>
                     <div class="space-y-1 text-gray-700 ">
                         <p>Checks remaining: {{ user?.request_count }}</p>
                     </div>
+
+                    <p v-show="!isSubscriptionActive">
+                        Subscription Status: <span class="text-red-500">Cancelled</span>
+                    </p>
                 </div>
 
-                <button @click="cancelSubscription(subscription?.id)" :disabled="processing"
+                <button @click="cancelSubscription(subscription?.original_id)" :disabled="processing"
+                    v-show="isSubscriptionActive"
                     class="flex items-center justify-center w-full px-4 py-2 mt-6 space-x-2 text-white bg-orange-500 rounded-lg shadow-md hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed">
                     <svg width="25" height="27" viewBox="0 0 25 27" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"

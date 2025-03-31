@@ -104,7 +104,6 @@ export const useSubscriptionStore = defineStore("subscription", {
         const response = await ApiService.post("payment/subscription/cancel", {
           original_id: original_id,
         });
-        console.log(response);
         return response;
       } catch (error) {
         throw error;
