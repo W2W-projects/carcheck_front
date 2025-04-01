@@ -1,74 +1,141 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import carData from '@/static/carData.json'; // Import car data
+import { useCarStore } from '@/stores/car';
 
 definePageMeta({
   title: 'Car Check Garage',
   layout: 'dashboard',
 });
 
-// Normalize carData to always be an array
-const normalizedCarData = Array.isArray(carData) ? carData : [carData];
+// Get data from store instead of static import
+const carStore = useCarStore();
+const isLoading = ref(true);
 
-// Dropdown state variables
+// Dropdown state variables - keep exactly as is
 const brandOpen = ref(false);
 const yearOpen = ref(false);
 const engineOpen = ref(false);
 const monthOpen = ref(false);
 
-// Selected values
+// Selected values - keep exactly as is
 const selectedBrand = ref('');
 const selectedYear = ref('');
 const selectedEngine = ref('');
 const selectedMonth = ref('');
 
-// Temporary filter values (used before applying filters)
+// Temporary filter values - keep exactly as is
 const tempSelectedBrand = ref('');
 const tempSelectedYear = ref('');
 const tempSelectedEngine = ref('');
 const tempSelectedMonth = ref('');
 
-// Extract unique values for dropdowns
-const carBrands = [...new Set(normalizedCarData.map((car) => car.details.make))];
-const carYears = [...new Set(normalizedCarData.map((car) => car.details.yearOfManufacture))];
-const engineTypes = [...new Set(normalizedCarData.map((car) => car.details.fuelType).filter((type) => type))];
-const monthsOfCheck = [
-  ...new Set(
-    normalizedCarData.flatMap((car) =>
-      car.details.motHistory?.RecordList?.map((record) => {
-        const date = new Date(record.TestDate);
-        return date.toLocaleString('default', { month: 'long' });
-      }) || []
-    )
-  ),
-];
-
+// Store the normalized car data from API
+const normalizedCarData = ref([]);
 // Filtered data based on selected filters
-const filteredCars = ref(normalizedCarData);
+const filteredCars = ref([]);
 
+// Compute unique values for dropdowns - these will update when car data changes
+const carBrands = computed(() => {
+  const brands = normalizedCarData.value
+    .map(car => car.details?.make)
+    .filter(Boolean);
+  return [...new Set(brands)];
+});
+
+const carYears = computed(() => {
+  const years = normalizedCarData.value
+    .map(car => car.details?.yearOfManufacture)
+    .filter(Boolean);
+  return [...new Set(years)];
+});
+
+const engineTypes = computed(() => {
+  const engines = normalizedCarData.value
+    .map(car => car.details?.fuelType)
+    .filter(Boolean);
+  return [...new Set(engines)];
+});
+
+const monthsOfCheck = computed(() => {
+  const months = new Set();
+
+  normalizedCarData.value.forEach(car => {
+    if (!car.details?.motHistory?.RecordList) return;
+
+    car.details.motHistory.RecordList.forEach(record => {
+      if (!record.TestDate) return;
+
+      // Improved date parsing for the format DD/MM/YYYY
+      try {
+        // Check if the date format is DD/MM/YYYY
+        if (record.TestDate.includes('/')) {
+          const [day, month, year] = record.TestDate.split('/');
+          const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+          if (!isNaN(date.getTime())) {
+            months.add(date.toLocaleString('default', { month: 'long' }));
+          }
+        } else {
+          // Fallback to regular date parsing
+          const date = new Date(record.TestDate);
+          if (!isNaN(date.getTime())) {
+            months.add(date.toLocaleString('default', { month: 'long' }));
+          }
+        }
+      } catch (e) {
+        console.error("Error parsing date:", record.TestDate);
+      }
+    });
+  });
+
+  return [...months];
+});
+
+// Apply filters function - keep the same functionality
 const applyFilters = () => {
   selectedBrand.value = tempSelectedBrand.value;
   selectedYear.value = tempSelectedYear.value;
   selectedEngine.value = tempSelectedEngine.value;
   selectedMonth.value = tempSelectedMonth.value;
 
-  filteredCars.value = normalizedCarData.filter((car) => {
+  filteredCars.value = normalizedCarData.value.filter((car) => {
+    // Check if car and car.details exist
+    if (!car || !car.details) return false;
+
     const matchesBrand = !selectedBrand.value || car.details.make === selectedBrand.value;
     const matchesYear = !selectedYear.value || car.details.yearOfManufacture === selectedYear.value;
     const matchesEngine = !selectedEngine.value || car.details.fuelType === selectedEngine.value;
-    const matchesMonth =
-      !selectedMonth.value ||
-      car.details.motHistory?.RecordList?.some((record) => {
-        const date = new Date(record.TestDate);
-        const month = date.toLocaleString('default', { month: 'long' });
-        return month === selectedMonth.value;
+
+    let matchesMonth = true;
+    if (selectedMonth.value && car.details.motHistory?.RecordList) {
+      matchesMonth = car.details.motHistory.RecordList.some((record) => {
+        if (!record.TestDate) return false;
+
+        // Improved date parsing for the format DD/MM/YYYY
+        try {
+          if (record.TestDate.includes('/')) {
+            const [day, month, year] = record.TestDate.split('/');
+            const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+            if (!isNaN(date.getTime())) {
+              return date.toLocaleString('default', { month: 'long' }) === selectedMonth.value;
+            }
+          } else {
+            const date = new Date(record.TestDate);
+            if (!isNaN(date.getTime())) {
+              return date.toLocaleString('default', { month: 'long' }) === selectedMonth.value;
+            }
+          }
+        } catch (e) {
+          return false;
+        }
+        return false;
       });
+    }
 
     return matchesBrand && matchesYear && matchesEngine && matchesMonth;
   });
 };
 
-// Close dropdowns when clicking outside
+// Close dropdowns when clicking outside - keep the same
 const closeDropdowns = () => {
   brandOpen.value = false;
   yearOpen.value = false;
@@ -83,8 +150,23 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
   document.addEventListener('click', handleClickOutside);
+
+  try {
+    // Fetch car data from store
+    await carStore.fetchCarsUserList();
+
+    // Process the data
+    normalizedCarData.value = carStore.userCarsList || [];
+
+    // Initialize filtered cars with all cars
+    filteredCars.value = [...normalizedCarData.value];
+  } catch (error) {
+    console.error("Failed to load cars:", error);
+  } finally {
+    isLoading.value = false;
+  }
 });
 
 onBeforeUnmount(() => {
@@ -94,16 +176,23 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="space-y-3">
-    <div class="h-[5.625rem] bg-white border border-gray-50 rounded-lg flex items-center justify-around">
+    <!-- Loading State -->
+    <div v-if="isLoading"
+      class="h-[5.625rem] bg-white border border-gray-50 rounded-lg flex items-center justify-center">
+      <div class="w-6 h-6 border-2 rounded-full border-t-primary border-primary-light animate-spin"></div>
+    </div>
+
+    <div v-else class="h-[5.625rem] bg-white border border-gray-50 rounded-lg flex items-center justify-around">
       <div class="grid flex-1 grid-cols-4 pl-10">
         <!-- Car Brand Dropdown -->
-        <div class="relative dropdown">
-          <label for="car-brand" class="block mb-1 text-sm text-gray-600">Car brand</label>
-          <div class="relative pr-3 text-black">
-            <button type="button" class="flex items-center justify-between w-full py-2 pr-3 text-left cursor-pointer "
+        <div class="relative px-5 border-r dropdown">
+          <label for="car-brand" class="block mb-1 text-sm font-semibold text-gray-500">Car brand</label>
+          <div class="relative text-black">
+            <button type="button" class="flex items-center justify-between w-full py-2 text-left cursor-pointer "
               @click="brandOpen = !brandOpen">
               <span class="text-sm font-bold">{{ tempSelectedBrand || 'All brands' }}</span>
-              <img src="/assets/svg/chevron-down.svg" alt="dropdown" :class="{ 'transform rotate-180': brandOpen }">
+              <img src="/public/assets/svg/chevron-down.svg" alt="dropdown"
+                :class="{ 'transform rotate-180': brandOpen }">
             </button>
             <div v-if="brandOpen"
               class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
@@ -120,13 +209,14 @@ onBeforeUnmount(() => {
         </div>
 
         <!-- Car Year Dropdown -->
-        <div class="relative dropdown">
-          <label for="car-year" class="block mb-1 text-sm text-gray-600">Car year</label>
-          <div class="relative pr-3 text-black">
-            <button type="button" class="flex items-center justify-between w-full py-2 pr-3 text-left cursor-pointer "
+        <div class="relative px-5 border-r dropdown">
+          <label for="car-year" class="block mb-1 text-sm font-semibold text-gray-500">Car year</label>
+          <div class="relative text-black">
+            <button type="button" class="flex items-center justify-between w-full py-2 text-left cursor-pointer "
               @click="yearOpen = !yearOpen">
               <span class="text-sm font-bold">{{ tempSelectedYear || 'All years' }}</span>
-              <img src="/assets/svg/chevron-down.svg" alt="dropdown" :class="{ 'transform rotate-180': yearOpen }">
+              <img src="/public/assets/svg/chevron-down.svg" alt="dropdown"
+                :class="{ 'transform rotate-180': yearOpen }">
             </button>
             <div v-if="yearOpen" class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
               <div @click="tempSelectedYear = ''; yearOpen = false" class="px-3 py-2 cursor-pointer hover:bg-gray-100">
@@ -141,13 +231,14 @@ onBeforeUnmount(() => {
         </div>
 
         <!-- Engine Type Dropdown -->
-        <div class="relative dropdown">
-          <label for="engine-type" class="block mb-1 text-sm text-gray-600">Engine type</label>
-          <div class="relative pr-3 text-black">
-            <button type="button" class="flex items-center justify-between w-full py-2 pr-3 text-left cursor-pointer "
+        <div class="relative px-5 border-r dropdown">
+          <label for="engine-type" class="block mb-1 text-sm font-semibold text-gray-500">Engine type</label>
+          <div class="relative text-black">
+            <button type="button" class="flex items-center justify-between w-full py-2 text-left cursor-pointer "
               @click="engineOpen = !engineOpen">
               <span class="text-sm font-bold">{{ tempSelectedEngine || 'All types' }}</span>
-              <img src="/assets/svg/chevron-down.svg" alt="dropdown" :class="{ 'transform rotate-180': engineOpen }">
+              <img src="/public/assets/svg/chevron-down.svg" alt="dropdown"
+                :class="{ 'transform rotate-180': engineOpen }">
             </button>
             <div v-if="engineOpen"
               class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
@@ -164,13 +255,14 @@ onBeforeUnmount(() => {
         </div>
 
         <!-- Month of Check Dropdown -->
-        <div class="relative dropdown">
-          <label for="check-month" class="block mb-1 text-sm text-gray-600">Month of check</label>
-          <div class="relative pr-3 text-black">
-            <button type="button" class="flex items-center justify-between w-full py-2 pr-3 text-left cursor-pointer "
+        <div class="relative px-5 border-r dropdown">
+          <label for="check-month" class="block mb-1 text-sm font-semibold text-gray-500">Month of check</label>
+          <div class="relative text-black">
+            <button type="button" class="flex items-center justify-between w-full py-2 text-left cursor-pointer "
               @click="monthOpen = !monthOpen">
               <span class="text-sm font-bold">{{ tempSelectedMonth || 'All months' }}</span>
-              <img src="/assets/svg/chevron-down.svg" alt="dropdown" :class="{ 'transform rotate-180': monthOpen }">
+              <img src="/public/assets/svg/chevron-down.svg" alt="dropdown"
+                :class="{ 'transform rotate-180': monthOpen }">
             </button>
             <div v-if="monthOpen"
               class="absolute z-10 w-full mt-1 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg max-h-48">
@@ -189,7 +281,7 @@ onBeforeUnmount(() => {
       <div class="w-[8.25rem]">
         <button @click="applyFilters"
           class="h-[3rem] w-[3rem] bg-primary rounded flex items-center justify-center mx-auto">
-          <img src="/assets/svg/search-sm.svg" alt="">
+          <img src="/public/assets/svg/search-sm.svg" alt="">
         </button>
       </div>
     </div>
@@ -198,9 +290,18 @@ onBeforeUnmount(() => {
       <H3 class="text-black font-bold text-[1.25rem]">
         My Checks
       </H3>
-      <div
+
+      <!-- Empty state -->
+      <div v-if="filteredCars.length === 0 && !isLoading" class="flex items-center justify-center py-12 text-gray-500">
+        <div class="text-center">
+          <p>No cars match your search criteria</p>
+        </div>
+      </div>
+
+      <!-- Cars grid - keep the same design -->
+      <div v-else
         class="grid max-h-[32.5rem] grid-cols-4 gap-4 overflow-y-auto custom-scrollbar pr-6 transition-all duration-300">
-        <DashboardCarInfo v-for="(car, index) in filteredCars" :key="index" :car="car" />
+        <DashboardCarInfo v-for="(car, index) in filteredCars" :key="car.id || index" :car="car" />
       </div>
     </div>
   </div>

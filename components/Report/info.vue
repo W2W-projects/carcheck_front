@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { onMounted, computed, ref, watch } from 'vue';
+import { onMounted, computed, ref } from 'vue';
 import { useSubscriptionStore } from '@/stores/subscription';
+import { useCarRegistrationSearchStore } from '@/stores/carRegistrationSearch';
 import Hashed from '../Includes/Hashed.vue';
 
-const isTableVisible = ref(true)
-const dateFirstRegistered = ref("");
+const isTableVisible = ref(true);
 
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
 const smmtDetail = computed(() => carRegistrationSearchStore.smmtDetails);
@@ -12,26 +12,29 @@ const vehicleRegistration = computed(() => carRegistrationSearchStore.vehicleReg
 
 const subscriptionStore = useSubscriptionStore();
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
+
+const dateFirstRegistered = computed(() => {
+  if (vehicleRegistration.value?.DateFirstRegistered) {
+    return new Date(vehicleRegistration.value.DateFirstRegistered).toISOString().split('T')[0];
+  }
+  return "";
+});
+
 onMounted(async () => {
-  await carRegistrationSearchStore.fetchSmmtDetails();
-  await carRegistrationSearchStore.fetchVehicleRegistration();
+  await Promise.all([
+    carRegistrationSearchStore.fetchSmmtDetails(),
+    carRegistrationSearchStore.fetchVehicleRegistration()
+  ]);
 });
 
 const toggleTableVisibility = () => {
-  isTableVisible.value = !isTableVisible.value
+  isTableVisible.value = !isTableVisible.value;
 }
-
-watch(vehicleRegistration, (newValue) => {
-  if (newValue && newValue.DateFirstRegistered) {
-    const registeredDate = newValue.DateFirstRegistered;
-    dateFirstRegistered.value = new Date(registeredDate).toISOString().split('T')[0];
-  }
-}, { immediate: true });
 </script>
 
 <template>
   <report-wrapper class="py-7" id="report-info">
-    <div class="flex items-center justify-between text-black"  id="show-bottom-bar">
+    <div class="flex items-center justify-between text-black" id="show-bottom-bar">
       <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
         <svg width="31" height="21" viewBox="0 0 31 21" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -86,9 +89,18 @@ watch(vehicleRegistration, (newValue) => {
               </td>
             </tr>
             <tr>
+              <th>Transmission</th>
+              <td>
+                <span v-if="smmtDetail?.Transmission">{{ smmtDetail?.Transmission }}</span>
+                <!-- <Hashed v-else></Hashed> -->
+                <span v-else>N/A</span>
+              </td>
+            </tr>
+            <tr>
               <th>First registered</th>
               <td>
                 <span v-if="dateFirstRegistered">{{ dateFirstRegistered }}</span>
+                <span v-else>N/A</span>
               </td>
             </tr>
           </tbody>

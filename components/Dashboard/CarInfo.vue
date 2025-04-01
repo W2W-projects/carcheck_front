@@ -107,7 +107,8 @@
             {{ car.details?.fuelType }}
           </div>
         </div>
-        <div class="flex items-center space-x-1 text-[0.58rem]  font-bold text-[#C2C2C2]">
+        <button @click="handleSeeMoreClick(car)"
+          class="flex items-center space-x-1 text-[0.58rem]  font-bold text-[#C2C2C2]">
           <p>See more</p>
           <span>
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -118,19 +119,30 @@
                 stroke-linejoin="round" />
             </svg>
           </span>
-        </div>
+        </button>
       </div>
     </div>
   </div>
+
+  <CarDetailsModal v-if="selectedCar" v-model:isOpen="isModalOpen" :car="selectedCar" @download="downloadReport" />
 </template>
 
 <script lang="ts" setup>
+import CarDetailsModal from './CarDetailsModal.vue';
+
 defineProps({
   car: {
     type: Object,
     required: true
   }
 });
+
+const { isModalOpen, selectedCar, showCarDetailsModal } = useCarDetails();
+const { downloadReport } = useDownloadReport();
+
+function handleSeeMoreClick(data: any) {
+  showCarDetailsModal(data);
+}
 </script>
 
 <style></style>

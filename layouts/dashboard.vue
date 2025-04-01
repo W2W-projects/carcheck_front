@@ -53,9 +53,24 @@ const sideBarData = [
 const isRouteActive = (routeName: string) => route.name === routeName;
 
 const isRouteResource = () => route.name === 'dashboard-resources';
+
+
+import { useCarDetails } from '~/composables/useCarDetails';
+import { useDownloadReport } from '~/composables/downloadReport';
+
+const { isModalOpen, selectedCar } = useCarDetails();
+const { downloadReport } = useDownloadReport();
+
+function handleDownload(car: any) {
+  downloadReport(car);
+}
+
 </script>
 
 <template>
+
+
+  <CarDetailsModal v-if="selectedCar" v-model:isOpen="isModalOpen" :car="selectedCar" @download="handleDownload" />
   <div class="flex w-full h-screen py-5 space-x-12 overflow-hidden bg-white/90"
     :class="[isRouteResource() ? 'pl-10' : 'px-10']">
     <!-- sidebar -->

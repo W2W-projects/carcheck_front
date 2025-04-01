@@ -1,24 +1,32 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed, watch } from 'vue';
 import countries from "~/static/countryData.json";
 
 const authStore = useAuthStore();
 const user = computed(() => authStore.getCurrentUser);
 
 const form = reactive({
-    first_name: user.value?.first_name || '',
-    last_name: user.value?.last_name || '',
-    email: user.value?.email || null,
-    country: user.value?.country || null,
-    phone: user.value?.phone || '',
-    postcode: user.value?.postcode || '',
-    city: user.value?.city || '',
-    username: user.value?.username || null,
+    first_name: '',
+    last_name: '',
+    email: null,
+    country: null,
+    phone: '',
+    postcode: '',
+    city: '',
+    username: null,
 });
 
 const errors = reactive({});
 const processing = ref(false);
 const formSuccess = ref(false);
+
+const resetFormWithUserData = () => {
+    if (!user.value) return;
+
+    Object.keys(form).forEach(key => {
+        form[key] = user.value[key] || form[key];
+    });
+};
 
 const submitForm = async () => {
     processing.value = true;
@@ -27,22 +35,37 @@ const submitForm = async () => {
     try {
         await authStore.updateUserDetails(form);
         formSuccess.value = true;
-        Object.keys(errors).forEach(key => {
-            errors[key] = null;
-        });
+
+        Object.keys(errors).forEach(key => errors[key] = null);
+
+        await authStore.fetchUserDetails();
+
+        setTimeout(() => formSuccess.value = false, 3000);
     } catch (error) {
         if (error.response?.data?.errors) {
             Object.assign(errors, error.response.data.errors);
+        } else {
+            errors.general = 'An error occurred while updating your profile';
         }
     } finally {
         processing.value = false;
     }
 };
 
+// Simple, efficient watcher that triggers once and when data changes
+watch(() => user.value, resetFormWithUserData, { immediate: true });
 </script>
 
 <template>
     <form @submit.prevent="submitForm" class="flex flex-col h-full">
+        <div v-if="formSuccess" class="px-4 py-2 mx-8 mb-4 text-green-700 bg-green-100 rounded">
+            Your profile has been updated successfully!
+        </div>
+
+        <div v-if="errors.general" class="px-4 py-2 mx-8 mb-4 text-red-700 bg-red-100 rounded">
+            {{ errors.general }}
+        </div>
+
         <div class="flex items-center justify-center flex-1 px-8 text-black md:py-0">
             <div class="grid grid-cols-2 gap-x-8 gap-y-8">
                 <!-- First Name -->

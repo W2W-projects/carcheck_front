@@ -10,9 +10,13 @@ const authStore = useAuthStore();
 const user = computed(() => authStore.getCurrentUser);
 
 function formatData(date) {
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    const formattedDate = new Date(date).toLocaleDateString('en-GB', options);
-    return formattedDate;
+    if (!date) return '';
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    };
+    return new Date(date).toLocaleDateString('en-US', options);
 }
 
 function cancelSubscription(id) {
@@ -26,7 +30,11 @@ function cancelSubscription(id) {
         });
 }
 
-const isSubscriptionActive = computed(() => subscription?.status === 'active');
+const isSubscriptionActive = computed(() => {
+    return subscription.value?.status === 'active' ||
+        subscription.value?.active === true ||
+        subscription.value?.is_active === true;
+});
 
 onMounted(() => {
     subscriptionStore.getUserSubscription();
@@ -35,6 +43,8 @@ onMounted(() => {
         subscriptionStore.fetchUserSubscription(email);
     }
 });
+
+
 </script>
 
 <template>
