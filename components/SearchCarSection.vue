@@ -25,36 +25,34 @@ const moreFeatures = async () => {
 </script>
 
 <template>
-  <!-- <div class="lg:px-[9.12rem] section-1-bg lg:min-h-[75rem]"> -->
   <div
-    class="lg:px-[9.12rem] section-1-bg lg:min-h-[41rem] flex flex-col items-start w-full pt-[5.4%] mx-auto max-w-screen-2xl"
+    class="lg:px-[9.12rem] overflow-hidden px-4 section-1-bg lg:min-h-[41rem] flex flex-col items-start w-full pt-[5.4%] mx-auto max-w-screen-2xl"
     id="check">
-    <h1 class="lg:text-[2.5rem] text-xl text-[#0F1829] leading-[2.8rem]">Check it before
+    <h1 class="lg:text-[2.5rem] text-xl text-[#0F1829] md:leading-[2.8rem]">Check it before
       <br />
       <span class="text-2xl font-bold text-center lg:text-4xl">you regret it </span>
     </h1>
 
-    <!-- <SearchBar class="mt-4" inputHeight="h-[3.75rem]" width="w-[24.6rem]" /> -->
-    <div class="h-[4.25rem] bg-blue-500 mt-4 flex translate-x-[30%] relative items-center">
-      <SearchBar class="scale-[160%]" width="w-[15.55rem]" :focused="false" />
+    <div class="h-[4.25rem] mt-4 flex lg:translate-x-[30%] translate-x-[15%] relative items-center ">
+      <SearchBar class="lg:scale-[160%] scale-[120%]" width="lg:w-[15.55rem] w-[75%] min-w-[15.55rem]"
+        :focused="false" />
     </div>
     <p class="text-[#0F1829] mt-5 lg:text-[1.95rem] md:text-2xl text-xl  font-thin">We can generate a <span
         class="font-bold">full history</span> <br />
       report for <span class="font-bold">any car</span></p>
+
     <!--  features      -->
     <div>
       <Features :addedMoreFeatures="addedMoreFeatures" class="mt-[1.9rem]"></Features>
       <div class="flex flex-row items-center justify-center w-full mt-5" v-if="isAddMoreBtnHidden == false">
         <button class="bg-none" @click="moreFeatures">
-          <p class="text-[#FF7400] text-[1.3rem] tracking-widest font-bold">And more ...</p>
+          <p class="text-[#FF7400] md:text-[1.3rem] md:tracking-widest font-bold">And more ...</p>
         </button>
       </div>
     </div>
   </div>
 </template>
 <style scoped>
-/* Add styles here if needed */
-
 .section-1-bg {
   background-image: url("/png/car-find-section-bg-1.png");
   background-size: cover;

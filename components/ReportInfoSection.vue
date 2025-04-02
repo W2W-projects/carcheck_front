@@ -2,12 +2,12 @@
   <div class="flex flex-col items-center justify-center w-full bg-[#EEEEEE] report-bg-section relative ">
     <img src="/svg/report-car.svg" alt="Report Info" class="md:block hidden translate-y-[5.6rem] absolute" />
     <div class="container px-4 py-12 mx-auto max-w-screen-2xl">
-      <div class="flex flex-col items-center justify-center pt-10 pb-24 text-4xl">
+      <div class="flex flex-col items-center justify-center pt-10 pb-10 text-4xl md:pb-24">
         <h2 class="text-gray-800">What’s included</h2>
         <p class="mt-2 text-gray-800"><span class="border-b-4 border-b-orange-500">in</span> <span
             class="font-bold">your report</span></p>
       </div>
-      <div class="">
+      <div>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
           <div class="flex flex-col items-center justify-between lg:-mr-36 md:-20">
             <div class="flex flex-row items-center justify-center">
