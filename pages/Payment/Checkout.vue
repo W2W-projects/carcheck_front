@@ -78,7 +78,8 @@ const subsPrice = computed(() => planStore?.getSubsPrice);
 <template>
 
   <section class="relative p-0 m-0 overflow-hidden">
-    <div class="flex lg:flex-row flex-col-reverse mx-auto lg:px-[9.12rem] lg:py-10 py-4 px-8 lg:space-x-5">
+    <div
+      class="flex lg:flex-row flex-col-reverse mx-auto lg:px-[9.12rem] lg:py-10 py-4 px-8 lg:space-x-5 max-w-screen-2xl">
       <div class="flex-1 h-full mt-10 md:mt-0">
         <OrderSummary />
       </div>
@@ -107,7 +108,7 @@ const subsPrice = computed(() => planStore?.getSubsPrice);
       <img src="/images/webp/checkout-road.webp" class="w-full scale-[110%]" alt="">
     </div>
 
-    <div class="mx-auto lg:px-[9.12rem] px-8 space-x-5 text-black leading-4 pt-4 pb-14">
+    <div class="mx-auto lg:px-[9.12rem] px-8 space-x-5 text-black leading-4 pt-4 pb-14 max-w-screen-2xl">
       <small>Get your CarCheck report and full access to CarCheck for just £{{ planPrice }} with a 2-day trial. After
         the
         trial,

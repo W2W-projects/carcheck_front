@@ -86,40 +86,45 @@ const articleCategories = computed(() => {
 </script>
 
 <template>
-  <div class="w-full h-full space-y-4 text-black">
-
+  <div class="w-full h-full space-y-4 overflow-hidden text-black">
     <!-- guides -->
-    <div class="w-full space-y-2">
+    <div class="w-full space-y-2 ">
       <div class="flex items-center justify-between">
-        <p class="text-lg font-bold">Guides</p>
-        <p class="mr-10 text-lg font-bold text-gray-400">See all</p>
+        <p class="text-base font-bold sm:text-lg">Guides</p>
+        <p class="mr-3 text-base font-bold text-gray-400 sm:mr-6 md:mr-10 sm:text-lg">See all</p>
       </div>
 
-      <div class="flex w-full">
+      <div class="w-full max-w-[91vw] md:max-w-none md:w-auto overflow-hidden">
         <DashboardResourcesGuides :data="guides" />
       </div>
     </div>
 
     <!-- articles -->
-    <div class="space-y-2">
-      <div class="flex items-center justify-between">
-        <div class="flex space-x-5">
-          <p class="text-lg font-bold">Article</p>
+    <div class="mt-6 space-y-2 sm:mt-4">
+      <div class="flex flex-col justify-between sm:flex-row sm:items-center">
+        <div class="flex flex-wrap pb-2 overflow-x-auto gap-x-3 sm:pb-0 scrollbar-hide sm:gap-x-5">
+          <p class="text-base font-bold sm:text-lg whitespace-nowrap">Article</p>
           <template v-for="(category, index) in articleCategories" :key="index">
-            <p class="text-lg font-bold text-gray-400">{{ category }}</p>
+            <p class="text-base font-bold text-gray-400 sm:text-lg whitespace-nowrap">{{ category }}</p>
           </template>
-
         </div>
-        <p class="mr-10 text-lg font-bold text-gray-400">See all</p>
+        <p class="mt-2 mr-3 text-base font-bold text-gray-400 sm:mr-6 md:mr-10 sm:text-lg sm:mt-0">See all</p>
       </div>
-      <div class="flex w-full gap-x-6">
+
+      <div class="w-full max-w-[91vw] md:max-w-none md:w-auto overflow-hidden">
         <DashboardResourcesArticles :data="articles" />
       </div>
-
     </div>
   </div>
 </template>
 
+<style scoped>
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
 
-
-<style scoped></style>
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>

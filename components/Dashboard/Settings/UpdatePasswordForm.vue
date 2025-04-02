@@ -104,16 +104,13 @@ const updatePassword = async () => {
             </div>
         </div>
 
-        <div class="flex items-center justify-between px-8 mb-4 text-black bg-primary-blue">
-            <p>Update your password</p>
+        <div class="flex items-center justify-between px-8 mt-5 mb-4 text-black md:mt-0 bg-primary-blue">
+            <p class="hidden md:block">Update your password</p>
             <button
-                class="flex items-center justify-center space-x-2 text-white rounded bg-primary w-[7.3125rem] h-[2.1875rem]"
+                class="flex items-center justify-center space-x-2 text-white rounded bg-primary w-full md:w-[7.3125rem] h-[2.1875rem]"
                 :disabled="processing">
                 <span>
-
-
                     <img src="/assets/svg/update.svg" alt="">
-
                 </span>
                 <span>Update</span>
             </button>

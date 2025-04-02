@@ -1,6 +1,6 @@
 <template>
   <div
-    class="h-[12.5rem] rounded-xl bg-white flex flex-col items-center justify-between px-[1.7rem] py-[1.25rem] text-black">
+    class="h-[12.5rem] 2xl:h-[14rem] rounded-xl bg-white flex flex-col items-center justify-between px-[1.7rem] py-[1.25rem] text-black">
     <div class="flex w-full">
       <div class="flex items-center flex-1 space-x-1">
         <div v-show="car?.details?.vbrand_logo" class="w-7">
@@ -16,7 +16,7 @@
       </div>
     </div>
     <div>
-      <img :src="car.image" alt="" class="max-w-[9rem]">
+      <img :src="car.image" alt="" class="max-w-[9rem] 2xl:max-w-[14rem]">
     </div>
 
     <div class="flex w-full space-x-2">

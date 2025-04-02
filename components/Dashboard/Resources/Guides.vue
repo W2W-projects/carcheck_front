@@ -113,7 +113,7 @@ const updateLastVisibleSlide = () => {
 };
 
 const shouldBeTransparent = (index) => {
-  if (isAtEnd.value) {
+  if (isAtEnd.value || index === 0) {
     return false;
   }
 

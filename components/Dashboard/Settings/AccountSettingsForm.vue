@@ -67,7 +67,7 @@ watch(() => user.value, resetFormWithUserData, { immediate: true });
         </div>
 
         <div class="flex items-center justify-center flex-1 px-8 text-black md:py-0">
-            <div class="grid grid-cols-2 gap-x-8 gap-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
                 <!-- First Name -->
                 <div class="col-span-1">
                     <label for="first-name" class="block text-sm font-medium text-gray-700">First Name</label>
@@ -131,10 +131,10 @@ watch(() => user.value, resetFormWithUserData, { immediate: true });
                 </div>
             </div>
         </div>
-        <div class="flex items-center justify-between px-8 mb-4 text-black bg-primary-blue">
-            <p>Update your personal information</p>
+        <div class="flex items-center justify-between px-8 mt-5 mb-4 text-black md:mt-0 bg-primary-blue">
+            <p class="hidden md:block">Update your personal information</p>
             <button
-                class="flex items-center justify-center space-x-2 text-white rounded bg-primary w-[7.3125rem] h-[2.1875rem]"
+                class="flex items-center justify-center space-x-2 text-white rounded bg-primary w-full md:w-[7.3125rem] h-[2.1875rem]"
                 :disabled="processing">
                 <span>
                     <img src="/assets/svg/update.svg" alt="">

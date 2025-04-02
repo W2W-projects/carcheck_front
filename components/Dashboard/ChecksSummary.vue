@@ -21,20 +21,25 @@ const userRequestCountLeft = computed<CheckRequests>(() => carStore.requestCount
 
 <template>
   <div class="w-full h-[12rem] rounded-xl bg-dashboard-custom-1">
-    <div class="relative flex flex-col justify-between h-full py-5 pl-11">
-      <div class="leading-[1.75rem]">
+    <div class="relative flex flex-col justify-between h-full py-5 pl-5 sm:pl-11">
+      <div class="leading-[1.75rem] z-10">
         <p class="uppercase font-bold text-[1.15rem]">Checks recap</p>
         <p class="text-[1.8rem] font-bold">Remaining Checks : {{ userRequestCountLeft.one_off_request_count +
           userRequestCountLeft.request_count }}</p>
-        <!-- <p class="text-[1.8rem] font-bold">Remaining Checks : {{ userRequestCountLeft.request_count }}</p>
-            <p class="text-lg">Trial Checks : {{ userRequestCountLeft.request_count_trial }}</p>
-            <p class="text-lg">Total Checks : {{ userRequestCountLeft.one_off_request_count + userRequestCountLeft.request_count }}</p> -->
       </div>
-      <button class="h-[2.9rem] w-[13rem] bg-[#0F1829] text-white text-xl rounded-lg">
+      <button class="h-[2.9rem] w-[13rem] bg-[#0F1829] text-white text-xl rounded-lg z-10">
         Get more checks
       </button>
-      <img src="/public/images/png/dashboard/car-with-shadow.png" class="absolute w-[34rem] right-0 -top-[4.7rem]"
-        alt="">
+      <img src="/public/images/png/dashboard/car-with-shadow.png"
+        class="absolute hidden md:block w-[22rem] sm:w-[34rem] right-0 top-0 sm:-top-[4.7rem] z-0" alt="">
     </div>
   </div>
 </template>
+
+<style scoped>
+.bg-dashboard-custom-1 {
+  background: linear-gradient(to right, #FF7400, #FFA500), url('/public/images/png/dashboard/skyline.png');
+  background-size: cover;
+  /* background-blend-mode: overlay; */
+}
+</style>
