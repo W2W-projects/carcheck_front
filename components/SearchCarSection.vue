@@ -26,7 +26,9 @@ const moreFeatures = async () => {
 
 <template>
   <!-- <div class="lg:px-[9.12rem] section-1-bg lg:min-h-[75rem]"> -->
-  <div class="lg:px-[9.12rem] section-1-bg lg:min-h-[41rem] flex flex-col items-start w-full pt-[5.4%]" id="check">
+  <div
+    class="lg:px-[9.12rem] section-1-bg lg:min-h-[41rem] flex flex-col items-start w-full pt-[5.4%] mx-auto max-w-screen-2xl"
+    id="check">
     <h1 class="lg:text-[2.5rem] text-xl text-[#0F1829] leading-[2.8rem]">Check it before
       <br />
       <span class="text-2xl font-bold text-center lg:text-4xl">you regret it </span>
@@ -34,7 +36,7 @@ const moreFeatures = async () => {
 
     <!-- <SearchBar class="mt-4" inputHeight="h-[3.75rem]" width="w-[24.6rem]" /> -->
     <div class="h-[4.25rem] bg-blue-500 mt-4 flex translate-x-[30%] relative items-center">
-      <SearchBar class="scale-[160%]" width="w-[15.55rem]" :focused="true" />
+      <SearchBar class="scale-[160%]" width="w-[15.55rem]" :focused="false" />
     </div>
     <p class="text-[#0F1829] mt-5 lg:text-[1.95rem] md:text-2xl text-xl  font-thin">We can generate a <span
         class="font-bold">full history</span> <br />

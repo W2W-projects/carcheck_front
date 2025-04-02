@@ -46,35 +46,37 @@ function replaceText(text) {
 </script>
 <template>
   <!-- intro -->
-  <section class="flex flex-wrap items-center justify-center mx-auto lg:px-[9.12rem] px-8 panoramic-bg">
-    <div
-      class="flex flex-col lg:items-start items-center lg:text-start text-center justify-center w-full h-[23rem] car-bg">
-      <p class="text-[2.8rem] leading-tight tracking-wider -translate-y-4 text-black">Just choose
-        <br />
-        <span class="text-[3rem] tracking-wide"><b>the best report</b> for you</span>
-      </p>
-      <div class="flex flex-col items-center justify-center space-y-4 -translate-y-4">
-        <p class="text-[1.8rem] tracking-wider text-[#2464A6]">We run the checks</p>
-        <div class="mx-auto">
-          <svg class="animate-pulse" width="48" height="62" viewBox="0 0 48 62" fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M24 24C22.0617 24 20.1234 23.2463 18.6559 21.7668L0.60225 3.56615C-0.20075 2.75661 -0.20075 1.41669 0.60225 0.607153C1.40525 -0.202384 2.73435 -0.202384 3.53735 0.607153L21.591 18.8078C22.9201 20.1477 25.0799 20.1477 26.409 18.8078L44.4626 0.607153C45.2656 -0.202384 46.5947 -0.202384 47.3977 0.607153C48.2007 1.41669 48.2007 2.75661 47.3977 3.56615L29.3441 21.7668C27.8766 23.2463 25.9383 24 24 24Z"
-              fill="#2464A6" />
-            <path
-              d="M24 43C22.0617 43 20.1234 42.2463 18.6559 40.7668L0.60225 22.5662C-0.20075 21.7566 -0.20075 20.4167 0.60225 19.6072C1.40525 18.7976 2.73435 18.7976 3.53735 19.6072L21.591 37.8078C22.9201 39.1477 25.0799 39.1477 26.409 37.8078L44.4626 19.6072C45.2656 18.7976 46.5947 18.7976 47.3977 19.6072C48.2007 20.4167 48.2007 21.7566 47.3977 22.5662L29.3441 40.7668C27.8766 42.2463 25.9383 43 24 43Z"
-              fill="#2464A6" />
-            <path
-              d="M24 62C22.0617 62 20.1234 61.2463 18.6559 59.7668L0.60225 41.5662C-0.20075 40.7566 -0.20075 39.4167 0.60225 38.6072C1.40525 37.7976 2.73435 37.7976 3.53735 38.6072L21.591 56.8078C22.9201 58.1477 25.0799 58.1477 26.409 56.8078L44.4626 38.6072C45.2656 37.7976 46.5947 37.7976 47.3977 38.6072C48.2007 39.4167 48.2007 40.7566 47.3977 41.5662L29.3441 59.7668C27.8766 61.2463 25.9383 62 24 62Z"
-              fill="#2464A6" />
-          </svg>
+  <section class=" panoramic-bg">
+    <div class="flex flex-wrap items-center justify-center mx-auto lg:px-[9.12rem] px-8 max-w-screen-2xl">
+      <div
+        class="flex flex-col lg:items-start items-center lg:text-start text-center justify-center w-full h-[23rem] car-bg">
+        <p class="text-[2.8rem] leading-tight tracking-wider -translate-y-4 text-black">Just choose
+          <br />
+          <span class="text-[3rem] tracking-wide"><b>the best report</b> for you</span>
+        </p>
+        <div class="flex flex-col items-center justify-center space-y-4 -translate-y-4">
+          <p class="text-[1.8rem] tracking-wider text-[#2464A6]">We run the checks</p>
+          <div class="mx-auto">
+            <svg class="animate-pulse" width="48" height="62" viewBox="0 0 48 62" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M24 24C22.0617 24 20.1234 23.2463 18.6559 21.7668L0.60225 3.56615C-0.20075 2.75661 -0.20075 1.41669 0.60225 0.607153C1.40525 -0.202384 2.73435 -0.202384 3.53735 0.607153L21.591 18.8078C22.9201 20.1477 25.0799 20.1477 26.409 18.8078L44.4626 0.607153C45.2656 -0.202384 46.5947 -0.202384 47.3977 0.607153C48.2007 1.41669 48.2007 2.75661 47.3977 3.56615L29.3441 21.7668C27.8766 23.2463 25.9383 24 24 24Z"
+                fill="#2464A6" />
+              <path
+                d="M24 43C22.0617 43 20.1234 42.2463 18.6559 40.7668L0.60225 22.5662C-0.20075 21.7566 -0.20075 20.4167 0.60225 19.6072C1.40525 18.7976 2.73435 18.7976 3.53735 19.6072L21.591 37.8078C22.9201 39.1477 25.0799 39.1477 26.409 37.8078L44.4626 19.6072C45.2656 18.7976 46.5947 18.7976 47.3977 19.6072C48.2007 20.4167 48.2007 21.7566 47.3977 22.5662L29.3441 40.7668C27.8766 42.2463 25.9383 43 24 43Z"
+                fill="#2464A6" />
+              <path
+                d="M24 62C22.0617 62 20.1234 61.2463 18.6559 59.7668L0.60225 41.5662C-0.20075 40.7566 -0.20075 39.4167 0.60225 38.6072C1.40525 37.7976 2.73435 37.7976 3.53735 38.6072L21.591 56.8078C22.9201 58.1477 25.0799 58.1477 26.409 56.8078L44.4626 38.6072C45.2656 37.7976 46.5947 37.7976 47.3977 38.6072C48.2007 39.4167 48.2007 40.7566 47.3977 41.5662L29.3441 59.7668C27.8766 61.2463 25.9383 62 24 62Z"
+                fill="#2464A6" />
+            </svg>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- plan section -->
-  <section class="mt-8 lg:px-[9rem] px-5">
+  <section class="mt-8 lg:px-[9rem] px-5 mx-auto max-w-screen-2xl">
     <PlanSection />
     <p class="text-[#0F1829] text-lg mt-12 px-3 tracking-wider text-justify">All plans include a 48hr trial
       subscription. After the
@@ -92,7 +94,7 @@ function replaceText(text) {
     <TrustedBy class="mt-4" />
   </section>
 
-  <section class="lg:px-[7.5rem] mt-[2.85rem] mb-[2.85rem]" id="report-offering">
+  <section class="lg:px-[7.5rem] mt-[2.85rem] mb-[2.85rem] mx-auto max-w-screen-2xl" id="report-offering">
     <table class="w-full text-black">
       <thead>
         <tr class="flex text-sm lg:text-xl">
