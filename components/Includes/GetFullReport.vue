@@ -96,6 +96,8 @@ const downloadReport = async () => {
                 { financeRecords: carRegistrationSearchStore.financeRecords }
             ];
 
+            console.log('car_data', car_data);
+
             if (!subscription) {
                 errorMessage.value = "You don't have any active subscription. Please buy or upgrade plan.";
             }

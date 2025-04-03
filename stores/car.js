@@ -44,7 +44,7 @@ export const useCarStore = defineStore('car', {
                 const response = await ApiService.get(`v1/fetch-users-car-detail`);
                 let res = response.data;
                 if(res){
-                    this.userCarsList = res;
+                    this.userCarsList = res;                    
                 }
                 return this.userCarsList;
             } catch (error) {

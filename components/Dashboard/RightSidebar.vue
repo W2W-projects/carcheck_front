@@ -29,7 +29,8 @@ const full_history = [
 
 
 <template>
-    <div class="flex flex-col bg-city bg-white text-black h-full w-[20rem] rounded-lg px-9 py-7 relative">
+  <div class="flex lg:flex-col bg-city bg-white text-black h-full lg:w-[20rem] w-full rounded-lg px-9 py-7 relative">
+    <div class="w-3/6 overflow-hidden lg:w-auto">
       <div>
         <p class="uppercase text-primary text-[0.85rem] font-bold">
           make a NEW CHECK
@@ -44,7 +45,7 @@ const full_history = [
         <SearchBar width="w-full" />
       </div>
       <div class="mt-[1.5rem] pl-1 space-y-4">
-        <p class="font-extralight leading-4">We can generate a <span class="font-bold">full history</span>
+        <p class="leading-4 font-extralight">We can generate a <span class="font-bold">full history</span>
           report for <span class="font-bold">any car</span></p>
 
         <div class="grid grid-cols-2 gap-y-1">
@@ -59,9 +60,10 @@ const full_history = [
           </div>
         </div>
       </div>
-
-      <div class="absolute bottom-0 w-full left-1/2 -translate-x-1/2">
-        <img src="/public/images/png/dashboard/car-right-sidebar.png" class="w-full" alt="">
-      </div>
     </div>
+    <div
+      class="relative bottom-0 flex-1 w-full overflow-hidden translate-x-10 lg:-translate-x-1/2 lg:left-1/2 lg:absolute">
+      <img src="/public/images/png/dashboard/car-right-sidebar.png" class="w-full" alt="">
+    </div>
+  </div>
 </template>

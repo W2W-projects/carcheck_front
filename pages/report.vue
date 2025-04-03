@@ -27,7 +27,7 @@ definePageMeta({
 </script>
 
 <template>
-  <div class="bg-[#EEEEEE]">
+  <div class="bg-[#EEEEEE] ">
 
     <!-- Section 1 -->
     <ReportSection1 id="report" />

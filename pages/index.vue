@@ -43,48 +43,44 @@ definePageMeta({
     <WhyNeedCarCheck />
     <ReportInfoSection />
     <section>
-      <div class="bg-[#EEEEEE] lg:px-[10.7rem] md:px-44 px-10">
-        <div class="flex flex-row items-center justify-between mt-[6.75rem]">
-          <div class="mx-auto">
-            <h3 class="text-4xl text-gray-800 text-start">We have the best
-              <b> plans arou<span class="upper-border">nd</span></b>
-            </h3>
+      <div class="mx-auto max-w-screen-2xl">
+        <div class="bg-[#EEEEEE] lg:px-[10.7rem] 3xl:px-0 md:px-44 px-5">
+          <div class="flex flex-row items-center justify-between mt-[6.75rem]">
+            <div class="mx-auto">
+              <h3 class="text-4xl text-gray-800 text-start">We have the best
+                <b> plans arou<span class="upper-border">nd</span></b>
+              </h3>
+            </div>
           </div>
-
-          <!-- <div class="border-2 rounded-lg p-0.5 border-[#0F1829] text-xl tracking-wider ">
-            <button :class="{ 'bg-[#0F1829] text-white': isMonthlyActive, 'text-[#0F1829]': !isMonthlyActive }"
-              class="px-[1.1rem] py-2 rounded" @click="toggleBilling('monthly')">
-              Monthly billing
-            </button>
-            <button :class="{ 'bg-[#0F1829] text-white': !isMonthlyActive, 'text-[#0F1829]': isMonthlyActive }"
-              class="px-[1.1rem] py-2" @click="toggleBilling('yearly')">
-              Yearly billing
-            </button>
-          </div> -->
-        </div>
-        <div class="mt-14">
-          <PlanSection />
-        </div>
-        <div
-          class="w-full h-[23.5rem] bg-[#0F1829] mt-14 rounded-t-[27px] px-[4rem] flex flex-col justify-center text-white">
-          <p class="text-3xl font-bold text-center">Pick your <span class="text-[#FF7400]">ideal trial plan</span>
-            above.
-          </p>
-          <p class="mt-8 text-xl font-extralight">After the 48-hour trial period expires, unless you cancel, you'll be
-            upgraded to our
-            monthly
-            membership.</p>
-          <p class="mt-10 text-2xl font-bold">This entitles you to make 7 full reports for £39.95 per month - only £5.70
-            per
-            report!
-          </p>
-          <p class="mt-8 text-xl leading-6 font-extralight">Enjoy the benefits of your membership, which also includes
-            ressources,
-            reminders for
-            saved
-            vehicles and access
-            to special offers. And don't worry if you run out - you can always purchase more reports with special
-            members-only discounts.</p>
+          <div class="mt-14">
+            <PlanSection />
+          </div>
+          <div
+            class="w-full md:h-[23.5rem] bg-[#0F1829] mt-14 rounded-t-[27px] md:px-[4rem] px-4 py-5 text-justify md:py-0 flex flex-col justify-center text-white">
+            <p class="text-2xl font-bold text-center lg:text-3xl">Pick your <span class="text-[#FF7400]">ideal trial
+                plan</span>
+              above.
+            </p>
+            <p class="mt-8 md:text-xl font-extralight">After the 48-hour trial period expires, unless you cancel, you'll
+              be
+              upgraded to our
+              monthly
+              membership.</p>
+            <p class="mt-10 text-xl font-bold lg:text-2xl">This entitles you to make 7 full reports for £39.95 per month
+              - only
+              £5.70
+              per
+              report!
+            </p>
+            <p class="mt-8 text-lg leading-6 md:text-xl font-extralight">Enjoy the benefits of your membership, which
+              also includes
+              ressources,
+              reminders for
+              saved
+              vehicles and access
+              to special offers. And don't worry if you run out - you can always purchase more reports with special
+              members-only discounts.</p>
+          </div>
         </div>
       </div>
       <img src="/svg/plan-end-track.svg" alt="Plan End Track" class="w-full" />

@@ -1,95 +1,58 @@
 <script setup lang="ts">
 import { onMounted, computed, ref } from 'vue';
 import { useCarStore } from '@/stores/car';
+import CarInfo from './CarInfo.vue';
 
 const carStore = useCarStore();
 const isLoading = ref(true);
 
-interface UserCars {
-    model: string | null;
-    image: string | null;
-    plate: string | null;
-    mileage: number | null;
-    type: string | null;
-}
+const filteredCars = computed(() => {
+    if (!carStore.userCarsList?.length) return [];
+
+    return carStore.userCarsList
+        .filter(car => car?.image && car?.reg_number)
+        .slice(0, 3);
+});
+
+const hasLoaded = ref(false);
 
 onMounted(async () => {
+    if (hasLoaded.value) return;
+
     try {
         await carStore.fetchCarsUserList();
+        hasLoaded.value = true;
     } catch (error) {
         console.error("Failed to fetch data on mounted:", error);
     } finally {
         isLoading.value = false;
     }
 });
-
-const userCarsList = computed<UserCars[]>(() => carStore.userCarsList);
-
 </script>
 
 <template>
-    <div v-if="userCarsList?.length" class="grid grid-cols-3 text-black gap-x-5">
-        <div v-for="(car, index) in userCarsList" :key="index" v-show="index < 3 && car?.image && car?.reg_number"
-            class="h-[12.5rem] rounded-xl bg-white flex flex-col items-center justify-between px-[1.7rem] py-[1.25rem]">
-            <div class="flex w-full">
-                <div class="flex items-center flex-1 space-x-1">
-                    <div class="w-[0.8rem]">
-                        <img src="#" class="w-full" alt="">
-                    </div>
-                    <div class="flex flex-col leading-3">
-                        <small class="font-bold">{{ car.details?.make ?? car.details?.makeModel }}</small>
-                        <p class="text-[0.5rem] font-bold text-[#CFCCCC]">{{ car.details?.makeModel }}</p>
-                    </div>
-                </div>
-                <div>
-                    <p class="text-[0.65rem] font-bold">{{ car.details?.yearOfManufacture }}</p>
-                </div>
+    <div class="space-y-4">
+        <!-- Loading State - Improved for mobile -->
+        <div v-if="isLoading" class="py-6 text-center sm:py-8">
+            <div
+                class="inline-block w-5 h-5 border-2 rounded-full sm:w-6 sm:h-6 border-t-primary border-primary-light animate-spin">
             </div>
-            <div>
-                <img :src="car.image" alt="" class="max-w-[9rem]">
-            </div>
+            <p class="mt-2 text-[0.85rem] sm:text-[0.9rem]">Fetching your recent checks...</p>
+        </div>
 
-            <div class="flex w-full space-x-2">
-                <div class="flex justify-between flex-1 space-x-1">
-                    <div class="leading-3">
-                        <div class="text-[0.5rem] space-x-1 flex items-center">
-                            <span>Plate</span>
-                        </div>
-                        <div class="text-[0.7rem] uppercase font-bold">
-                            {{ car.reg_number }}
-                        </div>
-                    </div>
-                    <div class="leading-3">
-                        <div class="text-[0.5rem] space-x-1 flex items-center">
-                            <span>Mileage</span>
-                        </div>
-                        <div class="text-[0.7rem] font-bold">
-                            {{ car.details?.mileage }}
-                        </div>
-                    </div>
-                    <div class="leading-3">
-                        <div class="text-[0.5rem] space-x-1 flex items-center">
-                            <span>Type</span>
-                        </div>
-                        <div class="text-[0.7rem] font-bold">
-                            {{ car.details?.fuelType }}
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-1 text-[0.58rem]  font-bold text-[#C2C2C2]">
-                        <p>See more</p>
-                        <img src="/images/svg/icon-chev-right.svg" alt="Chevron">
-                    </div>
-                </div>
+        <!-- Car Grid - Responsive layout improved -->
+        <div v-else-if="filteredCars.length"
+            class="grid grid-cols-1 gap-3 overflow-hidden sm:gap-4 xs:grid-cols-2 md:grid-cols-3">
+            <CarInfo v-for="(car, index) in filteredCars" :key="car.id || index" :car="car"
+                class="transition-all duration-300 hover:shadow-md" />
+        </div>
+
+        <!-- Empty State - More responsive -->
+        <div v-else class="flex items-center justify-center py-8 text-center text-gray-400 sm:py-12">
+            <div class="px-4">
+                <p class="text-base sm:text-lg">No previous checks.</p>
+                <p class="mt-2 text-xs sm:text-sm">Start checking vehicles to see them here.</p>
             </div>
         </div>
-    </div>
-
-    <div v-if="isLoading">
-        <p class="text-[0.9rem]">Fetching...</p>
-    </div>
-
-    <div v-else-if="!isLoading && userCarsList?.length === 0"
-        class="flex items-center justify-center h-full text-center text-gray-400">
-        <p>No previous checks.</p>
     </div>
 </template>

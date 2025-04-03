@@ -25,14 +25,14 @@ const downloadReport = async () => {
         debugger
         if ((hasSubscription.request_count > 0) && hasSubscription.active) {
             try {
-                let report_type="";
-                if(subscription?.plan?.plan_code=="48h-export-subscription"){
+                let report_type = "";
+                if (subscription?.plan?.plan_code == "48h-export-subscription") {
                     report_type = "expert";
-                }else if(subscription?.plan?.plan_code=="48h-basic-subscription"){
+                } else if (subscription?.plan?.plan_code == "48h-basic-subscription") {
                     report_type = "basic";
-                }else if(subscription?.plan?.plan_code=="premium-3x"){
+                } else if (subscription?.plan?.plan_code == "premium-3x") {
                     report_type = "premium-3x";
-                }else{
+                } else {
                     report_type = "";
                 }
                 const response = await ApiService.post('users/download-report', {
@@ -60,7 +60,7 @@ const downloadReport = async () => {
 
             } catch (error) {
                 reportText.value = "Download Report";
-                if(error.data)
+                if (error.data)
                     errorMessage.value = error.data.error;
             }
         } else {
@@ -98,9 +98,10 @@ const reportDate = () => {
                 <div class="flex flex-col justify-center items-center">
                     <h1 class="text-2xl font-bold">YOUR <span class="text-orange-500">CAR REPORT</span> IS READY!</h1>
                     <button @click.prevent="downloadReport"
-                        class="rounded bg-orange-500 text-white text-lg px-20 py-2 mt-6">{{ reportText }}</button>
-                    
-                    <p v-if="errorMessage" id="standard_error_help" class="mt-2 text-xs text-red-600 dark:text-red-400"><span class="font-medium"></span> {{ errorMessage }}</p>
+                        class="rounded bg-primary text-white text-lg px-20 py-2 mt-6">{{ reportText }}</button>
+
+                    <p v-if="errorMessage" id="standard_error_help" class="mt-2 text-xs text-red-600 dark:text-red-400">
+                        <span class="font-medium"></span> {{ errorMessage }}</p>
                 </div>
                 <Features></Features>
             </div>

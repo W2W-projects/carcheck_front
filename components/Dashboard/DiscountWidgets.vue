@@ -102,13 +102,13 @@ async function buyCustomPlan(plan) {
 </script>
 
 <template>
-  <div class="h-[11.5rem] bg-white rounded-xl flex justify-between">
-    <div class="flex flex-col justify-between pt-4 pb-6 text-black px-9">
-      <div class="pr-8 space-y-1">
-        <p class="text-2xl font-bold">
+  <div class="h-auto min-h-[11.5rem] 2xl:min-h-[13rem] bg-white rounded-xl flex flex-col md:flex-row justify-between">
+    <div class="flex flex-col justify-between px-4 pt-4 pb-6 text-black lg:px-9 md:px-5">
+      <div class="pr-2 space-y-1 md:pr-8">
+        <p class="text-xl font-bold md:text-2xl">
           Running out of <br /> checks ?
         </p>
-        <p class="text-[0.9rem]">These offers are for you</p>
+        <p class="text-sm md:text-[0.9rem]">These offers are for you</p>
       </div>
       <div class="flex items-center space-x-1 font-bold">
         <small>
@@ -119,10 +119,12 @@ async function buyCustomPlan(plan) {
         </span>
       </div>
     </div>
-    <div class="flex px-[1.1rem] py-[0.9rem] space-x-5">
+    <div
+      class="flex flex-col md:flex-row overflow-x-auto py-2 px-2 md:px-[1.1rem] md:py-[0.9rem] space-y-4 md:space-y-0 lg:space-x-5 md:space-x-2 2xl:my-auto">
       <div v-for="(pln, index) in mappedPlans" :key="pln.id"
-        class="h-[9.4rem] w-[10.35rem] rounded-lg px-[0.8rem] pt-[1.2rem] pb-[0.6rem] flex flex-col"
+        class="h-[9.4rem] w-full lg:w-[10.35rem] md:w-[10rem] rounded-lg px-[0.8rem] pt-[1.2rem] pb-[0.6rem] flex flex-col flex-shrink-0"
         :style="{ backgroundColor: `rgba(${parseInt(check_colors[index].slice(1, 3), 16)}, ${parseInt(check_colors[index].slice(3, 5), 16)}, ${parseInt(check_colors[index].slice(5, 7), 16)}, 0.30)` }">
+        <!-- Plan content stays the same -->
         <div class="flex-1 space-y-2 text-center text-black">
           <div class="flex items-center justify-between">
             <div class="leading-[0.9rem] text-start">

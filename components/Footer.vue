@@ -3,99 +3,112 @@ import { useAuthStore } from '~/stores/auth';
 import { computed } from 'vue';
 
 const authStore = useAuthStore();
-const currentUser = computed(()=> authStore.getCurrentUser);
+const currentUser = computed(() => authStore.getCurrentUser);
 
-const startCheckIn = () => {
-  if (currentUser.value && Object.keys(currentUser.value).length > 0) {
-    navigateTo('/payment/plans');
-  } else {
-    localStorage.setItem('redirect-url', '/payment/plans');
-    navigateTo('/auth/login');
-  }
-};
+
 </script>
 
 <template>
-  <footer class="bg-[#EEEEEE] px-12 md:px-32 lg:px-36 pt-7">
-    <div class="mx-auto w-full max-w-screen-xl py-6 lg:py-8">
-      <div class="grid grid-cols-2  sm:grid-cols-3 md:grid-cols-5">
-        <div>
-          <h2 class="mb-4 text-xl font-semibold text-[#0F1829]">How it works</h2>
-          <ul class="text-gray-500 dark:text-gray-400 font-medium space-y-3">
+  <footer class="bg-[#EEEEEE] px-4 sm:px-6 md:px-32 lg:px-36 pt-5 sm:pt-7">
+    <div class="w-full max-w-screen-xl py-4 mx-auto sm:py-6 lg:py-8">
+      <div class="grid grid-cols-2 gap-6 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-5 sm:gap-4">
+        <!-- How it works section -->
+        <div class="mt-4 sm:mt-0">
+          <h2 class="mb-2 sm:mb-4 text-lg sm:text-xl font-semibold text-[#0F1829]">How it works</h2>
+          <ul class="space-y-2 font-medium text-gray-500 sm:space-y-3 dark:text-gray-400">
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-lg font-thin">What’s included</a>
+              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">What's included</a>
             </li>
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-lg font-thin">Steps to check</a>
+              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Steps to check</a>
             </li>
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-lg font-thin">Another Page</a>
+              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Another Page</a>
             </li>
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-lg font-thin">Last Page</a>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h2 class="mb-4 text-xl font-semibold text-[#0F1829] ">About us</h2>
-          <ul class="text-gray-500 dark:text-gray-400 font-medium space-y-3">
-            <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-lg font-thin ">How we wre</a>
-            </li>
-            <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-lg font-thin">Our resources</a>
-            </li>
-            <li>
-              <NuxtLink to="/contact-us" class="hover:underline text-[#0F1829] text-lg font-thin">Contact US</NuxtLink>
+              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Last Page</a>
             </li>
           </ul>
         </div>
-        <div>
-          <h2 class="mb-4 text-xl font-semibold text-[#0F1829] ">Pricing</h2>
-          <ul class="text-gray-500 dark:text-gray-400 font-medium space-y-3">
+
+        <!-- About us section -->
+        <div class="mt-4 sm:mt-0">
+          <h2 class="mb-2 sm:mb-4 text-lg sm:text-xl font-semibold text-[#0F1829]">About us</h2>
+          <ul class="space-y-2 font-medium text-gray-500 sm:space-y-3 dark:text-gray-400">
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-lg font-thin">Best offers</a>
+              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">How we wre</a>
             </li>
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-lg font-thin">Best prices</a>
+              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Our resources</a>
             </li>
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-lg font-thin">Find your plans</a>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h2 class="mb-4 text-xl font-semibold text-[#0F1829] ">Reports</h2>
-          <ul class="text-gray-500 dark:text-gray-400 font-medium space-y-3">
-            <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-lg font-thin">Sample Report</a>
-            </li>
-            <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-lg font-thin">What's in there</a>
+              <NuxtLink to="/contact-us" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Contact
+                US</NuxtLink>
             </li>
           </ul>
         </div>
-        <div>
-          <h2 class="mb-4 text-xl font-semibold text-[#0F1829] ">Newsletter</h2>
-          <div class="flex items-center">
+
+        <!-- Pricing section -->
+        <div class="mt-4 sm:mt-0">
+          <h2 class="mb-2 sm:mb-4 text-lg sm:text-xl font-semibold text-[#0F1829]">Pricing</h2>
+          <ul class="space-y-2 font-medium text-gray-500 sm:space-y-3 dark:text-gray-400">
+            <li>
+              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Best offers</a>
+            </li>
+            <li>
+              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Best prices</a>
+            </li>
+            <li>
+              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Find your plans</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Reports section -->
+        <div class="mt-4 sm:mt-0">
+          <h2 class="mb-2 sm:mb-4 text-lg sm:text-xl font-semibold text-[#0F1829]">Reports</h2>
+          <ul class="space-y-2 font-medium text-gray-500 sm:space-y-3 dark:text-gray-400">
+            <li>
+              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Sample Report</a>
+            </li>
+            <li>
+              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">What's in there</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Newsletter section -->
+        <div class="col-span-2 mt-6 sm:mt-0 md:col-span-1">
+          <h2 class="mb-2 sm:mb-4 text-lg sm:text-xl font-semibold text-[#0F1829]">Newsletter</h2>
+          <div class="flex items-center max-w-xs sm:max-w-none">
             <input type="email"
-              class="w-full py-2 px-4 text-[#0F1829] bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full py-2 px-3 sm:px-4 text-[#0F1829] bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your email" />
             <button
-              class="bg-primary hover:bg-blue-600 text-white px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 -ml-2">
-              <img src="assets/svg/arrow-right.svg" alt="Arrow Right" class="w-4" />
+              class="px-3 py-2 -ml-2 text-white rounded-md sm:px-4 sm:py-3 bg-primary hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <img src="assets/svg/arrow-right.svg" alt="Arrow Right" class="w-3 sm:w-4" />
             </button>
           </div>
-          <p class="mt-4 text-lg font-thin text-gray-600">Get in touch with someone</p>
-          <button class="rounded-sm bg-primary text-white px-6 py-1 mt-2 text-xl font-bold"
-            @click.prevent="startCheckIn()">Start
-            Checking</button>
+          <div>
+            <p class="mt-3 text-base font-thin text-gray-600 sm:mt-4 sm:text-lg">Get in touch with someone</p>
+            <NuxtLink
+              class="inline-block px-5 py-1 mt-2 text-lg font-bold text-white rounded-sm sm:px-6 sm:text-xl bg-primary"
+              to="#check">
+              Start Checking
+            </NuxtLink>
+          </div>
         </div>
       </div>
+
+      <!-- Divider -->
       <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
-      <div class="sm:flex sm:items-center sm:justify-between">
-        <app-logo />
-        <div class="flex mt-4 sm:justify-center sm:mt-0">
+
+      <!-- Bottom section with logo and social icons -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <app-logo class="mx-auto mb-4 sm:mx-0 sm:mb-0" />
+
+        <!-- Social icons -->
+        <div class="flex justify-center mt-4 space-x-5 sm:justify-start sm:mt-0">
           <a href="#" class="text-gray-500 hover:text-[#0F1829] dark:hover:text-white">
             <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
               viewBox="0 0 8 19">
@@ -105,7 +118,7 @@ const startCheckIn = () => {
             </svg>
             <span class="sr-only">Facebook page</span>
           </a>
-          <a href="#" class="text-gray-500 hover:text-[#0F1829] dark:hover:text-white ms-5">
+          <a href="#" class="text-gray-500 hover:text-[#0F1829] dark:hover:text-white">
             <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
               viewBox="0 0 21 16">
               <path
@@ -113,7 +126,7 @@ const startCheckIn = () => {
             </svg>
             <span class="sr-only">Discord community</span>
           </a>
-          <a href="#" class="text-gray-500 hover:text-[#0F1829] dark:hover:text-white ms-5">
+          <a href="#" class="text-gray-500 hover:text-[#0F1829] dark:hover:text-white">
             <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
               viewBox="0 0 20 17">
               <path fill-rule="evenodd"
@@ -122,7 +135,7 @@ const startCheckIn = () => {
             </svg>
             <span class="sr-only">Twitter page</span>
           </a>
-          <a href="#" class="text-gray-500 hover:text-[#0F1829] dark:hover:text-white ms-5">
+          <a href="#" class="text-gray-500 hover:text-[#0F1829] dark:hover:text-white">
             <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
               viewBox="0 0 20 20">
               <path fill-rule="evenodd"
@@ -131,7 +144,7 @@ const startCheckIn = () => {
             </svg>
             <span class="sr-only">GitHub account</span>
           </a>
-          <a href="#" class="text-gray-500 hover:text-[#0F1829] dark:hover:text-white ms-5">
+          <a href="#" class="text-gray-500 hover:text-[#0F1829] dark:hover:text-white">
             <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
               viewBox="0 0 20 20">
               <path fill-rule="evenodd"
@@ -144,5 +157,4 @@ const startCheckIn = () => {
       </div>
     </div>
   </footer>
-
 </template>
