@@ -43,7 +43,7 @@ definePageMeta({
     <WhyNeedCarCheck />
     <ReportInfoSection />
     <section>
-      <div class="max-w-screen-2xl">
+      <div class="mx-auto max-w-screen-2xl">
         <div class="bg-[#EEEEEE] lg:px-[10.7rem] 3xl:px-0 md:px-44 px-5">
           <div class="flex flex-row items-center justify-between mt-[6.75rem]">
             <div class="mx-auto">
