@@ -82,7 +82,7 @@
             {
                 "id": 9,
                 "title": "Technical data",
-                "icon": "technical-data.svg"
+                "icon": "technicaldata.svg"
             }
         ],
         "basic_features": [
@@ -109,7 +109,7 @@
             {
                 "id": 6,
                 "title": "Technical data",
-                "icon": "technical-data.svg"
+                "icon": "technicaldata.svg"
             }
         ],
         "standard_features": [
@@ -136,12 +136,12 @@
             {
                 "id": 5,
                 "title": "Technical data",
-                "icon": "technical-data.svg"
+                "icon": "technicaldata.svg"
             },
             {
                 "id": 6,
                 "title": "Written off",
-                "icon": "tax-record-icon.svg"
+                "icon": "write-off.svg"
             }
         ],
         "premium_features": [
@@ -173,7 +173,7 @@
             {
                 "id": 6,
                 "title": "Written off",
-                "icon": "tax-record-icon.svg"
+                "icon": "write-off.svg"
             }
         ]
     }
