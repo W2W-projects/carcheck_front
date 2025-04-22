@@ -8,16 +8,16 @@ const moreFeatures = async () => {
       "id": 12, "title": "Write off", "icon": "warning.svg"
     },
     {
-      "id": 7, "title": "Finance History", "icon": "outstanding-finances.svg"
+      "id": 7, "title": "Finance History", "icon": "financial-history.svg"
     },
     {
-      "id": 8, "title": "Tax Records", "icon": "tax-record-icon.svg"
+      "id": 8, "title": "Tax Records", "icon": "tax-records.svg"
     },
     {
-      "id": 9, "title": "Technical data", "icon": "technical-data.svg"
+      "id": 9, "title": "Technical data", "icon": "technicaldata.svg"
     },
     {
-      "id": 10, "title": "Vehicle Valuation", "icon": "mileage-history.svg"
+      "id": 10, "title": "Vehicle Valuation", "icon": "valuation.svg"
     }
   );
   isAddMoreBtnHidden.value = true;
