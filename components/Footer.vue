@@ -36,14 +36,14 @@ const currentUser = computed(() => authStore.getCurrentUser);
           <h2 class="mb-2 sm:mb-4 text-lg sm:text-xl font-semibold text-[#0F1829]">About us</h2>
           <ul class="space-y-2 font-medium text-gray-500 sm:space-y-3 dark:text-gray-400">
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">How we wre</a>
+              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Who we are</a>
             </li>
             <li>
               <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Our resources</a>
             </li>
             <li>
               <NuxtLink to="/contact-us" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Contact
-                US</NuxtLink>
+                us</NuxtLink>
             </li>
           </ul>
         </div>

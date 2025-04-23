@@ -39,7 +39,7 @@ watch(vehicleHistory, (newHistory) => {
 
 
 <template>
-  <report-wrapper class="py-8" >
+  <report-wrapper class="py-8">
     <div class="flex items-center justify-between text-black ">
       <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
         <svg width="24" height="26" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -156,7 +156,7 @@ watch(vehicleHistory, (newHistory) => {
               <span v-if="isShowAble">{{ plateChangesCount > 9 ? plateChangesCount : '0' + plateChangesCount }}</span>
               <hashed contain="zero" v-else></hashed>
             </h2>
-            <p class="text-2xl font-light">PLATE <br /> CHANGE</p>
+            <p class="text-2xl font-light">PLATE <br /> CHANGES</p>
           </div>
           <div class="w-1/2">
             <svg width="256" height="132" viewBox="0 0 256 132" fill="none" xmlns="http://www.w3.org/2000/svg">
