@@ -9,7 +9,7 @@ const setBaseUrl = (env) => {
   const urls = {
     local: base_url || "http://localhost/api",
     dev: test_base_url || "https://dev-back.car-check.info/api",
-    prod: prod_url || "https://car-check.io",
+    prod: prod_url || "https://car-check.io/api",
   };
   return urls[env] || urls.local;
 };

@@ -70,6 +70,7 @@ const downloadReport = async () => {
         await carRegistrationSearchStore.fetchVehicleDimension();
         await carRegistrationSearchStore.fetchVehicleGeneralInfo();
         await carRegistrationSearchStore.fetchPerformance();
+        await carRegistrationSearchStore.fetchVehicleRegistration();
 
 
         if (hasSubscription?.active || hasSubscription?.request_count > 0 || user.request_count > 0 || user.one_off_request_count > 0 || carStore?.requestCounts?.one_off_request_count > 0) {

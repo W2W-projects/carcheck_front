@@ -142,6 +142,10 @@ async function handleCheckoutClick() {
                 if (payload?.hasSubscription) {
                     await subscriptionStore.setHasSubscription(payload.hasSubscription);
                 }
+                const regNumber = registrationSearchStore.reg_number || localStorage.getItem('reg_number');
+                if (regNumber) {
+                    await registrationSearchStore.searchCarRegNumber(regNumber);
+                }
                 setTimeout(() => {
                     buttonProcess.value = "DONE!";
                     navigateTo('/report');
@@ -176,6 +180,7 @@ async function createSubscription(selectedPlan) {
                 name: cardholderName.value,
             },
             plan_id: selectedPlan.id,
+            reg_number: registrationSearchStore.reg_number,
         });
         if (response.success) {
             successMessage.value = "Payment done successfully.";
@@ -201,106 +206,7 @@ async function createSubscription(selectedPlan) {
         }
 
         if (payload?.car_data) {
-
-
-            console.log("payload.car_data", payload.car_data);
-
-            // vehicle MOT History
-            const vehicleMotHistoryObj = payload.car_data.find(item => item.MotHistory);
-
-            if (vehicleMotHistoryObj && vehicleMotHistoryObj.MotHistory) {
-                await registrationSearchStore.setMOTHistory(vehicleMotHistoryObj);
-            } else {
-                console.error("Vehicle MOT History not found in car data");
-            }
-            // vehicle History
-            const vehicleHistoryObj = payload.car_data.find(item => item.VehicleHistory);
-
-            if (vehicleHistoryObj && vehicleHistoryObj.VehicleHistory) {
-                await registrationSearchStore.setVehicleHistory(vehicleHistoryObj.VehicleHistory);
-            } else {
-                console.error("Vehicle History not found in car data");
-            }
-
-            // vehicle General
-            const vehicleTechDetailsObj = payload.car_data.find(item => item.TechnicalDetails);
-
-            if (vehicleTechDetailsObj && vehicleTechDetailsObj.vehicleTechnicalDetailsObj) {
-                await registrationSearchStore.setVehicleGeneralInfo(vehicleTechDetailsObj.vehicleTechnicalDetailsObj.General);
-            } else {
-                console.error("Vehicle General not found in car data");
-            }
-
-            // vehicle Performance
-            const technicalDetailsObj = payload.car_data.find(item => item.TechnicalDetails);
-
-            if (technicalDetailsObj && technicalDetailsObj.vehicleTechnicalDetailsObj) {
-                await registrationSearchStore.setPerformance(technicalDetailsObj.vehicleTechnicalDetailsObj.Performance);
-            } else {
-                console.error("Vehicle Performance not found in car data");
-            }
-
-            // vehicle Dimesion
-            const vehicleTechnicalDetailsObj = payload.car_data.find(item => item.TechnicalDetails);
-
-            if (vehicleTechnicalDetailsObj && vehicleTechnicalDetailsObj.vehicleTechnicalDetailsObj) {
-                await registrationSearchStore.setVehicleDimension(vehicleTechnicalDetailsObj.vehicleTechnicalDetailsObj.Dimensions);
-            } else {
-                console.error("Vehicle Dimension not found in car_data");
-            }
-            // vehicle SmmtDetails
-            const vehicleSetSmmtDetailsObj = payload.car_data.find(item => item.SmmtDetails);
-
-            if (vehicleSetSmmtDetailsObj && vehicleSetSmmtDetailsObj.SmmtDetails) {
-                await registrationSearchStore.setSmmtDetails(vehicleSetSmmtDetailsObj.SmmtDetails);
-            } else {
-                console.error("SmmtDetails not found in car data");
-            }
-
-            // vehicle ClassificationDetails
-            const vehicleClassificationDetailsObj = payload.car_data.find(item => item.ClassificationDetails);
-
-            if (vehicleClassificationDetailsObj && vehicleClassificationDetailsObj.ClassificationDetails) {
-                await registrationSearchStore.setClassificationDetails(vehicleClassificationDetailsObj.ClassificationDetails);
-            } else {
-                console.error("ClassificationDetails not found in car data");
-            }
-
-            // vehicle registration
-            const vehicleRegistrationObj = payload.car_data.find(item => item.VehicleRegistration);
-
-            if (vehicleRegistrationObj && vehicleRegistrationObj.VehicleRegistration) {
-                await registrationSearchStore.setVehicleRegistration(vehicleRegistrationObj.VehicleRegistration);
-            } else {
-                console.error("VehicleRegistration not found in car_data");
-            }
-
-            // vehicle status
-            const vehicleStatusObj = payload.car_data.find(item => item.VehicleStatus);
-
-            if (vehicleStatusObj && vehicleStatusObj.VehicleStatus && vehicleStatusObj.VehicleStatus.MotVed) {
-                await registrationSearchStore.setMotVed(vehicleStatusObj.VehicleStatus.MotVed);
-            } else {
-                console.error("Vehicle status not found in car data");
-            }
-            // vehicle valuation
-            const vehicleValuationObj = payload.car_data.find(item => item.ValuationList);
-            if (vehicleValuationObj && vehicleValuationObj.ValuationList) {
-                await registrationSearchStore.setVehicleValuationList(vehicleValuationObj);
-            } else {
-                console.error("Vehicle status not found in car data");
-            }
-
-
-            const allowFullReportObj = payload.car_data.find(item => item.allow_full_report);
-            if (allowFullReportObj && allowFullReportObj.allow_full_report) {
-                await registrationSearchStore.setAllowFullReport({
-                    allow_full_report: allowFullReportObj.allow_full_report
-                });
-            } else {
-                console.error("allowFullReport not found in car data");
-            }
-
+            await registrationSearchStore.applyCarData(payload.car_data);
         }
 
         // if (selectedPlan.plan_code === '48h-basic-subscription') {

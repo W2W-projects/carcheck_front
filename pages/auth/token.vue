@@ -46,7 +46,7 @@ const handleTokenForPasswordResetSubmit = async () => {
         form.email = localStorage.getItem("email-for-token");
         let response = await auth.submitTokenForPasswordReset(form);
         if (response.success && response.data) {
-            let eData = response.data;
+            localStorage.setItem("reset-token", form.reset_token);
             navigateTo('/auth/reset-password');
         } else {
             throw new Error("Invalid email");

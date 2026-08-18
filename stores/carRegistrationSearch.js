@@ -304,10 +304,9 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
         async searchCarRegNumber(car_reg_number) {
             try {
                 const tokenStore = useTokenStore();
-                const authStore = useAuthStore();
                 const carStore = useCarStore();
 
-               
+
                 const token = tokenStore.getToken;
                 this.reg_number = car_reg_number.replace(/[^a-zA-Z0-9]/g, "");
                 carStore.setCarRegNumber(this.reg_number);
@@ -319,48 +318,49 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                     await this.cleanupLocalStorage();
                 }
 
-                if (response.payload && Array.isArray(response.payload)) {
-                    let combinedPayload = response.payload.reduce((acc, item) => {
-                        return { ...acc, ...item };
-                    }, {});
-
-
-                    await this.setVehicleImageUrl(combinedPayload);
-                    await this.setVehicleLogo(combinedPayload);
-                    await this.setSmmtDetails(combinedPayload);
-                    await this.setVehicleDimension(combinedPayload);
-                    await this.setVehicleRegistration(combinedPayload);
-                    await this.setMotVed(combinedPayload);
-                    await this.setVehicleGeneralInfo(combinedPayload);
-                    await this.setPerformance(combinedPayload);
-                    await this.setClassificationDetails(combinedPayload);
-                    await this.setMOTHistory(combinedPayload);
-                    await this.setMOTAdditionalInfo(combinedPayload);
-                    await this.setAllowFullReport(combinedPayload);
-                    
-                    //assignment of checkout count
-                    if(authStore.user){
-                        authStore.user.request_count = Number(combinedPayload.request_count) || 0;
-                        authStore.user.one_off_request_count = Number(combinedPayload.one_off_request_count) || 0;
-                        authStore.user.request_count_trial = Number(combinedPayload.request_count_trial) || 0;
-                    }
-
-                    if(authStore.user?.request_count > 0 || authStore.user?.one_off_request_count > 0 || authStore.user?.request_count_trial > 0){
-                        await this.setVehicleHistory(combinedPayload);
-                        await this.setVehicleValuationList(combinedPayload);
-                        await this.setStolenRecord(combinedPayload);
-                        await this.setWriteOffRecords(combinedPayload);
-                        await this.setFinanceRecords(combinedPayload);
-                        await this.setRiskRecords(combinedPayload);
-                    }
-                    
-                    await this.setNumberOfLooksUp(combinedPayload);
-                    localStorage.setItem('reg_number', this.reg_number);
-                }
+                await this.applyCarData(response.payload);
             } catch (error) {
                 console.log("Error while fetching car details:", error);
                 throw error;
             }
+        },
+
+        async applyCarData(payload) {
+            if (!Array.isArray(payload)) return;
+
+            const authStore = useAuthStore();
+            const combinedPayload = payload.reduce((acc, item) => {
+                return { ...acc, ...item };
+            }, {});
+
+            await this.setVehicleImageUrl(combinedPayload);
+            await this.setVehicleLogo(combinedPayload);
+            await this.setSmmtDetails(combinedPayload);
+            await this.setVehicleDimension(combinedPayload);
+            await this.setVehicleRegistration(combinedPayload);
+            await this.setMotVed(combinedPayload);
+            await this.setVehicleGeneralInfo(combinedPayload);
+            await this.setPerformance(combinedPayload);
+            await this.setClassificationDetails(combinedPayload);
+            await this.setMOTHistory(combinedPayload);
+            await this.setMOTAdditionalInfo(combinedPayload);
+            await this.setAllowFullReport(combinedPayload);
+
+            if (authStore.user) {
+                authStore.user.request_count = Number(combinedPayload.request_count) || 0;
+                authStore.user.one_off_request_count = Number(combinedPayload.one_off_request_count) || 0;
+                authStore.user.request_count_trial = Number(combinedPayload.request_count_trial) || 0;
+            }
+
+            await this.setVehicleHistory(combinedPayload);
+            await this.setVehicleValuationList(combinedPayload);
+            await this.setStolenRecord(combinedPayload);
+            await this.setWriteOffRecords(combinedPayload);
+            await this.setFinanceRecords(combinedPayload);
+            await this.setRiskRecords(combinedPayload);
+
+            await this.setNumberOfLooksUp(combinedPayload);
+            localStorage.setItem('reg_number', this.reg_number);
         },
 
         // Set data in localStorage with encryption

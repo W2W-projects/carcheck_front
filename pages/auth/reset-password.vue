@@ -16,7 +16,8 @@ definePageMeta({
 const form = reactive({
     password: "",
     password_confirmation: "",
-    email: localStorage.getItem("email-for-token")??null
+    email: localStorage.getItem("email-for-token")??null,
+    reset_token: localStorage.getItem("reset-token")??null
 
 });
 
@@ -55,6 +56,7 @@ const handleResetPasswordSubmit = async () => {
         let response = await auth.handlePasswordResetSubmit(form);
         
         if (response.success && response.data) {
+            localStorage.removeItem("reset-token");
             navigateTo('/auth/login');
         } else {
             throw new Error("Invalid Password or Confirm password");

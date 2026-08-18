@@ -19,7 +19,6 @@
     "@pinia/nuxt": "^0.5.1",
     "@stripe/stripe-js": "^4.1.0",
     "@types/chart.js": "^2.9.41",
-    "@types/swiper": "^6.0.0",
     "chart.js": "^4.4.4",
     "chartjs-gauge": "^0.3.0",
     "date-fns": "^4.1.0",
