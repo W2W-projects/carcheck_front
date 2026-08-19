@@ -5,10 +5,7 @@ import ApiService from '~/services/apiService';
 
 // Store initialization
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
-const tokenStore = useTokenStore();
-const subscriptionStore = useSubscriptionStore();
 const authStore = useAuthStore();
-const carStore = useCarStore();
 
 const errorMessage = ref<string | null>(null);
 const showPasswordField = ref(false);
@@ -19,7 +16,6 @@ const form = reactive({
 });
 const getFullReportButton = ref('Get full report');
 const getFullReportY = ref('Get full report');
-const subscriptionStatus = computed(() => subscriptionStore.getSubscriptionStatus);
 
 // Props
 const props = defineProps({
@@ -36,114 +32,23 @@ const props = defineProps({
         default: true,
     }
 });
-// Helper function to format date
-const reportDate = () => {
-    const date = new Date();
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-};
+const { downloadReport: runDownload, isDownloading, isAnyDownloading, errorMessage: downloadError } = useDownloadReport();
 
-// Main function to handle report download
 const downloadReport = async () => {
     getFullReportY.value = "Downloading...";
-    const isAuthenticated = tokenStore.getToken && tokenStore.getStatus;
-    const hasSubscription = await subscriptionStore.getHasSubscription();
+    const result = await runDownload(carRegistrationSearchStore.reg_number);
 
-    if (!isAuthenticated) {
-        return navigateTo('/auth/login');
+    if (result?.success) {
+        getFullReportY.value = "Downloaded";
+        return;
     }
 
-    if (isAuthenticated && !subscriptionStatus.value) {
-        return navigateTo('/pricing');
+    getFullReportButton.value = "Get full report";
+    getFullReportY.value = "Get full report";
+    errorMessage.value = downloadError.value;
+    if (errorMessage.value) {
+        setTimeout(() => { errorMessage.value = ""; }, 3000);
     }
-    try {
-        const subscription = await subscriptionStore.getUserSubscription();
-        // if (subscription !== null && hasSubscription && hasSubscription?.onTrial && subscription.plan?.plan_code === '48h-basic-subscription') {
-        // if (subscription !== null) {
-        //     errorMessage.value = "Your are on basic trial plan. Please buy single offer.";
-        //     return;
-        // }
-        const user = authStore.user;
-
-        await carRegistrationSearchStore.fetchVehicleDimension();
-        await carRegistrationSearchStore.fetchVehicleGeneralInfo();
-        await carRegistrationSearchStore.fetchPerformance();
-        await carRegistrationSearchStore.fetchVehicleRegistration();
-
-
-        if (hasSubscription?.active || hasSubscription?.request_count > 0 || user.request_count > 0 || user.one_off_request_count > 0 || carStore?.requestCounts?.one_off_request_count > 0) {
-            let car_data = [
-                { vehicleStatus: carRegistrationSearchStore.vehicleStatus },
-                { vehicleDetails: carRegistrationSearchStore.vehicleDetails },
-                { MOTHistory: carRegistrationSearchStore.MOTHistory },
-                { technicalDetails: carRegistrationSearchStore.technicalDetails },
-                { classificationDetails: carRegistrationSearchStore.classificationDetails },
-                { vehicleHistory: carRegistrationSearchStore.vehicleHistory },
-                { vehicleValuationsList: carRegistrationSearchStore.vehicleValuationsList },
-                { dimensions: carRegistrationSearchStore.dimensions },
-                { general: carRegistrationSearchStore.general },
-                { vehicleRegistration: carRegistrationSearchStore.vehicleRegistration },
-                { motVed: carRegistrationSearchStore.motVed },
-                { smmtDetails: carRegistrationSearchStore.smmtDetails },
-                { performance: carRegistrationSearchStore.performance },
-                { vbrand_logo: carRegistrationSearchStore.vbrand_logo },
-                { vehicleImageUrl: carRegistrationSearchStore.vehicleImageUrl },
-                { getFullReportText: carRegistrationSearchStore.getFullReportText },
-                { stolenRecord: carRegistrationSearchStore.stolenRecord },
-                { writeOff: carRegistrationSearchStore.writeOff },
-                { riskRecords: carRegistrationSearchStore.riskRecords },
-                { financeRecords: carRegistrationSearchStore.financeRecords }
-            ];
-
-            console.log('car_data', car_data);
-
-            if (!subscription) {
-                errorMessage.value = "You don't have any active subscription. Please buy or upgrade plan.";
-            }
-
-            const token = tokenStore.getToken;
-            const response = await ApiService.post(
-                'users/download-report',
-                {
-                    email: authStore.user?.email,
-                    report_type: subscription?.plan?.plan_code,
-                    car_data: car_data
-                },
-                token
-            );
-            if (response.success && response.payload) {
-                const payload = response.payload;
-                const downloadUrl = payload.report_link;
-                const link = document.createElement('a');
-                link.href = downloadUrl;
-                link.download = `report-${reportDate()}.pdf`;
-                link.target = '_blank';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                getFullReportY.value = "Downloaded";
-
-            } else {
-                throw new Error('Failed to retrieve the report data.');
-            }
-        } else {
-            getFullReportButton.value = "Get full report";
-            getFullReportY.value = "Get full report";
-
-            return navigateTo('/payment/plans');
-        }
-    } catch (error) {
-        getFullReportY.value = "Get full report";
-        errorMessage.value = error?.data?.message || 'Error occurred during the subscription check.';
-        getFullReportButton.value = "Get full report";
-        setTimeout(() => {
-            errorMessage.value = "";
-            getFullReportY.value = "Get full report";
-        }, 3000);
-    }
-
 };
 
 const handleGetFullReport = async () => {
@@ -270,9 +175,11 @@ watch(
                 {{ getFullReportY }}
             </button>
         </form>
-        <button v-else @click.prevent="downloadReport" class="w-full"
-            :class="['bg-[#FF7400] text-white text-xl rounded-lg py-2']">
-            Download Report
+        <button v-else @click.prevent="downloadReport" :disabled="isAnyDownloading" :aria-busy="isDownloading"
+            class="flex items-center justify-center w-full gap-2 bg-[#FF7400] text-white text-xl rounded-lg py-2 disabled:cursor-not-allowed"
+            :class="isDownloading ? 'opacity-70' : isAnyDownloading ? 'opacity-80' : ''">
+            <span v-if="isDownloading" class="w-5 h-5 border-2 rounded-full border-white/40 border-t-white animate-spin" aria-hidden="true"></span>
+            {{ isDownloading ? 'Downloading...' : getFullReportY }}
         </button>
         <div class="w-full text-center">
             <small v-if="errorMessage" class="mt-2 text-red-500">{{ errorMessage }}</small>
@@ -287,7 +194,7 @@ watch(
         </NuxtLink> -->
     </div>
     <div v-else class="bg-red-400 w-[22rem] flex items-center justify-end rounded-lg">
-        <a href="#report" class="w-full px-20 py-2 text-center text-white rounded-lg bg-primary">Get full report</a>
+        <a href="#report" class="w-full px-20 py-2 text-center text-white rounded-lg bg-brand">Get full report</a>
     </div>
 
 </template>

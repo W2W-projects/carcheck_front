@@ -121,7 +121,7 @@ const navigateToForgotPassword = () => navigateTo('/auth/password-reset-token');
                         <ButtonPrimary :disabled="isProcessing">{{ loginSubmit }}</ButtonPrimary>
 
                         <NuxtLink to="/auth/password-reset-token">
-                            <small class="underline cursor-pointer text-primary hover:text-primary/90">
+                            <small class="underline cursor-pointer text-brand hover:text-brand/90">
                                 Forgot Password
                             </small>
                         </NuxtLink>

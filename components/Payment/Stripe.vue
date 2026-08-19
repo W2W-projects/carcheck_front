@@ -304,9 +304,9 @@ watch(errorMessage, (newErrorMessage) => {
                 style="border:1px solid #0F1829 !important; border-radius: 30% !important;" />
             <label for="agree-terms" class="flex-1 font-thin">
                 I agree to the
-                <a href="/terms" target="_blank" class="text-primary"> privacy policy</a>
+                <a href="/terms" target="_blank" class="text-brand"> privacy policy</a>
                 and
-                <a href="/terms" target="_blank" class="text-primary"> terms & conditions</a> of
+                <a href="/terms" target="_blank" class="text-brand"> terms & conditions</a> of
                 service.
             </label>
         </div>
@@ -322,7 +322,7 @@ watch(errorMessage, (newErrorMessage) => {
                 <br>
             </div>
             <button v-else type="submit"
-                class="w-full px-3 py-3 text-lg font-bold text-center text-white rounded-lg hover:bg-primary/90 focus:ring-4 focus:outline-none focus:ring-blue-300 bg-primary">
+                class="w-full px-3 py-3 text-lg font-bold text-center text-white rounded-lg hover:bg-brand/90 focus:ring-4 focus:outline-none focus:ring-blue-300 bg-brand">
                 {{ buttonProcess }}
             </button>
         </div>

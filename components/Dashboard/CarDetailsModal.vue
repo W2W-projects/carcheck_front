@@ -97,9 +97,11 @@
                     <button @click="close" class="px-4 py-2 text-gray-800 bg-gray-200 rounded hover:bg-gray-300">
                         Close
                     </button>
-                    <button @click="downloadFullReport"
-                        class="px-4 py-2 text-white rounded bg-primary hover:bg-primary-dark">
-                        Download Full Report
+                    <button @click="downloadFullReport" :disabled="isAnyDownloading" :aria-busy="isDownloading"
+                        class="flex items-center justify-center gap-2 px-4 py-2 text-white rounded bg-brand hover:bg-brand-600 disabled:cursor-not-allowed"
+                        :class="isDownloading ? 'opacity-70' : isAnyDownloading ? 'opacity-80' : ''">
+                        <span v-if="isDownloading" class="w-5 h-5 border-2 rounded-full border-white/40 border-t-white animate-spin" aria-hidden="true"></span>
+                        {{ isDownloading ? 'Downloading...' : 'Download Full Report' }}
                     </button>
                 </div>
             </div>
@@ -116,6 +118,14 @@ const props = defineProps({
         required: true
     },
     isOpen: {
+        type: Boolean,
+        default: false
+    },
+    isDownloading: {
+        type: Boolean,
+        default: false
+    },
+    isAnyDownloading: {
         type: Boolean,
         default: false
     }

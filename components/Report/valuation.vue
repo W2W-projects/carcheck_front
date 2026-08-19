@@ -10,6 +10,7 @@ const toggleTableVisibility = () => {
 
 const valuationLists = computed(() => carRegistrationSearchStore.vehicleValuationsList);
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
+const planCurrency = computed(() => subscriptionStore.subscription?.plan?.currency?.symbol ?? '£');
 
 const chartData = ref([]);
 const isClient = ref(false);
@@ -66,7 +67,7 @@ const { isShowAble } = useIsShowAble();
         </span>
       </div>
 
-      <small v-if="!hasSubscription">Unlock all valuation details on the full report</small>
+      <small v-if="!hasSubscription?.active">Unlock all valuation details on the full report</small>
       <button class="bg-[#FF7400] text-white text-xl w-72 rounded-lg py-2">Get full report</button>
     </div>
 
@@ -75,7 +76,7 @@ const { isShowAble } = useIsShowAble();
       <!-- v-if="!(subscription?.plan?.plan_code ==='48h-basic-subscription' && hasSubscription?.onTrial) && (user.request_count > 0 || user.one_off_request_count > 0)" -->
       <div v-if="isClient">
         <chart-bar v-if="chartData.length > 0" :data="chartData" :hasSubscription="isShowAble"
-          :height="getChartHeight()" width="100%" />
+          :currency="planCurrency" :height="getChartHeight()" width="100%" />
       </div>
       <div v-else>
         <p>Loading data...</p>

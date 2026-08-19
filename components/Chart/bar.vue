@@ -4,27 +4,26 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, onBeforeUnmount, ref, computed, watch } from 'vue';
 import { Chart, BarController, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
 
 // Props definition
-const props = defineProps<{
-  data: { label: string; value: number }[];
-  class?: string;
-  height?: {
-    type: number | string;
-    default: 25;
-  };
-  width?: {
-    type: number | string;
-    default: '100%';
-  };
-  hasSubscription: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    data: { label: string; value: number }[];
+    class?: string;
+    height?: number | string;
+    width?: number | string;
+    currency?: string;
+    hasSubscription?: boolean;
+  }>(),
+  { height: 25, width: '100%', currency: '£', hasSubscription: false }
+);
 
 // Computed properties for labels and values
 const labels = computed(() => props.data.map((item) => item.label));
 const values = computed(() => props.data.map((item) => item.value));
+const datasetLabel = computed(() => `Price (${props.currency})`);
 const height = computed(() => convertToNumber(props.height));
 const width = computed(() => convertToNumber(props.width));
 
@@ -38,18 +37,19 @@ function convertToNumber(value: any) {
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const chartCanvas = ref<HTMLCanvasElement | null>(null);
+let chart: Chart | null = null;
 
 // Function to create and configure the chart
 onMounted(() => {
   if (chartCanvas.value) {
-    new Chart(chartCanvas.value, {
+    chart = new Chart(chartCanvas.value, {
       type: 'bar',
       data: {
-        labels: props.data.map(item => item.label),
+        labels: labels.value,
         datasets: [
           {
-            label: 'Price (£)',
-            data: props.data.map(item => item.value),
+            label: datasetLabel.value,
+            data: values.value,
             backgroundColor: '#F94144',
             borderWidth: 1,
             barThickness: 20,
@@ -64,7 +64,9 @@ onMounted(() => {
             beginAtZero: true,
             ticks: {
               callback: function (value) {
-                return props.hasSubscription ? `£${value.toLocaleString()}` : 'X'.repeat(value.toString().length);
+                return props.hasSubscription
+                  ? `${props.currency}${value.toLocaleString()}`
+                  : 'X'.repeat(value.toString().length);
               },
             },
           },
@@ -76,6 +78,29 @@ onMounted(() => {
       },
     });
   }
+});
+
+watch(
+  [() => props.data, () => props.currency, () => props.hasSubscription],
+  () => {
+    if (!chart) return;
+
+    chart.data.labels = labels.value;
+    chart.data.datasets[0].data = values.value;
+    chart.data.datasets[0].label = datasetLabel.value;
+
+    if (chart.options.plugins?.tooltip) {
+      chart.options.plugins.tooltip.enabled = props.hasSubscription;
+    }
+
+    chart.update();
+  },
+  { deep: true }
+);
+
+onBeforeUnmount(() => {
+  chart?.destroy();
+  chart = null;
 });
 </script>
 

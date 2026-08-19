@@ -43,14 +43,6 @@ const failedTests = computed(() => {
     : [];
 });
 
-// Helper function to get failure category (from FailureReasonList)
-function getFailureCategory(failureList) {
-  if (failureList && failureList.length > 0) {
-    return failureList.map(failure => failure).join(", ");
-  }
-  return "No failure category";
-}
-
 // Helper function to get failure type (from AnnotationDetailsList or custom)
 function getFailureType(annotationList) {
   if (annotationList && annotationList.length > 0) {
@@ -176,7 +168,7 @@ const { isShowAble } = useIsShowAble();
             <tbody>
               <tr>
                 <th>Date</th>
-                <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{
+                <td v-if="isShowAble">{{
                   test.TestDate }}</td>
                 <td v-else>
                   <Hashed contain="stars" />
@@ -184,15 +176,19 @@ const { isShowAble } = useIsShowAble();
               </tr>
               <tr>
                 <th>Category</th>
-                <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{
-                  getFailureCategory(test.FailureReasonList) }}</td>
+                <td v-if="isShowAble">
+                  <ul v-if="test.FailureReasonList?.length" class="list-disc space-y-2 pl-5">
+                    <li v-for="(category, categoryIndex) in test.FailureReasonList" :key="categoryIndex">{{ category }}</li>
+                  </ul>
+                  <span v-else>No failure category</span>
+                </td>
                 <td v-else>
                   <Hashed contain="stars" />
                 </td>
               </tr>
               <tr>
                 <th>Type</th>
-                <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{
+                <td v-if="isShowAble">{{
                   getFailureType(test.AnnotationDetailsList) }}</td>
                 <td v-else>
                   <Hashed contain="stars" />

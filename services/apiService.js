@@ -14,6 +14,19 @@ const setBaseUrl = (env) => {
   return urls[env] || urls.local;
 };
 
+const guestToken = () => {
+  if (typeof localStorage === "undefined") return null;
+
+  let existing = localStorage.getItem("guest_token");
+
+  if (!existing) {
+    existing = crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    localStorage.setItem("guest_token", existing);
+  }
+
+  return existing;
+};
+
 const ApiService = {
   async request(endpoint, method, data = null, token = null) {
     const tokenStore = useTokenStore();
@@ -22,6 +35,11 @@ const ApiService = {
       Accept: "application/json",
       "Content-Type": "application/json",
     };
+
+    const guest = guestToken();
+    if (guest) {
+      headers["X-Guest-Token"] = guest;
+    }
 
     if (tokenToUse) {
       headers["Authorization"] = `Bearer ${tokenToUse}`;

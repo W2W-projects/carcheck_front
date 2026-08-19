@@ -13,12 +13,9 @@ const vehicleRegistration = computed(() => carRegistrationSearchStore.vehicleReg
 const subscriptionStore = useSubscriptionStore();
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
 
-const dateFirstRegistered = computed(() => {
-  if (vehicleRegistration.value?.DateFirstRegistered) {
-    return new Date(vehicleRegistration.value.DateFirstRegistered).toISOString().split('T')[0];
-  }
-  return "";
-});
+const dateFirstRegistered = computed(
+  () => String(vehicleRegistration.value?.DateFirstRegistered ?? '').split('T')[0]
+);
 
 onMounted(async () => {
   await Promise.all([
@@ -106,7 +103,7 @@ const toggleTableVisibility = () => {
           </tbody>
         </table>
 
-        <div class="items-center justify-center flex space-x-1 bg-[#FF7400] text-xl py-2" v-if="!hasSubscription">
+        <div class="items-center justify-center flex space-x-1 bg-[#FF7400] text-xl py-2" v-if="!hasSubscription?.active">
           <p>Unlock 87 more rows with the</p>
           <a href="#" class="underline">full report</a>
         </div>

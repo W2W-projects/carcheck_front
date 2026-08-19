@@ -59,7 +59,7 @@ import { useCarDetails } from '~/composables/useCarDetails';
 import { useDownloadReport } from '~/composables/downloadReport';
 
 const { isModalOpen, selectedCar } = useCarDetails();
-const { downloadReport } = useDownloadReport();
+const { downloadReport, isDownloading, isAnyDownloading } = useDownloadReport();
 
 function handleDownload(car: any) {
   downloadReport(car);
@@ -68,7 +68,8 @@ function handleDownload(car: any) {
 </script>
 
 <template>
-  <CarDetailsModal v-if="selectedCar" v-model:isOpen="isModalOpen" :car="selectedCar" @download="handleDownload" />
+  <CarDetailsModal v-if="selectedCar" v-model:isOpen="isModalOpen" :car="selectedCar"
+    :is-downloading="isDownloading" :is-any-downloading="isAnyDownloading" @download="handleDownload" />
   <div class="flex flex-grow w-full min-h-screen py-5 overflow-x-hidden md:h-screen bg-white/90"
     :class="[isRouteResource() ? 'lg:pl-10' : 'lg:px-10', 'px-4 md:px-6 space-x-0 md:space-x-4 lg:space-x-12']">
     <!-- sidebar -->
@@ -123,14 +124,14 @@ function handleDownload(car: any) {
             </button>
             <div class="relative">
               <div
-                class="flex items-center justify-center overflow-hidden border-2 rounded-full shadow-md border-primary/40 w-9 h-9">
+                class="flex items-center justify-center overflow-hidden border-2 rounded-full shadow-md border-brand/40 w-9 h-9">
                 <div
-                  class="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-blue-300 to-primary/30">
+                  class="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-blue-300 to-brand/30">
                   <AppLogo class="w-full scale-[0.85]" />
                 </div>
               </div>
               <!-- Notification indicator -->
-              <div class="absolute w-3 h-3 border border-white rounded-full -top-1 -right-1 bg-primary"></div>
+              <div class="absolute w-3 h-3 border border-white rounded-full -top-1 -right-1 bg-brand"></div>
             </div>
           </div>
         </div>
@@ -162,7 +163,7 @@ function handleDownload(car: any) {
 
           <!-- Enhanced Action button for mobile -->
           <NuxtLink to="/"
-            class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white transition-all rounded-lg shadow-sm bg-primary md:px-10 md:py-2 md:text-base whitespace-nowrap hover:shadow-md">
+            class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white transition-all rounded-lg shadow-sm bg-brand md:px-10 md:py-2 md:text-base whitespace-nowrap hover:shadow-md">
             <span class="flex items-center md:hidden">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd"

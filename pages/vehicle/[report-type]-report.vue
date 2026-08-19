@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import carDefaultImage from '/images/car-icon.png';
-import ApiService from '~/services/apiService';
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
-const tokenStore = useTokenStore();
-const subscriptionStore = useSubscriptionStore();
-const planStore = usePlanStore();
-const authStore = useAuthStore();
 
 const vbrand_logo = computed(() => carRegistrationSearchStore.vbrand_logo);
 const errorMessage = ref(null);
@@ -15,70 +10,13 @@ onMounted(() => {
     // console.log("vbrand_logo: ", vbrand_logo.value);
 });
 
+const { downloadReport: runDownload, isDownloading, isAnyDownloading, errorMessage: downloadError, reportDate } = useDownloadReport();
+
 const downloadReport = async () => {
-    let selectedPlan = planStore.selectedPlan;
-    debugger
     reportText.value = "Downloading...";
-    if (tokenStore.getToken && tokenStore.getStatus) {
-        let subscription = await subscriptionStore.getUserSubscription();
-        let hasSubscription = await subscriptionStore.getHasSubscription();
-        debugger
-        if ((hasSubscription.request_count > 0) && hasSubscription.active) {
-            try {
-                let report_type = "";
-                if (subscription?.plan?.plan_code == "48h-export-subscription") {
-                    report_type = "expert";
-                } else if (subscription?.plan?.plan_code == "48h-basic-subscription") {
-                    report_type = "basic";
-                } else if (subscription?.plan?.plan_code == "premium-3x") {
-                    report_type = "premium-3x";
-                } else {
-                    report_type = "";
-                }
-                const response = await ApiService.post('users/download-report', {
-                    email: authStore.user?.email,
-                    report_type: report_type
-                }, { responseType: 'blob' });
-
-                if (response.success && response.payload) {
-                    const downloadUrl = response.payload;
-
-                    const link = document.createElement('a');
-                    link.href = downloadUrl;
-                    link.download = `report-${reportDate()}.pdf`;
-                    link.target = '_blank';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-
-                    reportText.value = "Downloaded";
-                } else {
-                    reportText.value = "Download Report";
-                    errorMessage.value = "Failed to retrieve the report data";
-                    console.error("Error: Invalid response status", response.success);
-                }
-
-            } catch (error) {
-                reportText.value = "Download Report";
-                if (error.data)
-                    errorMessage.value = error.data.error;
-            }
-        } else {
-            reportText.value = "Download Report";
-            console.error("No remaining report downloads available.");
-            navigateTo('/payment/plans')
-        }
-    } else {
-        navigateTo('/auth/login');
-    }
-};
-
-const reportDate = () => {
-    const date = new Date();
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
+    const result = await runDownload(carRegistrationSearchStore.reg_number);
+    reportText.value = result?.success ? "Downloaded" : "Download Report";
+    errorMessage.value = downloadError.value;
 };
 
 </script>
@@ -97,8 +35,12 @@ const reportDate = () => {
             <div>
                 <div class="flex flex-col justify-center items-center">
                     <h1 class="text-2xl font-bold">YOUR <span class="text-orange-500">CAR REPORT</span> IS READY!</h1>
-                    <button @click.prevent="downloadReport"
-                        class="rounded bg-primary text-white text-lg px-20 py-2 mt-6">{{ reportText }}</button>
+                    <button @click.prevent="downloadReport" :disabled="isAnyDownloading" :aria-busy="isDownloading"
+                        class="flex items-center justify-center gap-2 rounded bg-brand text-white text-lg px-20 py-2 mt-6 disabled:cursor-not-allowed"
+                        :class="isDownloading ? 'opacity-70' : isAnyDownloading ? 'opacity-80' : ''">
+                        <span v-if="isDownloading" class="w-5 h-5 border-2 rounded-full border-white/40 border-t-white animate-spin" aria-hidden="true"></span>
+                        {{ isDownloading ? 'Downloading...' : reportText }}
+                    </button>
 
                     <p v-if="errorMessage" id="standard_error_help" class="mt-2 text-xs text-red-600 dark:text-red-400">
                         <span class="font-medium"></span> {{ errorMessage }}</p>

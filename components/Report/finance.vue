@@ -30,10 +30,7 @@ onMounted(async () => {
   }
 });
 
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return date.toISOString().split('T')[0];
-};
+const formatDate = (dateString: string) => String(dateString ?? '').split('T')[0];
 
 const { isShowAble } = useIsShowAble();
 </script>
@@ -104,34 +101,39 @@ const { isShowAble } = useIsShowAble();
         </thead>
         <tbody>
           <template v-if="isShowAble">
-            <tr v-if="finance && finance.length > 0">
-              <th>Agreement Date</th>
-              <td>{{ finance[0]?.AgreementDate ? formatDate(finance[0].AgreementDate) : 'Not available' }}</td>
-            </tr>
-            <tr v-if="finance && finance.length > 0">
-              <th>Agreement Type</th>
-              <td>{{ finance[0]?.AgreementType || 'Not available' }}</td>
-            </tr>
-            <tr v-if="finance && finance.length > 0">
-              <th>Term (months)</th>
-              <td>{{ finance[0]?.AgreementTerm || 'Not available' }}</td>
-            </tr>
-            <tr v-if="finance && finance.length > 0">
-              <th>Agreement Number</th>
-              <td>{{ finance[0]?.AgreementNumber || 'Not available' }}</td>
-            </tr>
-            <tr v-if="finance && finance.length > 0">
-              <th>Finance Company</th>
-              <td>{{ finance[0]?.FinanceCompany || 'Not available' }}</td>
-            </tr>
-            <tr v-if="finance && finance.length > 0">
-              <th>Contact Number</th>
-              <td>{{ finance[0]?.ContactNumber || 'Not available' }}</td>
-            </tr>
-            <tr v-if="finance && finance.length > 0">
-              <th>Vehicle Description</th>
-              <td>{{ finance[0]?.VehicleDescription || 'Not available' }}</td>
-            </tr>
+            <template v-for="(record, index) in finance" :key="index">
+              <tr v-if="finance.length > 1">
+                <th colspan="2">Agreement {{ index + 1 }}</th>
+              </tr>
+              <tr>
+                <th>Agreement Date</th>
+                <td>{{ record.AgreementDate ? formatDate(record.AgreementDate) : 'Not available' }}</td>
+              </tr>
+              <tr>
+                <th>Agreement Type</th>
+                <td>{{ record.AgreementType || 'Not available' }}</td>
+              </tr>
+              <tr>
+                <th>Term (months)</th>
+                <td>{{ record.AgreementTerm || 'Not available' }}</td>
+              </tr>
+              <tr>
+                <th>Agreement Number</th>
+                <td>{{ record.AgreementNumber || 'Not available' }}</td>
+              </tr>
+              <tr>
+                <th>Finance Company</th>
+                <td>{{ record.FinanceCompany || 'Not available' }}</td>
+              </tr>
+              <tr>
+                <th>Contact Number</th>
+                <td>{{ record.ContactNumber || 'Not available' }}</td>
+              </tr>
+              <tr>
+                <th>Vehicle Description</th>
+                <td>{{ record.VehicleDescription || 'Not available' }}</td>
+              </tr>
+            </template>
             <tr v-if="!finance || finance.length === 0">
               <td colspan="2" class="w-full py-3 text-center">No finance information available</td>
             </tr>
@@ -182,7 +184,7 @@ const { isShowAble } = useIsShowAble();
           </template>
         </tbody>
       </table>
-      <div v-if="!hasSubscription" class="bg-[#FF7400] w-full flex items-center justify-center py-2">
+      <div v-if="!hasSubscription?.active" class="bg-[#FF7400] w-full flex items-center justify-center py-2">
         <h3 class="text-xl font-semibold">Unlock finance data with the
           <a href="#" class="underline">full report</a>
         </h3>

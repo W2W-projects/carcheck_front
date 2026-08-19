@@ -121,7 +121,7 @@ const { isShowAble } = useIsShowAble();
             </tr>
             <tr>
               <th>Band</th>
-              <td>{{ MOTVed?.VedRate?.VedCo2Band || 'N/A' }}</td>
+              <td>{{ MOTVed?.VedCo2Band || 'N/A' }}</td>
             </tr>
             <tr>
               <th>Single payment (12 months)</th>

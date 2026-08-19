@@ -2,10 +2,10 @@
 </script>
 <template>
   <div class="py-10 md:px-0 px-8">
-    <h1 class="text-4xl font-bold text-primary max-w-5xl mx-auto">
+    <h1 class="text-4xl font-bold text-brand max-w-5xl mx-auto">
       About Us
     </h1>
-    <h2 class="text-2xl font-bold text-primary mb-6 max-w-5xl mx-auto">
+    <h2 class="text-2xl font-bold text-brand mb-6 max-w-5xl mx-auto">
       Helping You Drive with Confidence
     </h2>
     <div class="flex items-center justify-center max-w-5xl mx-auto">
@@ -24,7 +24,7 @@
             satisfaction—backed by industry certifications for reliability.
           </p>
           <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-lg text-center font-bold text-primary mb-6">
+            <h3 class="text-lg text-center font-bold text-brand mb-6">
               Start your car check today – Enter a vehicle registration number now!
             </h3>
             <div class="flex items-center justify-center">

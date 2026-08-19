@@ -1,11 +1,5 @@
 <script lang="ts" setup>
 import { differenceInCalendarDays, parse } from 'date-fns';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import { Autoplay, Navigation, Pagination } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/vue';
-const modules = [Autoplay, Pagination, Navigation];
 
 import { useAuthStore } from '~/stores/auth';
 import { useSubscriptionStore } from '@/stores/subscription';
@@ -23,12 +17,12 @@ const longestPeriodBetweenTests = ref(0);
 const mostRecentMOT = ref(null);
 const clickedMotHistory = ref(0);
 const longestPeriodOutOfMot = ref(0);
-const slidesPerView = ref(0);
 const errorMessage = ref("");
 const isTableVisible = ref(true);
 const isAuthenticated = useAuthStore().isAuthenticated;
 
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
+const { odometerReading, odometerLabel } = useOdometer();
 
 const motHistory = computed(() => {
   if (!carRegistrationSearchStore.MOTHistory || carRegistrationSearchStore.MOTHistory.length === 0) {
@@ -76,8 +70,6 @@ onMounted(async () => {
       mostRecentMOT.value = motHistory.value[0];
       clickedMotHistory.value = 0;
       calculateLongestPeriodBetTests(motHistory.value);
-      slidesPerView.value = motHistory.value.length;
-
       setDefaultMotRecord();
 
       calculateLongestPeriodBetTests(motHistory.value);
@@ -117,17 +109,11 @@ function isMOThistoryLocked(index: number) {
 }
 
 
-const navigationOptions = {
-  nextEl: '.swiper-button-custom-next',
-  prevEl: '.swiper-button-custom-prev',
-};
-
-let swiperInstance = null;
 let motHistoryIndex = ref(0);
 
-const onSwiper = (swiper) => {
-  swiperInstance = swiper;
-  swiper.slideTo(motHistoryIndex.value, 800);
+const scrollToCurrentMot = () => {
+  nextTick(() => document.getElementById(`mot-page-${motHistoryIndex.value}`)
+    ?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }));
 };
 
 const nextSlide = () => {
@@ -145,9 +131,7 @@ const nextSlide = () => {
     mostRecentMOT.value = motHistory.value[nextIndex];
   }
 
-  if (swiperInstance) {
-    swiperInstance.slideTo(motHistoryIndex.value, 800);
-  }
+  scrollToCurrentMot();
 };
 
 const prevSlide = () => {
@@ -165,9 +149,7 @@ const prevSlide = () => {
     mostRecentMOT.value = motHistory.value[prevIndex]; // Update table
   }
 
-  if (swiperInstance) {
-    swiperInstance.slideTo(motHistoryIndex.value, 800);
-  }
+  scrollToCurrentMot();
 };
 
 function handleSliderIndexClick(index: number) {
@@ -180,6 +162,7 @@ function handleSliderIndexClick(index: number) {
   motHistoryIndex.value = index;
   clickedMotHistory.value = index;
   mostRecentMOT.value = motHistory.value[index];
+  scrollToCurrentMot();
 }
 
 function clearErrorMessage() {
@@ -281,7 +264,7 @@ function setDefaultMotRecord() {
       </div>
       <!-- ------------------------------- -->
       <div class="flex flex-col items-center justify-start flex-1 space-y-1">
-        <p v-if="!hasSubscription">Unlock more MOT reports on the <a href="#" class="underline">full report</a></p>
+        <p v-if="!hasSubscription?.active">Unlock more MOT reports on the <a href="#" class="underline">full report</a></p>
         <Includes-get-full-report :show-form="isAuthenticated"
           get-full-report="Get full report"></Includes-get-full-report>
       </div>
@@ -296,8 +279,7 @@ function setDefaultMotRecord() {
     <div v-show="isTableVisible" class="w-full space-y-4 text-black">
       <div class="flex flex-col items-center justify-center lg:flex-row">
         <div class="relative w-full md:w-7/12 lg:w-1/3">
-          <chart-gauge v-if="failPercentage" :failRate="failPercentage" height="30" width="100%" />
-          <chart-gauge v-else :failRate="0" height="30" width="100%" />
+          <chart-gauge :fail-rate="failPercentage" :fail-count="totalFailedItems" :total-count="totalMotChecks" />
         </div>
         <div class="flex-1 lg:pl-10">
           <table class="w-full mt-6 text-black">
@@ -336,7 +318,7 @@ function setDefaultMotRecord() {
       <div class="flex items-center justify-between w-full lg:px-5">
         <div class="w-fit">
           <button @click="prevSlide"
-            class="w-8 h-8 border border-black items-center justify-center flex rounded hover:bg-[#FF7400] transition-colors duration-300">
+            class="flex items-center justify-center w-8 h-8 border border-[#0F1829] rounded hover:bg-[#FF7400] transition-colors duration-300">
             <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M6.16123 8.84323C6.06624 8.74836 6.01281 8.61965 6.0127 8.48539V8.22883C6.01425 8.09487 6.06746 7.96668 6.16123 7.87099L9.63161 4.40737C9.69499 4.34346 9.78128 4.30751 9.87129 4.30751C9.96131 4.30751 10.0476 4.34346 10.111 4.40737L10.5903 4.88674C10.6539 4.94896 10.6896 5.03413 10.6896 5.12305C10.6896 5.21196 10.6539 5.29713 10.5903 5.35936L7.58584 8.35711L10.5903 11.3549C10.6543 11.4183 10.6902 11.5045 10.6902 11.5946C10.6902 11.6846 10.6543 11.7709 10.5903 11.8342L10.111 12.3069C10.0476 12.3708 9.96131 12.4067 9.87129 12.4067C9.78128 12.4067 9.69499 12.3708 9.63161 12.3069L6.16123 8.84323Z"
@@ -344,14 +326,17 @@ function setDefaultMotRecord() {
             </svg>
           </button>
         </div>
-        <div class="w-[90%]">
-          <swiper :centeredSlides="false" :slidesPerView="slidesPerView" :autoplay="false" @swiper="onSwiper"
-            :navigation="navigationOptions" :modules="modules" class="mySwiper selection:py-6">
-            <swiper-slide v-for="(_, index) in totalMotChecks" :key="index"
-              @click.prevent="!isMOThistoryLocked(index) ? handleSliderIndexClick(index) : null" class="cursor-pointer">
-
-              <span v-if="isMOThistoryLocked(index)"
-                class="h-8 w-8 items-center justify-center flex rounded bg-[#FFA500]">
+        <div class="min-w-0 w-[90%] overflow-x-auto px-1 py-2">
+          <div class="flex items-center justify-between min-w-full gap-3 w-max">
+            <button v-for="(_, index) in totalMotChecks" :id="`mot-page-${index}`" :key="index" type="button"
+              class="flex items-center justify-center w-8 h-8 shrink-0 rounded cursor-pointer"
+              :class="isMOThistoryLocked(index)
+                ? 'bg-[#FFA500]'
+                : clickedMotHistory === index
+                  ? 'border border-[#FF7400] bg-[#FF7400] text-white'
+                  : 'border border-[#FF7400] text-[#FF7400]'"
+              @click="handleSliderIndexClick(index)">
+              <template v-if="isMOThistoryLocked(index)">
                 <!-- 🔒 Locked Icon -->
                 <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -363,20 +348,14 @@ function setDefaultMotRecord() {
                   <rect x="13.6807" y="14.6592" width="0.00985118" height="0.00985118" stroke="white"
                     stroke-width="2.25" stroke-linejoin="round" />
                 </svg>
-              </span>
-
-              <span v-else class="flex items-center justify-center w-8 h-8 text-sm border border-orange-300 rounded"
-                :class="(clickedMotHistory + 1 === index + 1) ? 'bg-[#FF7400] text-white' : 'text-primary'">
-                <!-- 🔓 Unlock Icon -->
-                #{{ index + 1 }}
-              </span>
-            </swiper-slide>
-
-          </swiper>
+              </template>
+              <span v-else class="text-sm">#{{ index + 1 }}</span>
+            </button>
+          </div>
         </div>
         <div class="w-fit">
           <button @click="nextSlide"
-            class="w-8 h-8 border border-black items-center justify-center flex rounded hover:bg-[#FF7400] transition-colors duration-300">
+            class="flex items-center justify-center w-8 h-8 border border-[#0F1829] rounded hover:bg-[#FF7400] transition-colors duration-300">
             <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M6.16123 8.84323C6.06624 8.74836 6.01281 8.61965 6.0127 8.48539V8.22883C6.01425 8.09487 6.06746 7.96668 6.16123 7.87099L9.63161 4.40737C9.69499 4.34346 9.78128 4.30751 9.87129 4.30751C9.96131 4.30751 10.0476 4.34346 10.111 4.40737L10.5903 4.88674C10.6539 4.94896 10.6896 5.03413 10.6896 5.12305C10.6896 5.21196 10.6539 5.29713 10.5903 5.35936L7.58584 8.35711L10.5903 11.3549C10.6543 11.4183 10.6902 11.5045 10.6902 11.5946C10.6902 11.6846 10.6543 11.7709 10.5903 11.8342L10.111 12.3069C10.0476 12.3708 9.96131 12.4067 9.87129 12.4067C9.78128 12.4067 9.69499 12.3708 9.63161 12.3069L6.16123 8.84323Z"
@@ -433,11 +412,11 @@ function setDefaultMotRecord() {
           </tr>
           <tr>
             <th>Odometer reading</th>
-            <td>{{ mostRecentMOT.OdometerReading }} miles</td>
+            <td>{{ odometerReading(mostRecentMOT) }} {{ odometerLabel(mostRecentMOT) }}</td>
           </tr>
           <tr>
             <th>Mileage since last pass</th>
-            <td>{{ mostRecentMOT.MileageSinceLastPass }} miles</td>
+            <td>{{ mostRecentMOT.MileageSinceLastPass }} {{ odometerLabel(mostRecentMOT) }}</td>
           </tr>
           <tr>
             <th>Days since last test</th>
@@ -445,11 +424,16 @@ function setDefaultMotRecord() {
           </tr>
           <tr>
             <th>Major failures</th>
-            <td>{{ mostRecentMOT.MajorFailures || 'None' }}</td>
+            <td>{{ mostRecentMOT.FailureReasonList?.length ? mostRecentMOT.FailureReasonList.join(', ') : 'None' }}</td>
           </tr>
           <tr>
             <th>Advisories</th>
-            <td>{{ mostRecentMOT.Advisories || 'None' }}</td>
+            <td>
+              <ul v-if="mostRecentMOT.AdvisoryNoticeList?.length" class="list-disc space-y-2 pl-5">
+                <li v-for="(advisory, index) in mostRecentMOT.AdvisoryNoticeList" :key="index">{{ advisory }}</li>
+              </ul>
+              <span v-else>None</span>
+            </td>
           </tr>
         </tbody>
       </table>

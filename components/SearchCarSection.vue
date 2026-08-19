@@ -27,6 +27,7 @@ const moreFeatures = async () => {
 <template>
   <div
     class="lg:px-[9.12rem] overflow-hidden px-4 section-1-bg lg:min-h-[41rem] flex flex-col items-start w-full pt-[5.4%] mx-auto max-w-screen-2xl"
+    style="--section-bg: url('/png/car-find-section-bg-1.png')"
     id="check">
     <h1 class="lg:text-[2.5rem] text-xl text-[#0F1829] md:leading-[2.8rem]">Check it before
       <br />
@@ -54,7 +55,7 @@ const moreFeatures = async () => {
 </template>
 <style scoped>
 .section-1-bg {
-  background-image: url("/png/car-find-section-bg-1.png");
+  background-image: var(--section-bg);
   background-size: cover;
   background-position: 0% 79%;
 }

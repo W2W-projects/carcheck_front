@@ -208,17 +208,28 @@ onBeforeUnmount(() => {
 <template>
   <!-- Add h-full class to the root div to fill available space -->
   <div class="flex flex-col h-full space-y-3">
-    <!-- Loading State -->
-    <div v-if="isLoading"
-      class="h-[5.625rem] bg-white border border-gray-50 rounded-lg flex items-center justify-center">
-      <div class="w-6 h-6 border-2 rounded-full border-t-primary border-primary-light animate-spin"></div>
+    <div v-if="isLoading" class="space-y-3" role="status" aria-label="Loading garage">
+      <div class="grid grid-cols-2 gap-4 p-4 bg-white border rounded-lg md:grid-cols-4 border-gray-50">
+        <div v-for="item in 4" :key="item" class="space-y-2">
+          <UtilitiesSkeleton class="w-16 h-3" />
+          <UtilitiesSkeleton class="w-full h-8" />
+        </div>
+      </div>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div v-for="item in 6" :key="item" class="h-[12.5rem] p-5 bg-white rounded-xl">
+          <UtilitiesSkeleton class="w-24 h-3" />
+          <UtilitiesSkeleton class="w-32 h-20 mx-auto mt-4" />
+          <UtilitiesSkeleton class="w-full h-3 mt-4" />
+        </div>
+      </div>
+      <span class="sr-only">Loading garage...</span>
     </div>
 
     <div v-else class="bg-white border rounded-lg border-gray-50">
       <!-- Filter toggle button (mobile only) -->
       <div class="flex items-center justify-between p-3 border-b md:hidden">
         <p class="font-medium text-black">Filters</p>
-        <button @click="toggleFilters" class="flex items-center space-x-1 text-primary">
+        <button @click="toggleFilters" class="flex items-center space-x-1 text-brand">
           <span>{{ isFilterVisible ? 'Hide' : 'Show' }}</span>
           <img src="/public/assets/svg/chevron-down.svg" alt="toggle"
             :class="{ 'transform rotate-180': isFilterVisible }">
@@ -332,7 +343,7 @@ onBeforeUnmount(() => {
         <!-- Search button - centered and full width on mobile -->
         <div class="p-4 flex justify-center md:w-[8.25rem]">
           <button @click="applyFilters; isFilterVisible = false"
-            class="h-[3rem] w-full md:w-[3rem] bg-primary rounded flex items-center justify-center">
+            class="h-[3rem] w-full md:w-[3rem] bg-brand rounded flex items-center justify-center">
             <img src="/public/assets/svg/search-sm.svg" alt="Search">
             <span class="ml-2 md:hidden">Apply Filters</span>
           </button>
@@ -349,7 +360,7 @@ onBeforeUnmount(() => {
         <!-- Filter indicator/button -->
         <button v-if="!isFilterVisible && (selectedBrand || selectedYear || selectedEngine || selectedMonth)"
           @click="toggleFilters"
-          class="flex items-center px-3 py-1 space-x-1 text-sm rounded-full md:hidden text-primary bg-primary/10">
+          class="flex items-center px-3 py-1 space-x-1 text-sm rounded-full md:hidden text-brand bg-brand/10">
           <span>Filters ({{ [selectedBrand, selectedYear, selectedEngine, selectedMonth].filter(Boolean).length
           }})</span>
         </button>

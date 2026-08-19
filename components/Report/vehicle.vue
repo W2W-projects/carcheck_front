@@ -5,11 +5,15 @@ import { useAuthStore } from '~/stores/auth';
 const carRegistrationSearch = useCarRegistrationSearchStore();
 
 const isTableVisible = ref(true);
-const numberOfPreviousKeepers = ref(0);
-const plateChangesCount = ref(0);
-const theftReports = ref(0);
 
 const vehicleHistory = computed(() => carRegistrationSearch.vehicleHistory);
+const stolenRecord = computed(() => carRegistrationSearch.stolenRecord);
+
+const numberOfPreviousKeepers = computed(() => vehicleHistory.value?.NumberOfPreviousKeepers || 0);
+const plateChangesCount = computed(() => vehicleHistory.value?.PlateChangeCount || 0);
+
+const theftReports = computed(() => stolenRecord.value?.StolenMiaftrRecordCount
+  || (stolenRecord.value?.Stolen ? 1 : 0));
 
 const isAuthenticated = useAuthStore().isAuthenticated;
 
@@ -20,18 +24,10 @@ const toggleTableVisibility = () => {
 const { isShowAble } = useIsShowAble();
 
 onMounted(async () => {
-  if (!vehicleHistory.value) {
-    await carRegistrationSearch.fetchVehicleHistory();
-  }
-});
-
-
-watch(vehicleHistory, (newHistory) => {
-  if (newHistory) {
-    plateChangesCount.value = newHistory?.PlateChangeCount || 0;
-    numberOfPreviousKeepers.value = newHistory?.NumberOfPreviousKeepers || 0;
-    theftReports.value = newHistory?.TheftReports || 0;
-  }
+  await Promise.all([
+    carRegistrationSearch.fetchVehicleHistory(),
+    carRegistrationSearch.fetchStolenRecords(),
+  ]);
 });
 
 </script>

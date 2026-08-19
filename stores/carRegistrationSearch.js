@@ -10,6 +10,20 @@ import { useAuthStore } from '~/stores/auth';
 
 import { useCarStore } from '~/stores/car';
 
+const isPlainObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
+
+const mergeDeep = (target, source) => {
+    for (const [key, value] of Object.entries(source)) {
+        if (value === null || value === undefined) continue;
+
+        target[key] = isPlainObject(value)
+            ? mergeDeep(isPlainObject(target[key]) ? target[key] : {}, value)
+            : value;
+    }
+
+    return target;
+};
+
 export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch', {
     state: () => {
         return {
@@ -329,9 +343,7 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
             if (!Array.isArray(payload)) return;
 
             const authStore = useAuthStore();
-            const combinedPayload = payload.reduce((acc, item) => {
-                return { ...acc, ...item };
-            }, {});
+            const combinedPayload = payload.reduce((acc, item) => mergeDeep(acc, item), {});
 
             await this.setVehicleImageUrl(combinedPayload);
             await this.setVehicleLogo(combinedPayload);
@@ -556,7 +568,10 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                 const storageKey = systematicFourCharCode(key);
                 localStorage.removeItem(storageKey);
             });
-        
+
+            const { reg_number, getFullReportText } = this;
+            this.$reset();
+            this.$patch({ reg_number, getFullReportText });
         }
     },
     persist: {

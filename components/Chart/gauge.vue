@@ -1,175 +1,118 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue';
-import { Chart, ArcElement, DoughnutController, Tooltip, Legend } from 'chart.js';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { ArcElement, Chart, DoughnutController } from 'chart.js';
 
-// Register Chart.js elements
-Chart.register(ArcElement, Tooltip, Legend, DoughnutController);
+Chart.register(ArcElement, DoughnutController);
 
-// Props definition
 const props = defineProps<{
-  failRate: number | string; // Fail rate percentage
-  class?: string; // Tailwind classes for styling
-  height?: string | number; // Canvas height
-  width?: string | number; // Canvas width
+  failRate: number | string;
+  failCount?: number;
+  totalCount?: number;
+  class?: string;
 }>();
 
-// Computed properties to determine canvas size
-const height = computed(() => convertToNumber(props.height, 150));
-const width = computed(() => convertToNumber(props.width, 150));
-const failRate = computed(() => convertToNumber(props.failRate, 0));
-const passRate = computed(() => 100 - failRate.value);
-
-function convertToNumber(value: any, defaultValue: number) {
-  if (typeof value === 'string' && value.includes('%')) {
-    return value;
-  }
-  return typeof value === 'string' ? parseFloat(value) : value || defaultValue;
-}
-
-// Reference to canvas element
 const chartCanvas = ref<HTMLCanvasElement | null>(null);
+const failRate = computed(() => Math.max(0, Math.min(100, Number(props.failRate) || 0)));
+const passRate = computed(() => 100 - failRate.value);
+const failCount = computed(() => props.failCount ?? Math.round((props.totalCount ?? 100) * failRate.value / 100));
+const passCount = computed(() => Math.max(0, (props.totalCount ?? 100) - failCount.value));
+let chart: Chart<'doughnut'> | null = null;
 
-// Function to create gauge chart
-onMounted(() => {
-  if (chartCanvas.value) {
-    const data = {
-      datasets: [
-        {
-          data: [passRate.value, failRate.value], // Two segments for pass and fail rates
-          backgroundColor: ['#FF9F29', '#FF4646'], // Orange for pass, red for fail
-          borderWidth: 0,
-          circumference: 180,
-          rotation: 270,
-        },
-      ],
-    };
+const gaugeDetails = {
+  id: 'gaugeDetails',
+  afterDatasetsDraw(chart: Chart<'doughnut'>) {
+    const arcs = chart.getDatasetMeta(0).data as ArcElement[];
+    if (!arcs.length) return;
 
-    const options = {
-      responsive: true,
-      cutout: '65%',
-      plugins: {
-        legend: {
-          display: false,
-        },
-        tooltip: {
-          enabled: false,
-        },
-      },
-      hover: {
-        mode: undefined,
-      },
-      animation: {
-        onComplete() {
-          const chartInstance = Chart.getChart(chartCanvas.value!);
+    const { ctx } = chart;
+    const { x, y, innerRadius, outerRadius } = arcs[0];
+    const labelRadius = (innerRadius + outerRadius) / 2;
 
-          if (!chartInstance) return;
+    ctx.save();
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = `600 ${Math.max(18, Math.min(21, outerRadius * 0.18))}px "TT Norms Pro"`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
 
-          const ctx = chartInstance.ctx;
-          const centerX = (chartInstance.chartArea.left + chartInstance.chartArea.right) / 2;
-          const centerY = chartInstance.chartArea.bottom - 100;
-          const chartRadius = Math.min(chartInstance.chartArea.right - chartInstance.chartArea.left,
-            chartInstance.chartArea.bottom - chartInstance.chartArea.top) / 2;
-
-          // Clear and redraw
-          ctx.save();
-          chartInstance.draw();
-
-          // Draw percentage labels on the gauge
-          const fontSize = Math.max(16, Math.min(20, chartRadius / 4));
-          ctx.font = `bold ${fontSize}px Arial`;
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillStyle = '#FFFFFF'; // White text for better visibility on colored sections
-
-          // Calculate angles for label positioning
-          // For pass rate: center angle is at (passRate/2) degrees from left
-          const passCenter = Math.PI - (Math.PI * (passRate.value / 200)); // Divide by 200 to get midpoint
-          // For fail rate: center angle is at (failRate/2) degrees from right
-          const failCenter = Math.PI * (failRate.value / 200);
-
-          // Position labels in the middle of their sections
-          const labelRadius = chartRadius * 0.85;
-
-          // Draw pass rate label (in orange section)
-          const passLabelX = centerX + labelRadius * Math.cos(passCenter);
-          const passLabelY = centerY - labelRadius * Math.sin(passCenter);
-          ctx.fillText(passRate.value.toString() + '%', passLabelX, passLabelY);
-
-          // Draw fail rate label (in red section)
-          const failLabelX = centerX + labelRadius * Math.cos(failCenter);
-          const failLabelY = centerY - labelRadius * Math.sin(failCenter);
-          ctx.fillText(failRate.value.toString() + '%', failLabelX, failLabelY);
-
-          // Calculate needle angle based on the fail rate
-          const needleAngle = Math.PI * (failRate.value / 100);
-          const needleLength = chartRadius * 0.6;
-          const circleRadius = 8; // Base circle radius
-
-          // Calculate needle endpoint
-          const needleX = centerX + needleLength * Math.cos(needleAngle);
-          const needleY = centerY - needleLength * Math.sin(needleAngle);
-
-          // Draw the needle with triangular shape
-          ctx.beginPath();
-
-          // Calculate base points of the triangle
-          const baseAngle = needleAngle + Math.PI / 2; // Perpendicular to needle angle
-          const baseWidth = circleRadius; // Match circle radius
-          const baseX1 = centerX + baseWidth * Math.cos(baseAngle);
-          const baseY1 = centerY - baseWidth * Math.sin(baseAngle);
-          const baseX2 = centerX + baseWidth * Math.cos(baseAngle + Math.PI);
-          const baseY2 = centerY - baseWidth * Math.sin(baseAngle + Math.PI);
-
-          // Draw triangular needle
-          ctx.beginPath();
-          ctx.moveTo(baseX1, baseY1);
-          ctx.lineTo(needleX, needleY);
-          ctx.lineTo(baseX2, baseY2);
-          ctx.closePath();
-
-          // Fill with gradient for 3D effect
-          const needleGradient = ctx.createLinearGradient(centerX, centerY, needleX, needleY);
-          needleGradient.addColorStop(0, '#2B2B2B');
-          needleGradient.addColorStop(1, '#000000');
-          ctx.fillStyle = needleGradient;
-          ctx.fill();
-
-          // Draw the center circle
-          ctx.beginPath();
-          ctx.arc(centerX, centerY, circleRadius, 0, Math.PI * 2);
-          ctx.fillStyle = '#000000';
-          ctx.fill();
-
-          ctx.restore();
-        },
-      },
-      events: [],
-    };
-
-    new Chart(chartCanvas.value, {
-      type: 'doughnut',
-      data: data,
-      options: options,
+    arcs.forEach((arc, index) => {
+      const angle = (arc.startAngle + arc.endAngle) / 2;
+      const value = index === 0 ? passRate.value : failRate.value;
+      ctx.fillText(`${value}%`, x + Math.cos(angle) * labelRadius, y + Math.sin(angle) * labelRadius);
     });
-  }
+
+    const angle = arcs[0].endAngle;
+    const directionX = Math.cos(angle);
+    const directionY = Math.sin(angle);
+    const baseX = x - directionX * innerRadius * 0.22;
+    const baseY = y - directionY * innerRadius * 0.22;
+    const tipX = x + directionX * innerRadius * 0.95;
+    const tipY = y + directionY * innerRadius * 0.95;
+    const halfBaseWidth = 4;
+
+    ctx.fillStyle = '#0F1829';
+    ctx.beginPath();
+    ctx.moveTo(baseX - directionY * halfBaseWidth, baseY + directionX * halfBaseWidth);
+    ctx.lineTo(tipX, tipY);
+    ctx.lineTo(baseX + directionY * halfBaseWidth, baseY - directionX * halfBaseWidth);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(x, y, 9, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  },
+};
+
+onMounted(() => {
+  if (!chartCanvas.value) return;
+
+  chart = new Chart(chartCanvas.value, {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [passRate.value, failRate.value],
+        backgroundColor: ['#FFA500', '#F94144'],
+        borderWidth: 0,
+      }],
+    },
+    options: {
+      aspectRatio: 2,
+      circumference: 180,
+      rotation: 270,
+      cutout: '60%',
+      layout: { padding: { bottom: 24 } },
+      events: [],
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false },
+      },
+    },
+    plugins: [gaugeDetails],
+  });
 });
 
+watch([passRate, failRate], ([pass, fail]) => {
+  if (!chart) return;
+  chart.data.datasets[0].data = [pass, fail];
+  chart.update();
+});
+
+onBeforeUnmount(() => chart?.destroy());
 </script>
+
 <template>
-  <div :class="props.class" class="relative">
-    <canvas ref="chartCanvas" :height="height" :width="width"></canvas>
-    <div class="absolute bottom-[10%] flex items-center justify-center w-full -translate-x-1/2 left-1/2">
-      <div class="flex items-center justify-center gap-4 mt-4 text-sm">
-        <div class="flex items-center">
-          <div class="w-3 h-3 rounded-full bg-[#FF9F29] mr-2"></div>
-          <small>Pass Rate ({{ passRate }})</small>
-        </div>
-        <div class="flex items-center">
-          <div class="w-3 h-3 rounded-full bg-[#FF4646] mr-2"></div>
-          <small>Fail Rate ({{ failRate }})</small>
-        </div>
+  <div :class="props.class" class="mx-auto w-full max-w-[360px]">
+    <canvas ref="chartCanvas"></canvas>
+    <div class="mt-5 flex items-center justify-center gap-4 whitespace-nowrap text-[15px]">
+      <div class="flex items-center gap-2">
+        <span class="size-3 rounded-full bg-[#F94144]"></span>
+        <span>Fail rate ({{ failCount }})</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="size-3 rounded-full bg-[#FFA500]"></span>
+        <span>Pass rate ({{ passCount }})</span>
       </div>
     </div>
   </div>
 </template>
-<style scoped></style>

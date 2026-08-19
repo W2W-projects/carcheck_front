@@ -5,7 +5,7 @@
       <h1
         class="relative z-10 mt-5 text-4xl text-black lg:tracking-widest xl:text-7xl lg:text-6xl md:text-3xl sm:text-2xl lg:font-bold lg:mt-32 md:mt-24">
         When do
-        y<span class="lg:text-white">o<span class="md:text-white text-primary">u n</span></span>eed Car
+        y<span class="lg:text-white">o<span class="md:text-white text-brand">u n</span></span>eed Car
         check</h1>
     </div>
     <div class="bg-white">

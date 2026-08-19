@@ -21,6 +21,10 @@ const toggleTableVisibility = () => {
   isTableVisible.value = !isTableVisible.value;
 }
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
+const { odometerReading, odometerLabel } = useOdometer();
+
+const odometerUnitLabel = computed(() => odometerLabel(motHistory.value.at(-1)));
+
 onMounted(async () => {
   await carRegistrationSearchStore.fetchMOTHistory();
 });
@@ -46,11 +50,11 @@ const chartData = computed(() => {
     //   (sum, record) => sum + (record.MileageSinceLastPass || 0),
     //   0
     // );
-    totalOdometerReading.value = motHistory.value ? motHistory.value[motHistory.value.length - 1].OdometerReading : 0;
+    totalOdometerReading.value = odometerReading(motHistory.value.at(-1)) ?? 0;
 
     return motHistory.value.map(record => ({
       label: formatDate(record.TestDate),
-      value: record.OdometerReading
+      value: odometerReading(record)
     }));
   }
   return [];
@@ -150,21 +154,23 @@ function getChartHeight() {
 
         <div class="flex flex-col flex-1">
           <small><span class="text-gray-500">Total registration:</span> <b>{{ totalRegistrations }}</b></small>
-          <small><span class="text-gray-500">Odometer:</span> <b>{{ totalOdometerReading }}</b></small>
+          <small><span class="text-gray-500">Odometer:</span> <b>{{ totalOdometerReading }} In {{
+            odometerUnitLabel }}</b></small>
           <small><span class="text-gray-500">First registration:</span> <b>{{ first_date }}</b></small>
         </div>
 
         <!-- ---------------------------------------------------- -->
 
         <div class="flex flex-col items-center justify-center flex-1 space-y-2">
-          <p class="font-thin text-gray-500" v-if="!hasSubscription">Check for mileage anomalies in full report</p>
+          <p class="font-thin text-gray-500" v-if="!hasSubscription?.active">Check for mileage anomalies in full report</p>
           <Includes-get-full-report :show-form="isAuthenticated"
             get-full-report="Get full report"></Includes-get-full-report>
         </div>
       </div>
       <div class="pt-10 border-t">
         <client-only>
-          <chart-line v-if="chartLoaded" :data="chartData" :height="getChartHeight()" width="100%" />
+          <chart-line v-if="chartLoaded" :data="chartData" :unit="odometerUnitLabel" :height="getChartHeight()"
+            width="100%" />
         </client-only>
       </div>
     </div>

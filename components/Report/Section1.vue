@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import ApiService from '~/services/apiService';
 import Hashed from '../Includes/Hashed.vue';
 // import Hashed from '../Includes/Hashed.vue';
-const errorMessage = ref(null);
-const reportText = ref("Get full report");
-const tokenStore = useTokenStore();
-const authStore = useAuthStore();
-const subscriptionStore = useSubscriptionStore();
 const reg_number = ref(null);
+
+const { reportDate } = useDownloadReport();
 
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
 
@@ -15,7 +11,6 @@ const vbrand_logo = computed(() => carRegistrationSearchStore.vbrand_logo);
 const vehicle_image = computed(() => carRegistrationSearchStore.vehicleImageUrl);
 const smmtDetail = computed(() => carRegistrationSearchStore.smmtDetails);
 const totalNumberOfLooksUp = computed(() => carRegistrationSearchStore.totalNumberOfLooksUp);
-const hasSubscription = computed(() => subscriptionStore.hasSubscription);
 
 onMounted(async () => {
   await carRegistrationSearchStore.fetchVehicleLogo();
@@ -33,69 +28,6 @@ onMounted(async () => {
   }
 
 });
-const downloadReport = async () => {
-  reportText.value = "Downloading...";
-  if (tokenStore.getToken && tokenStore.getStatus) {
-    let subscription = await subscriptionStore.getUserSubscription();
-    let hasSubscription = subscriptionStore.hasSubscription;
-
-    if ((hasSubscription.request_count > 0) && hasSubscription.active) {
-      try {
-        let report_type = "";
-        if (subscription?.plan?.plan_code == "48h-export-subscription") {
-          report_type = "export";
-        } else if (subscription?.plan?.plan_code == "48h-basic-subscription") {
-          report_type = "basic";
-        } else {
-          report_type = "single-offer";
-        }
-        const response = await ApiService.post('users/download-report', {
-          email: authStore.user?.email,
-          report_type: report_type
-        }, { responseType: 'blob' });
-
-        if (response.success && response.payload) {
-          const downloadUrl = response.payload;
-
-          const link = document.createElement('a');
-          link.href = downloadUrl;
-          link.download = `report-${reportDate()}.pdf`;
-          link.target = '_blank';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-
-          reportText.value = "Downloaded";
-        } else {
-          reportText.value = "Get full report";
-          errorMessage.value = "Failed to retrieve the report data";
-          console.error("Error: Invalid response status", response.success);
-        }
-
-      } catch (error) {
-        reportText.value = "Get full report";
-        if (error.data)
-          errorMessage.value = error.data.error;
-      }
-    } else {
-      reportText.value = "Get full report";
-      console.error("No remaining report downloads available.");
-      navigateTo('/payment/plans')
-    }
-  } else {
-    navigateTo('/auth/login');
-  }
-};
-const currentDateTime = () => {
-  const date = new Date();
-
-  let day = String(date.getDate()).padStart(2, '0');
-  let month = String(date.getMonth() + 1).padStart(2, '0');
-  let year = date.getFullYear();
-
-  let currentDate = `${day}-${month}-${year}`;
-  return currentDate;
-}
 </script>
 
 <template>
@@ -113,7 +45,7 @@ const currentDateTime = () => {
             <label class="font-extralight">
               Report date: &nbsp;
             </label>
-            <p class="font-bold">{{ currentDateTime() }}</p>
+            <p class="font-bold">{{ reportDate() }}</p>
           </div>
           <div class="flex items-center justify-center">
             <label class="font-extralight">

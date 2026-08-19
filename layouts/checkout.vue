@@ -13,7 +13,7 @@ useHead({
 </script>
 
 <template>
-  <div class="bg-checkout min-h-screen">
+  <div class="bg-checkout min-h-screen" style="--checkout-bg: url('/images/webp/bg-checkout.webp')">
     <Header />
     <main>
       <NuxtPage />
@@ -34,7 +34,7 @@ useHead({
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('/images/webp/bg-checkout.webp') no-repeat center center;
+  background: var(--checkout-bg) no-repeat center center;
   background-repeat: no-repeat !important;
   background-size: 120%;
   opacity: 2%;

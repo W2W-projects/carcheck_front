@@ -91,7 +91,7 @@ const subsPrice = computed(() => planStore?.getSubsPrice);
           <p class="text-black">
             Report stored for
           </p>
-          <span class="text-primary w-[4rem] font-bold">
+          <span class="text-brand w-[4rem] font-bold">
             {{ minutes === 0 ? '00' : minutes < 10 ? '0' + minutes : minutes }}:{{ seconds === 0 ? '00' : seconds < 10
               ? '0' + seconds : seconds }} </span>
         </div>

@@ -11,12 +11,13 @@ const authStore = useAuthStore();
 const toggleTableVisibility = () => {
   isTableVisible.value = !isTableVisible.value
 }
-// onMounted(async () => {
-//   await carRegistrationSearch.fetchVehicleHistory();
-//   await carRegistrationSearch.fetchWriteOffRecords();
-//   await carRegistrationSearch.fetchRiskRecords();
-//   await carRegistrationSearch.fetchFinanceRecords();
-// });
+onMounted(async () => {
+  await Promise.all([
+    carRegistrationSearch.fetchWriteOffRecords(),
+    carRegistrationSearch.fetchRiskRecords(),
+    carRegistrationSearch.fetchFinanceRecords(),
+  ]);
+});
 
 const writeOff = computed(() => carRegistrationSearch.writeOff);
 const riskRecords = computed(() => carRegistrationSearch.riskRecords);

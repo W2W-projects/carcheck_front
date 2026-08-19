@@ -1,9 +1,7 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue';
 
-import { useSubscriptionStore } from '@/stores/subscription';
-const subscriptionStore = useSubscriptionStore();
-const hasSubscription = computed(() => subscriptionStore.hasSubscription);
+const { isShowAble } = useIsShowAble();
 
 
 onMounted(async () => {
@@ -48,7 +46,7 @@ definePageMeta({
     <ReportFinance />
 
     <!-- Section 8 -->
-    <ReportValuation v-if="hasSubscription.active" />
+    <ReportValuation v-if="isShowAble" />
     <ReportValuationDemo v-else />
 
     <!-- Section 9 -->
