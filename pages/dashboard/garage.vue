@@ -58,35 +58,9 @@ const engineTypes = computed(() => {
 
 const monthsOfCheck = computed(() => {
   const months = new Set();
-
   normalizedCarData.value.forEach(car => {
-    if (!car.details?.motHistory?.RecordList) return;
-
-    car.details.motHistory.RecordList.forEach(record => {
-      if (!record.TestDate) return;
-
-      // Improved date parsing for the format DD/MM/YYYY
-      try {
-        // Check if the date format is DD/MM/YYYY
-        if (record.TestDate.includes('/')) {
-          const [day, month, year] = record.TestDate.split('/');
-          const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-          if (!isNaN(date.getTime())) {
-            months.add(date.toLocaleString('default', { month: 'long' }));
-          }
-        } else {
-          // Fallback to regular date parsing
-          const date = new Date(record.TestDate);
-          if (!isNaN(date.getTime())) {
-            months.add(date.toLocaleString('default', { month: 'long' }));
-          }
-        }
-      } catch (e) {
-        console.error("Error parsing date:", record.TestDate);
-      }
-    });
+    (car.details?.checkMonths ?? []).forEach(month => months.add(month));
   });
-
   return [...months];
 });
 
@@ -105,31 +79,8 @@ const applyFilters = () => {
     const matchesYear = !selectedYear.value || car.details.yearOfManufacture === selectedYear.value;
     const matchesEngine = !selectedEngine.value || car.details.fuelType === selectedEngine.value;
 
-    let matchesMonth = true;
-    if (selectedMonth.value && car.details.motHistory?.RecordList) {
-      matchesMonth = car.details.motHistory.RecordList.some((record) => {
-        if (!record.TestDate) return false;
-
-        // Improved date parsing for the format DD/MM/YYYY
-        try {
-          if (record.TestDate.includes('/')) {
-            const [day, month, year] = record.TestDate.split('/');
-            const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-            if (!isNaN(date.getTime())) {
-              return date.toLocaleString('default', { month: 'long' }) === selectedMonth.value;
-            }
-          } else {
-            const date = new Date(record.TestDate);
-            if (!isNaN(date.getTime())) {
-              return date.toLocaleString('default', { month: 'long' }) === selectedMonth.value;
-            }
-          }
-        } catch (e) {
-          return false;
-        }
-        return false;
-      });
-    }
+    const matchesMonth = !selectedMonth.value
+      || (car.details.checkMonths ?? []).includes(selectedMonth.value);
 
     return matchesBrand && matchesYear && matchesEngine && matchesMonth;
   });

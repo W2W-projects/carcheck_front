@@ -28,9 +28,7 @@ const startChecking = (plan) => {
 };
 
 onMounted(async () => {
-  if (!planStore.plansFetched) {
-    await planStore.fetchPlans();
-  }
+  await planStore.fetchPlans();
 });
 
 </script>

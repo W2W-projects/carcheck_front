@@ -21,43 +21,33 @@ const toggleTableVisibility = () => {
   isTableVisible.value = !isTableVisible.value;
 }
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
-const { odometerReading, odometerLabel } = useOdometer();
 
-const odometerUnitLabel = computed(() => odometerLabel(motHistory.value.at(-1)));
+const mileageHistory = computed(() => carRegistrationSearchStore.mileageHistory);
+
+const readings = computed(() => [...(mileageHistory.value?.Readings ?? [])].reverse());
+
+const odometerUnitLabel = computed(() =>
+  mileageHistory.value?.Unit === 'km' ? 'kilometres' : 'miles'
+);
 
 onMounted(async () => {
-  await carRegistrationSearchStore.fetchMOTHistory();
+  await carRegistrationSearchStore.fetchMileageHistory();
 });
-
-// Reverse motHistory array
-const motHistory = computed(() => {
-  return carRegistrationSearchStore.MOTHistory?.slice().reverse() || [];
-});
-
-function formatDate(dateString) {
-  return dateString;
-}
 
 const chartData = computed(() => {
-  if (motHistory.value && motHistory.value.length > 0) {
-    first_date.value = motHistory.value[0].TestDate;
-    last_date.value = motHistory.value[motHistory.value.length - 1].TestDate;
-
-    totalRegistrations.value = motHistory.value.length;
-
-    // Calculate total odometer reading
-    // totalOdometerReading.value = motHistory.value.reduce(
-    //   (sum, record) => sum + (record.MileageSinceLastPass || 0),
-    //   0
-    // );
-    totalOdometerReading.value = odometerReading(motHistory.value.at(-1)) ?? 0;
-
-    return motHistory.value.map(record => ({
-      label: formatDate(record.TestDate),
-      value: odometerReading(record)
-    }));
+  if (readings.value.length === 0) {
+    return [];
   }
-  return [];
+
+  first_date.value = readings.value[0].TestDate;
+  last_date.value = readings.value[readings.value.length - 1].TestDate;
+  totalRegistrations.value = readings.value.length;
+  totalOdometerReading.value = readings.value[readings.value.length - 1].Odometer ?? 0;
+
+  return readings.value.map(reading => ({
+    label: reading.TestDate,
+    value: reading.Odometer,
+  }));
 });
 
 watch(chartData, (newValue) => {

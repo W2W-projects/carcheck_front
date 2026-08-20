@@ -2,7 +2,6 @@
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import type { StripeCardCvcElement, StripeCardExpiryElement, StripeCardNumberElement, StripeElements } from '@stripe/stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import ApiService from '~/services/apiService';
 import { useSubscriptionStore } from '@/stores/subscription';
 import { useCarRegistrationSearchStore } from '@/stores/carRegistrationSearch';
 import { usePlanStore } from '@/stores/plan';
@@ -13,15 +12,10 @@ const plan = usePlanStore();
 const subscriptionStore = useSubscriptionStore();
 const registrationSearchStore = useCarRegistrationSearchStore();
 
-interface BillingDetails {
-    name: string;
-}
-
 const envConfig = useRuntimeConfig();
 
 const stripePromise = loadStripe(envConfig.public.stripe_public_key as string);
 const loading = ref(false);
-const cardComplete = ref(false);
 const termsAccepted = ref(false);
 const cardholderName = ref('');
 const buttonProcess = ref('Get report');
@@ -35,11 +29,6 @@ const successMessage = ref<string | null>(null);
 const formValidationMessage = ref<string | null>(null);
 const customerId = ref('');
 const paymentMethodId = ref('');
-
-const isFormValid = computed(() => {
-    return termsAccepted.value && cardholderName.value && cardComplete.value;
-});
-
 
 const style = {
     base: {
@@ -71,6 +60,7 @@ onMounted(async () => {
     }
 });
 async function handleCheckoutClick() {
+    if (loading.value || successMessage.value) return;
     buttonProcess.value = "PROCESSING...";
     try {
         resetError();
@@ -113,15 +103,15 @@ async function handleCheckoutClick() {
             buttonProcess.value = "PROCESS";
             return;
         }
-        const response = await ApiService.post('payment/token/create', {
-            payment_method_id: paymentMethod.id,
-            billing_details: { name: cardholderName.value },
-            plan: plan.getSelectedPlan,
-        });
+        const response = await subscriptionStore.createPaymentIntent(
+            paymentMethod.id,
+            { name: cardholderName.value },
+            plan.getSelectedPlan.id,
+        );
 
 
-        if ((response as any).payload.paymentStatus !== 'succeeded') {
-            const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment((response as any).payload.clientSecret, {
+        if (response.payload.paymentStatus !== 'succeeded') {
+            const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(response.payload.clientSecret, {
                 payment_method: paymentMethod.id,
             });
             if (confirmError) {
@@ -130,7 +120,7 @@ async function handleCheckoutClick() {
                 return;
             }
         }
-        const customer_id = (response as any).payload.customerId;
+        const customer_id = response.payload.customerId;
         customerId.value = customer_id;
         paymentMethodId.value = paymentMethod.id;
 
@@ -139,6 +129,7 @@ async function handleCheckoutClick() {
             let selectedPlan = plan.getSelectedPlan;
             if (selectedPlan.plan_code === "single-offer") {
                 let payload = response.payload;
+                successMessage.value = "Payment done successfully.";
                 if (payload?.hasSubscription) {
                     await subscriptionStore.setHasSubscription(payload.hasSubscription);
                 }
@@ -172,15 +163,13 @@ async function createSubscription(selectedPlan) {
     const user = auth.getCurrentUser;
     buttonProcess.value = "ALMOST THERE!";
     try {
-        const response = await ApiService.post("payment/process", {
-            customer_id: customerId.value,
-            payment_method_id: paymentMethodId.value,
+        const response = await subscriptionStore.processPayment({
+            customerId: customerId.value,
+            paymentMethodId: paymentMethodId.value,
             email: user.email,
-            billing_details: {
-                name: cardholderName.value,
-            },
-            plan_id: selectedPlan.id,
-            reg_number: registrationSearchStore.reg_number,
+            billingDetails: { name: cardholderName.value },
+            planId: selectedPlan.id,
+            regNumber: registrationSearchStore.reg_number,
         });
         if (response.success) {
             successMessage.value = "Payment done successfully.";
@@ -201,9 +190,6 @@ async function createSubscription(selectedPlan) {
             await subscriptionStore.setCurrentSubscription(payload.subscription);
         }
 
-        if (payload?.plan) {
-            await plan.setSelectedPlan(payload.plan);
-        }
 
         if (payload?.car_data) {
             await registrationSearchStore.applyCarData(payload.car_data);
@@ -261,8 +247,8 @@ watch(errorMessage, (newErrorMessage) => {
                 <div class="px-3 border-r border-black">
                     <img src="/assets/svg/cardName.svg" alt="" />
                 </div>
-                <input v-model="cardholderName" type="text" id="cardholder-name" placeholder="John Strawzen"
-                    class="w-full p-2 uppercase bg-transparent md:p-3 focus:border-none focus:outline-none active:border-none active:outline-none focus:ring-0 focus:ring-offset-0" />
+                <input v-model="cardholderName" type="text" id="cardholder-name" placeholder="Name on card"
+                    class="w-full p-2 uppercase bg-transparent placeholder:text-[#AAB7C4] md:p-3 focus:border-none focus:outline-none active:border-none active:outline-none focus:ring-0 focus:ring-offset-0" />
             </div>
         </div>
         <div class="w-full mb-4">
@@ -321,9 +307,11 @@ watch(errorMessage, (newErrorMessage) => {
                 <span class="block sm:inline">{{ successMessage }}</span>
                 <br>
             </div>
-            <button v-else type="submit"
-                class="w-full px-3 py-3 text-lg font-bold text-center text-white rounded-lg hover:bg-brand/90 focus:ring-4 focus:outline-none focus:ring-blue-300 bg-brand">
-                {{ buttonProcess }}
+            <button v-else type="submit" :disabled="loading" :aria-busy="loading"
+                class="flex items-center justify-center w-full gap-2 px-3 py-3 text-lg font-bold text-center text-white rounded-lg hover:bg-brand/90 focus:ring-4 focus:outline-none focus:ring-blue-300 bg-brand disabled:cursor-not-allowed"
+                :class="loading ? 'opacity-70' : ''">
+                <span v-if="loading" class="w-5 h-5 border-2 rounded-full border-white/40 border-t-white animate-spin" aria-hidden="true"></span>
+                {{ loading ? 'PROCESSING...' : buttonProcess }}
             </button>
         </div>
 

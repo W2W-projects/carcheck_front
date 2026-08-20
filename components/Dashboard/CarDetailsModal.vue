@@ -19,7 +19,7 @@
                             {{ carData.make || car?.details?.make }}
                             {{ carData.makeModel || car?.details?.makeModel }}
                         </h3>
-                        <p class="font-bold">{{ carData.vrm || car?.reg_number }}</p>
+                        <p class="font-bold">{{ car?.reg_number }}</p>
                     </div>
                 </div>
 
@@ -32,7 +32,7 @@
                                 <img :src="carData.vbrand_logo || car?.details?.vbrand_logo" alt="Brand Logo"
                                     class="h-8">
                             </div>
-                            <img :src="carData.imageUrl || car?.image" alt="Vehicle Image"
+                            <img :src="car?.image" alt="Vehicle Image"
                                 class="w-full h-auto rounded">
                         </div>
 
@@ -44,7 +44,7 @@
                                 </div>
                                 <div><span class="font-medium">Model:</span> {{ carData.makeModel ||
                                     car?.details?.makeModel }}</div>
-                                <div><span class="font-medium">VRM:</span> {{ carData.vrm || car?.reg_number }}</div>
+                                <div><span class="font-medium">VRM:</span> {{ car?.reg_number }}</div>
                                 <div><span class="font-medium">Year:</span> {{ carData.yearOfManufacture ||
                                     car?.details?.yearOfManufacture }}</div>
                                 <div><span class="font-medium">Fuel Type:</span> {{ carData.fuelType ||

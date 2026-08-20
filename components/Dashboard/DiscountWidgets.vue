@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import { loadStripe } from '@stripe/stripe-js';
+import type { Stripe } from '@stripe/stripe-js';
 import { useCarStore } from '@/stores/car';
-import ApiService from '~/services/apiService';
 import { useDiscountWidgetsStore } from '@/stores/dashboardDiscountWidgets';
+import type { ApiRequestError, CustomPlan } from '~/types/models';
 
 const envConfig = useRuntimeConfig();
 const carStore = useCarStore();
 const discountWidgetsStore = useDiscountWidgetsStore();
-const errorMessage = ref(null);
-const stripePromise = ref(null);
+const errorMessage = ref<string | null>(null);
+const stripePromise = shallowRef<Stripe | null>(null);
 const check_colors = ['#60C5FF', '#1EE6A8', '#EF343A'];
 
 const awaitingPayment = ref(false);
-const selectedPlan = ref(null);
+const selectedPlan = ref<CustomPlan | null>(null);
 
 onMounted(async () => {
   try {
@@ -25,16 +26,16 @@ onMounted(async () => {
 
 const customPlans = computed(() => discountWidgetsStore.customPlans);
 const mappedPlans = computed(() =>
-  customPlans.value.map(item => {
-    item.pricePerCheck =
+  customPlans.value.map(item => ({
+    ...item,
+    pricePerCheck:
       item.reports_count && item.price_after_discount
-        ? Number((item.price_after_discount / item.reports_count).toFixed(2))
-        : null;
-    return item;
-  })
+        ? Number((Number(item.price_after_discount) / item.reports_count).toFixed(2))
+        : null,
+  }))
 );
 
-async function buyCustomPlan(plan) {
+async function buyCustomPlan(plan: CustomPlan): Promise<void> {
   try {
     if (!plan.plan_code) {
       errorMessage.value = "No plan code provided.";
@@ -54,10 +55,8 @@ async function buyCustomPlan(plan) {
     }
 
     // Ensure requires_action is true before calling handleCardAction
-    if (result.requires_action && result.client_secret) {
-      console.log("3D Secure required. Handling authentication...");
-
-      const { error, paymentIntent } = await stripe.handleCardAction(result.client_secret);
+    if (result.requires_action && result.payment_intent_client_secret) {
+      const { error, paymentIntent } = await stripe.handleCardAction(result.payment_intent_client_secret);
 
       if (error) {
         console.error("Payment authentication failed:", error);
@@ -66,30 +65,24 @@ async function buyCustomPlan(plan) {
       }
 
       // Confirm payment intent on the backend
-      const confirmedPayment = await ApiService.post("confirm-payment-intent", {
-        payment_intent_id: paymentIntent.id,
-      });
+      const confirmedPayment = await carStore.confirmPaymentIntent(paymentIntent.id);
 
       if (!confirmedPayment.success) {
-        console.error("Payment confirmation failed:", confirmedPayment);
         errorMessage.value = "Payment confirmation failed. Please try again.";
         return;
       }
-
-      console.log("Payment confirmed successfully!", confirmedPayment);
     } else if (result.status === "succeeded") {
       await carStore.fetchRequestCounts();
-      console.log("Payment completed successfully:", result);
     } else {
-      // carStore.fetchRequestCounts();
-      // console.log("Plan purchased successfully:", result);
       return;
     }
 
     awaitingPayment.value = false;
 
-  } catch (error) {
-    errorMessage.value = error.data?.message || "An error occurred while processing the payment.";
+  } catch (error: unknown) {
+    errorMessage.value =
+      (error as Partial<ApiRequestError>).data?.message ||
+      "An error occurred while processing the payment.";
     console.error("Error processing payment:", error);
   } finally {
     setTimeout(() => {

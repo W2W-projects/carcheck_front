@@ -3,29 +3,25 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: [
     "~/assets/css/fonts.css",
-    "~/assets/css/input.css",
     "@fortawesome/fontawesome-svg-core/styles.css",
     // "~/assets/css/admin.css",
   ],
 
   modules: [
-    // "@nuxtjs/tailwindcss",
     "@pinia/nuxt",
-    "@pinia-plugin-persistedstate/nuxt",
-    "@nuxt/ui",
+    "pinia-plugin-persistedstate/nuxt",
+    "@nuxtjs/tailwindcss",
   ],
-
-  imports: {
-    dirs: ["./stores"],
-  },
-
-  pinia: {
-    storesDirs: ["./stores/**", "./custom-folder/stores/**"],
-  },
 
   plugins: ["~/plugins/fontawesome.js", "~/plugins/eventBus.js"],
 
-  build: {},
+  vite: {
+    build: {
+      rolldownOptions: {
+        checks: { pluginTimings: false },
+      },
+    },
+  },
 
   runtimeConfig: {
     public: {

@@ -12,9 +12,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary:"#FF7400"
+        "brand": "#FF7400",
+        "primary-orange": "#FF7400"
       },
-
+      backgroundColor: {
+        "brand": "#FF7400",
+        "primary-orange": "#FF7400"
+      },
       fontFamily: {
         roboto: ["Roboto", "sans-serif"],
       },

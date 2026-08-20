@@ -1,7 +1,6 @@
 <script setup>
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { useHead } from '@unhead/vue';
 
 const route = useRoute();
 const pageTitle = computed(() => route.meta?.title || 'Car Check');

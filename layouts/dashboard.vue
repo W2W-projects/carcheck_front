@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { useAuthStore } from "~/stores/auth";
-import { useHead } from '@unhead/vue';
 
 const authStore = useAuthStore()
 const user = authStore.user;

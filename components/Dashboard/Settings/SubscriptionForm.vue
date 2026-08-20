@@ -19,9 +19,9 @@ function formatData(date) {
     return new Date(date).toLocaleDateString('en-US', options);
 }
 
-function cancelSubscription(id) {
+function cancelSubscription() {
     const email = user.value?.email;
-    useSubscriptionStore().cancelSubscription(id)
+    useSubscriptionStore().cancelSubscription()
         .then(() => {
             subscriptionStore.fetchUserSubscription(email);
         })
@@ -94,7 +94,7 @@ onMounted(() => {
                     </p>
                 </div>
 
-                <button @click="cancelSubscription(subscription?.original_id)" :disabled="processing"
+                <button @click="cancelSubscription()" :disabled="processing"
                     v-show="isSubscriptionActive"
                     class="flex items-center justify-center w-full px-4 py-2 mt-6 mb-5 space-x-2 text-white bg-brand rounded-lg shadow-md md:mb-0 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed">
                     <svg width="25" height="27" viewBox="0 0 25 27" fill="none" xmlns="http://www.w3.org/2000/svg">

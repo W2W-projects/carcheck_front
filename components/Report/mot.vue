@@ -7,16 +7,10 @@ import { useSubscriptionStore } from '@/stores/subscription';
 const subscriptionStore = useSubscriptionStore();
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
 
-const totalMotChecks = ref(0);
-const failPercentage = ref(0);
-const lastMotDate = ref(null);
+
 const expiryDate = ref(null);
-const totalAdviceItems = ref(0);
-const totalFailedItems = ref(0);
-const longestPeriodBetweenTests = ref(0);
 const mostRecentMOT = ref(null);
 const clickedMotHistory = ref(0);
-const longestPeriodOutOfMot = ref(0);
 const errorMessage = ref("");
 const isTableVisible = ref(true);
 const isAuthenticated = useAuthStore().isAuthenticated;
@@ -24,37 +18,23 @@ const isAuthenticated = useAuthStore().isAuthenticated;
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
 const { odometerReading, odometerLabel } = useOdometer();
 
-const motHistory = computed(() => {
-  if (!carRegistrationSearchStore.MOTHistory || carRegistrationSearchStore.MOTHistory.length === 0) {
-    return [];
-  }
+const summary = computed(() => carRegistrationSearchStore.MOTSummary);
 
-  let reversedHistory = [...carRegistrationSearchStore.MOTHistory].reverse();
+const motHistory = computed(() =>
+  [...(carRegistrationSearchStore.MOTHistory ?? [])].reverse()
+);
 
-  //filter for fail percentage
-  let failedItem = reversedHistory.filter((item) => {
-    return item.TestResult !== "Pass";
-  })
-  if (failedItem.length > 0) {
-    totalFailedItems.value = failedItem.length;
-    let failedRaw = failedItem.length / reversedHistory.length;
-    failPercentage.value = Math.round(failedRaw * 100);
-  }
+const totalMotChecks = computed(() => summary.value?.RecordCount ?? motHistory.value.length);
 
-  // advice item
-  let adviceCount = 0;
-  reversedHistory.forEach(item => {
-    if (item.AdvisoryNoticeCount > 0) {
-      adviceCount++;
-    }
-  });
-  totalAdviceItems.value = adviceCount;
+const lockedCount = computed(() => Math.max(totalMotChecks.value - motHistory.value.length, 0));
 
-  let locked = reversedHistory.filter((_, index) => isMOThistoryLocked(index));
-  let unlocked = reversedHistory.filter((_, index) => !isMOThistoryLocked(index));
+const failPercentage = computed(() => summary.value?.FailPercentage ?? 0);
+const totalFailedItems = computed(() => summary.value?.FailedTestCount ?? 0);
+const totalAdviceItems = computed(() => summary.value?.AdvisoryTestCount ?? 0);
+const longestPeriodBetweenTests = computed(() => summary.value?.LongestDaysBetweenTests ?? 0);
+const longestPeriodOutOfMot = computed(() => summary.value?.LongestDaysOutOfMot ?? 0);
 
-  return [...locked, ...unlocked];
-});
+const recordAt = (index: number) => motHistory.value[index - lockedCount.value] ?? null;
 
 const toggleTableVisibility = () => {
   isTableVisible.value = !isTableVisible.value;
@@ -62,50 +42,22 @@ const toggleTableVisibility = () => {
 
 onMounted(async () => {
   try {
-    await carRegistrationSearchStore.fetchMOTHistory();
-    if (motHistory.value && motHistory.value.length > 0) {
+    await Promise.all([
+      carRegistrationSearchStore.fetchMOTHistory(),
+      carRegistrationSearchStore.fetchMOTSummary(),
+    ]);
+
+    if (motHistory.value.length > 0) {
       expiryDate.value = motHistory.value[motHistory.value.length - 1]?.ExpiryDate || "";
-      lastMotDate.value = motHistory.value.length[0]?.TestDate || "";
-      totalMotChecks.value = motHistory.value.length;
-      mostRecentMOT.value = motHistory.value[0];
-      clickedMotHistory.value = 0;
-      calculateLongestPeriodBetTests(motHistory.value);
       setDefaultMotRecord();
-
-      calculateLongestPeriodBetTests(motHistory.value);
-      calculateLongestDaysOutOfMOT();
-
     }
   } catch (error) {
     console.error('Error fetching MOTHistory:', error);
   }
 });
 
-const displayedMOTHistory = computed(() => {
-  return motHistory.value;
-});
-
 function isMOThistoryLocked(index: number) {
-  if (!motHistory.value || motHistory.value.length === 0) {
-    return true;
-  }
-
-  let hasSub = hasSubscription.value;
-  const isSubscribed =
-    hasSub.active &&
-    (hasSub.one_off_request_count > 0 || hasSub.request_count > 0 || hasSub.request_count_trial > 0);
-
-  const totalRecords = motHistory.value.length;
-
-  if (totalRecords <= 5) {
-    return false;
-  }
-
-  if (index >= totalRecords - 5) {
-    return false;
-  }
-
-  return !isSubscribed;
+  return recordAt(index) === null;
 }
 
 
@@ -116,41 +68,28 @@ const scrollToCurrentMot = () => {
     ?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }));
 };
 
-const nextSlide = () => {
-  if (!motHistory.value || motHistory.value.length === 0) return; // Prevent errors
+const step = (direction: 1 | -1) => {
+  let index = motHistoryIndex.value + direction;
 
-  let nextIndex = motHistoryIndex.value + 1;
-
-  while (nextIndex < motHistory.value.length && isMOThistoryLocked(nextIndex)) {
-    nextIndex++; // Skip locked records
+  while (index >= 0 && index < totalMotChecks.value && isMOThistoryLocked(index)) {
+    index += direction;
   }
 
-  if (nextIndex < motHistory.value.length) {
-    motHistoryIndex.value = nextIndex;
-    clickedMotHistory.value = nextIndex;
-    mostRecentMOT.value = motHistory.value[nextIndex];
+  if (index >= 0 && index < totalMotChecks.value) {
+    selectSlot(index);
   }
 
   scrollToCurrentMot();
 };
 
-const prevSlide = () => {
-  if (!motHistory.value || motHistory.value.length === 0) return; // Prevent errors
+const nextSlide = () => step(1);
+const prevSlide = () => step(-1);
 
-  let prevIndex = motHistoryIndex.value - 1;
-
-  while (prevIndex >= 0 && isMOThistoryLocked(prevIndex)) {
-    prevIndex--; // Skip locked records
-  }
-
-  if (prevIndex >= 0) {
-    motHistoryIndex.value = prevIndex;
-    clickedMotHistory.value = prevIndex;
-    mostRecentMOT.value = motHistory.value[prevIndex]; // Update table
-  }
-
-  scrollToCurrentMot();
-};
+function selectSlot(index: number) {
+  motHistoryIndex.value = index;
+  clickedMotHistory.value = index;
+  mostRecentMOT.value = recordAt(index);
+}
 
 function handleSliderIndexClick(index: number) {
   if (isMOThistoryLocked(index)) {
@@ -159,9 +98,7 @@ function handleSliderIndexClick(index: number) {
     return;
   }
 
-  motHistoryIndex.value = index;
-  clickedMotHistory.value = index;
-  mostRecentMOT.value = motHistory.value[index];
+  selectSlot(index);
   scrollToCurrentMot();
 }
 
@@ -169,31 +106,6 @@ function clearErrorMessage() {
   setTimeout(() => {
     errorMessage.value = null;
   }, 5000);
-}
-
-function calculateLongestPeriodBetTests(motHistory) {
-  if (!motHistory || motHistory.length < 2) return 0;
-  for (let i = 1; i < motHistory.length; i++) {
-
-    const prevTestDate = parse(motHistory[i - 1].TestDate, "dd/MM/yyyy", new Date());
-    const currentTestDate = parse(motHistory[i].TestDate, "dd/MM/yyyy", new Date());
-
-    const daysDifference = differenceInCalendarDays(currentTestDate, prevTestDate);
-    if (daysDifference > longestPeriodBetweenTests.value) {
-      longestPeriodBetweenTests.value = daysDifference;
-    }
-  }
-
-  return longestPeriodBetweenTests.value;
-}
-
-function calculateLongestDaysOutOfMOT() {
-  motHistory.value.forEach(item => {
-    if (Number(item.DaysOutOfMot) > longestPeriodOutOfMot.value) {
-      longestPeriodOutOfMot.value = Number(item.DaysOutOfMot);
-    }
-  });
-
 }
 
 function calculateDaysSinceLastTest(currentMOT) {
@@ -204,26 +116,7 @@ function calculateDaysSinceLastTest(currentMOT) {
 }
 
 function setDefaultMotRecord() {
-  if (!motHistory.value || motHistory.value.length === 0) return;
-
-  let hasSub = hasSubscription.value;
-  const isSubscribed =
-    hasSub.active &&
-    (hasSub.one_off_request_count > 0 || hasSub.request_count > 0 || hasSub.request_count_trial > 0);
-
-  // Determine the default index
-  if (!isSubscribed) {
-    if (motHistory.value.length > 5) {
-      motHistoryIndex.value = Math.max(motHistory.value.length - 5, 0);
-    } else {
-      motHistoryIndex.value = 0;
-    }
-  } else {
-    motHistoryIndex.value = 0;
-  }
-
-  mostRecentMOT.value = motHistory.value[motHistoryIndex.value];
-  clickedMotHistory.value = motHistoryIndex.value;
+  selectSlot(lockedCount.value);
 }
 </script>
 
@@ -305,7 +198,7 @@ function setDefaultMotRecord() {
               </tr>
               <tr>
                 <th>Longest period between tests</th>
-                <td>{{ longestPeriodBetweenTests ?? "" }} Days</td>
+                <td>{{ longestPeriodBetweenTests }} Days</td>
               </tr>
               <tr>
                 <th>Longest period off test</th>

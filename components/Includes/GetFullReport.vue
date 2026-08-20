@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { navigateTo } from 'nuxt/app';
 import { computed, defineProps, reactive, ref, watch } from 'vue';
-import ApiService from '~/services/apiService';
 
 // Store initialization
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
@@ -54,13 +53,10 @@ const downloadReport = async () => {
 const handleGetFullReport = async () => {
     getFullReportY.value = "Processing...";
     try {
-        const response = await ApiService.post('users/check-email-exist', { email: form.email });
+        const response = await authStore.checkEmailExists({ email: form.email });
         if (response.success && response.payload) {
-            let payload = response.payload;
-            if (payload.user_type && payload.user_type == "newlyCreatedUser") {
-                const tokenStore = useTokenStore();
-                tokenStore.setToken(payload.access_token, payload.access_token);
-                await authStore.setUser(payload.user);
+            // The store has already signed a newly created user in by this point.
+            if (response.payload.user_type === "newlyCreatedUser") {
                 // navigateTo('payment/plans');
                 navigateTo('pricing');
             } else {

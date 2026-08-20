@@ -1,18 +1,35 @@
 import ApiService from "@/services/apiService";
-
-import { defineStore } from 'pinia';
-
-// import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 import { decryptData, encryptData } from '~/composables/useCrypto';
 import { systematicFourCharCode } from '~/composables/useGenerateLocalstorageCode';
 import { useTokenStore } from '~/stores/token';
 import { useAuthStore } from '~/stores/auth';
-
 import { useCarStore } from '~/stores/car';
+import type {
+    ApiPayloadResponse,
+    CarLookupPayload,
+    CarRegistrationSearchState,
+    FinanceRecords,
+    MileageHistory,
+    MotRecord,
+    MotSummary,
+    MotVed,
+    RiskRecords,
+    SmmtDetails,
+    StolenRecord,
+    VehicleData,
+    VehicleHistory,
+    VehicleRegistration,
+    VehicleValuations,
+    WriteOffRecord,
+} from '~/types/models';
 
-const isPlainObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
+type PlainObject = Record<string, unknown>;
 
-const mergeDeep = (target, source) => {
+const isPlainObject = (value: unknown): value is PlainObject =>
+    value !== null && typeof value === 'object' && !Array.isArray(value);
+
+const mergeDeep = (target: PlainObject, source: PlainObject): PlainObject => {
     for (const [key, value] of Object.entries(source)) {
         if (value === null || value === undefined) continue;
 
@@ -25,13 +42,15 @@ const mergeDeep = (target, source) => {
 };
 
 export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch', {
-    state: () => {
+    state: (): CarRegistrationSearchState => {
         return {
             reg_number: "",
             vehicleImageUrl: null,
             vehicleStatus: null,
             vehicleDetails: null,
             MOTHistory: [],
+            MOTSummary: null,
+            mileageHistory: null,
             MOTAdditionalInfo: null,
             technicalDetails: null,
             classificationDetails: null,
@@ -53,167 +72,186 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
             allowFullReport: false,
         }
     },
-    getters: {
-        getCarDetail(state) {
-            return state.basicCarDetails;
-        },
-    },
     actions: {
-        async fetchVehicleImageUrl() {
-            let code = systematicFourCharCode('VehicleImageUrl');
+        async fetchVehicleImageUrl(): Promise<string | null> {
+            const code = systematicFourCharCode('VehicleImageUrl');
             const encryptedData = localStorage.getItem(code);
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
-                    this.vehicleImageUrl = JSON.parse(decrypted);
+                    this.vehicleImageUrl = JSON.parse(decrypted) as string;
                 } catch (error) {
                     console.error("Failed to decrypt vehicle image url:", error);
                 }
             }
             return this.vehicleImageUrl;
         },
-        async fetchVehicleLogo() {
-            let code = systematicFourCharCode('VehicleLogo');
+        async fetchVehicleLogo(): Promise<string | null> {
+            const code = systematicFourCharCode('VehicleLogo');
             const encryptedData = localStorage.getItem(code);
-            
-            if (!encryptedData) {
-                console.log("No encrypted data found for VehicleLogo");
-                return null;
-            }
-        
+
+            if (!encryptedData) return null;
+
             try {
                 const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
                 // Ensure vbrand_logo is updated in state
-                this.$patch({ vbrand_logo: JSON.parse(decrypted) });
+                this.$patch({ vbrand_logo: JSON.parse(decrypted) as string });
             } catch (error) {
                 console.error("Failed to decrypt Vehicle logo: ", error);
             }
-            
+
             return this.vbrand_logo;
         },
-        async fetchSmmtDetails() {
-            let code = systematicFourCharCode('SmmtDetails');
+        async fetchSmmtDetails(): Promise<SmmtDetails | null> {
+            const code = systematicFourCharCode('SmmtDetails');
             const encryptedData = localStorage.getItem(code);
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
-                    this.smmtDetails = JSON.parse(decrypted);
+                    this.smmtDetails = JSON.parse(decrypted) as SmmtDetails;
                 } catch (error) {
                     console.error("Failed to decrypt SmmtDetails:", error);
                 }
             }
             return this.smmtDetails;
         },
-        async fetchVehicleDimension() {
-            let code = systematicFourCharCode('VehicleDimension');
+        async fetchVehicleDimension(): Promise<VehicleData | null> {
+            const code = systematicFourCharCode('VehicleDimension');
             const encryptedData = localStorage.getItem(code);
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
-                    this.dimensions = JSON.parse(decrypted);
+                    this.dimensions = JSON.parse(decrypted) as VehicleData;
                 } catch (error) {
                     console.error("Failed to decrypt Vehicle Dimensions:", error);
                 }
             }
             return this.dimensions;
         },
-        async fetchVehicleRegistration() {
-            let code = systematicFourCharCode('VehicleRegistration');
+        async fetchVehicleRegistration(): Promise<VehicleRegistration | null> {
+            const code = systematicFourCharCode('VehicleRegistration');
             const encryptedData = localStorage.getItem(code);
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
-                    this.vehicleRegistration = JSON.parse(decrypted);
+                    this.vehicleRegistration = JSON.parse(decrypted) as VehicleRegistration;
                 } catch (error) {
                     console.error("Failed to decrypt Vehicle Registration:", error);
                 }
             }
             return this.vehicleRegistration;
         },
-        async fetchVehicleMotVed() {
-            let code = systematicFourCharCode('VehicleMotVed');
+        async fetchVehicleMotVed(): Promise<MotVed | null> {
+            const code = systematicFourCharCode('VehicleMotVed');
             const encryptedData = localStorage.getItem(code);
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
-                    this.motVed = JSON.parse(decrypted);
+                    this.motVed = JSON.parse(decrypted) as MotVed;
                 } catch (error) {
                     console.error("Failed to decrypt Vehicle MotVed: ", error);
                 }
             }
             return this.motVed;
         },
-        async fetchVehicleGeneralInfo() {
-            let code = systematicFourCharCode('VehicleGeneralInfo');
+        async fetchVehicleGeneralInfo(): Promise<VehicleData | null> {
+            const code = systematicFourCharCode('VehicleGeneralInfo');
             const encryptedData = localStorage.getItem(code);
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
-                    this.general = JSON.parse(decrypted);
+                    this.general = JSON.parse(decrypted) as VehicleData;
                 } catch (error) {
                     console.error("Failed to decrypt Vehicle General Information: ", error);
                 }
             }
             return this.general;
         },
-        async fetchPerformance() {
-            let code = systematicFourCharCode('Performance');
+        async fetchPerformance(): Promise<VehicleData | null> {
+            const code = systematicFourCharCode('Performance');
             const encryptedData = localStorage.getItem(code);
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
-                    this.performance = JSON.parse(decrypted);
+                    this.performance = JSON.parse(decrypted) as VehicleData;
                 } catch (error) {
                     console.error("Failed to decrypt Vehicle Technical Performance: ", error);
                 }
             }
             return this.performance;
         },
-        async fetchClassificationDetails() {
-            let code = systematicFourCharCode('VehicleClassificationDetails');
+        async fetchClassificationDetails(): Promise<VehicleData | null> {
+            const code = systematicFourCharCode('VehicleClassificationDetails');
             const encryptedData = localStorage.getItem(code);
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
-                    this.classificationDetails = JSON.parse(decrypted);
+                    this.classificationDetails = JSON.parse(decrypted) as VehicleData;
                 } catch (error) {
                     console.error("Failed to decrypt Vehicle Classification Information: ", error);
                 }
             }
+            return this.classificationDetails;
         },
-        async fetchVehicleHistory() {
-            let code = systematicFourCharCode('VehicleHistory');
+        async fetchVehicleHistory(): Promise<VehicleHistory | null> {
+            const code = systematicFourCharCode('VehicleHistory');
             const encryptedData = localStorage.getItem(code);
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
-                    this.vehicleHistory = JSON.parse(decrypted);
+                    this.vehicleHistory = JSON.parse(decrypted) as VehicleHistory;
                 } catch (error) {
                     console.error("Failed to decrypt Vehicle History: ", error);
                 }
             }
             return this.vehicleHistory;
         },
-        async fetchMOTHistory() {
-            let code = systematicFourCharCode('MOTHistory');
+        async fetchMOTHistory(): Promise<MotRecord[]> {
+            const code = systematicFourCharCode('MOTHistory');
             const encryptedData = localStorage.getItem(code);
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
-                    this.MOTHistory = JSON.parse(decrypted);
+                    this.MOTHistory = JSON.parse(decrypted) as MotRecord[];
                 } catch (error) {
                     console.error("Failed to decrypt Vehicle MOT Additional Information: ", error);
                 }
             }
             return this.MOTHistory;
         },
-        async fetchMOTAdditionalInformation() {
-            let code = systematicFourCharCode('MOTAdditionalInfo');
+        async fetchMileageHistory(): Promise<MileageHistory | null> {
+            const code = systematicFourCharCode('MileageHistory');
             const encryptedData = localStorage.getItem(code);
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
-                    this.MOTAdditionalInfo = JSON.parse(decrypted);
+                    this.mileageHistory = JSON.parse(decrypted) as MileageHistory;
+                } catch (error) {
+                    console.error("Failed to decrypt mileage history: ", error);
+                }
+            }
+            return this.mileageHistory;
+        },
+        async fetchMOTSummary(): Promise<MotSummary | null> {
+            const code = systematicFourCharCode('MOTSummary');
+            const encryptedData = localStorage.getItem(code);
+            if (encryptedData) {
+                try {
+                    const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
+                    this.MOTSummary = JSON.parse(decrypted) as MotSummary;
+                } catch (error) {
+                    console.error("Failed to decrypt MOT summary: ", error);
+                }
+            }
+            return this.MOTSummary;
+        },
+        async fetchMOTAdditionalInformation(): Promise<VehicleData | null> {
+            const code = systematicFourCharCode('MOTAdditionalInfo');
+            const encryptedData = localStorage.getItem(code);
+            if (encryptedData) {
+                try {
+                    const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
+                    this.MOTAdditionalInfo = JSON.parse(decrypted) as VehicleData;
                 } catch (error) {
                     console.error("Failed to decrypt Vehicle MOT History: ", error);
                 }
@@ -221,101 +259,94 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
             return this.MOTAdditionalInfo;
         },
 
-        async fetchValuationList() {
-            let code = systematicFourCharCode('VehicleValuationsList');
+        async fetchValuationList(): Promise<VehicleValuations | null> {
+            const code = systematicFourCharCode('VehicleValuationsList');
             const encryptedData = localStorage.getItem(code);
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
-                    this.vehicleValuationsList = JSON.parse(decrypted);
+                    this.vehicleValuationsList = JSON.parse(decrypted) as VehicleValuations;
                 } catch (error) {
                     console.error("Failed to decrypt Vehicle MOT History: ", error);
                 }
             }
             return this.vehicleValuationsList;
         },
-        async fetchFullReportText() {
+        async fetchFullReportText(): Promise<string> {
             return this.getFullReportText;
         },
-        async fetchStolenRecords() {
-            let code = systematicFourCharCode('vehicleStolenRecords');
-            const encryptedData = localStorage.getItem(code);            
+        async fetchStolenRecords(): Promise<StolenRecord | null> {
+            const code = systematicFourCharCode('vehicleStolenRecords');
+            const encryptedData = localStorage.getItem(code);
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
-                    this.stolenRecord = JSON.parse(decrypted);
+                    this.stolenRecord = JSON.parse(decrypted) as StolenRecord;
                 } catch (error) {
                     console.error("Failed to decrypt Vehicle Stolen data: ", error);
                 }
-            }else {
-                console.log("No data found for stolen records.");
             }
-            
+
             return this.stolenRecord;
         },
-        async fetchWriteOffRecords() {
-            let code = systematicFourCharCode('vehicleWriteOffRecords');
+        async fetchWriteOffRecords(): Promise<WriteOffRecord | null> {
+            const code = systematicFourCharCode('vehicleWriteOffRecords');
             const encryptedData = localStorage.getItem(code);
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
-                    this.writeOff = JSON.parse(decrypted);
+                    this.writeOff = JSON.parse(decrypted) as WriteOffRecord;
                 } catch (error) {
                     console.error("Failed to decrypt Vehicle write-off data: ", error);
                 }
-            }else{
-                console.log("No data found for stolen records.");
             }
             return this.writeOff;
         },
-        async fetchRiskRecords() {
-            let code = systematicFourCharCode('vehicleRiskRecords');
+        async fetchRiskRecords(): Promise<RiskRecords | null> {
+            const code = systematicFourCharCode('vehicleRiskRecords');
             const encryptedData = localStorage.getItem(code);
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
-                    this.riskRecords = JSON.parse(decrypted);
+                    this.riskRecords = JSON.parse(decrypted) as RiskRecords;
                 } catch (error) {
                     console.error("Failed to decrypt Vehicle risk data: ", error);
                 }
             }
-            
+
             return this.riskRecords;
         },
-        async fetchFinanceRecords() {
-            let code = systematicFourCharCode('vehicleFinanceRecords');
+        async fetchFinanceRecords(): Promise<FinanceRecords | null> {
+            const code = systematicFourCharCode('vehicleFinanceRecords');
             const encryptedData = localStorage.getItem(code);
-            console.log("encryptedData: ", encryptedData);
-            
+
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
-                    console.log("decrypted: ", decrypted);
-                    
-                    this.financeRecords = JSON.parse(decrypted);
+                    this.financeRecords = JSON.parse(decrypted) as FinanceRecords;
                 } catch (error) {
-                    console.error("Failed to decrypt Vehicle risk data: ", error);
+                    console.error("Failed to decrypt Vehicle finance data: ", error);
                 }
             }
             return this.financeRecords;
         },
-        async fetchNumberOfLooksUp() {
-            let code = systematicFourCharCode('numberOfLooksUp');
+        async fetchNumberOfLooksUp(): Promise<number> {
+            const code = systematicFourCharCode('numberOfLooksUp');
             const encryptedData = localStorage.getItem(code);
-            
+
             if (encryptedData) {
                 try {
                     const decrypted = await decryptData(`${code}`, JSON.parse(encryptedData));
-                    this.totalNumberOfLooksUp = JSON.parse(decrypted);
+                    this.totalNumberOfLooksUp = JSON.parse(decrypted) as number;
                 } catch (error) {
                     console.error("Failed to decrypt Vehicle total looks up: ", error);
                 }
             }
             return this.totalNumberOfLooksUp;
         },
-        
+
         // Search and store vehicle registration details
-        async searchCarRegNumber(car_reg_number) {
+        async searchCarRegNumber(car_reg_number: string): Promise<void> {
             try {
                 const tokenStore = useTokenStore();
                 const carStore = useCarStore();
@@ -326,8 +357,8 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
                 carStore.setCarRegNumber(this.reg_number);
 
                 const response = token
-                    ? await ApiService.get(`v1/car-check/${this.reg_number}`, token)
-                    : await ApiService.get(`v1/car-check/${this.reg_number}`);
+                    ? await ApiService.get<ApiPayloadResponse<CarLookupPayload[]>>(`v1/car-check/${this.reg_number}`, token)
+                    : await ApiService.get<ApiPayloadResponse<CarLookupPayload[]>>(`v1/car-check/${this.reg_number}`);
                 if(response.success){
                     await this.cleanupLocalStorage();
                 }
@@ -339,11 +370,14 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
             }
         },
 
-        async applyCarData(payload) {
+        async applyCarData(payload: CarLookupPayload[]): Promise<void> {
             if (!Array.isArray(payload)) return;
 
             const authStore = useAuthStore();
-            const combinedPayload = payload.reduce((acc, item) => mergeDeep(acc, item), {});
+            const combinedPayload = payload.reduce<PlainObject>(
+                (accumulator, item) => mergeDeep(accumulator, item),
+                {},
+            ) as CarLookupPayload;
 
             await this.setVehicleImageUrl(combinedPayload);
             await this.setVehicleLogo(combinedPayload);
@@ -355,6 +389,8 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
             await this.setPerformance(combinedPayload);
             await this.setClassificationDetails(combinedPayload);
             await this.setMOTHistory(combinedPayload);
+            await this.setMOTSummary(combinedPayload);
+            await this.setMileageHistory(combinedPayload);
             await this.setMOTAdditionalInfo(combinedPayload);
             await this.setAllowFullReport(combinedPayload);
 
@@ -376,194 +412,221 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
         },
 
         // Set data in localStorage with encryption
-        async setVehicleImageUrl(combinedPayload) {
-            let code = systematicFourCharCode('VehicleImageUrl');
-            if (combinedPayload?.VehicleImages?.ImageDetailsCount > 0) {
-                const data = JSON.stringify(combinedPayload.VehicleImages.ImageDetailsList[0].ImageUrl);
+        async setVehicleImageUrl(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('VehicleImageUrl');
+            const imageUrl = combinedPayload.VehicleImages?.ImageDetailsList?.[0]?.ImageUrl;
+            if (imageUrl) {
+                const data = JSON.stringify(imageUrl);
                 const encryptedData = await encryptData(code, data);
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
-        async setVehicleLogo(combinedPayload) {
-            let code = systematicFourCharCode('VehicleLogo');
+        async setVehicleLogo(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('VehicleLogo');
             if (combinedPayload.vbrand_logo) {
                 const data = JSON.stringify(combinedPayload.vbrand_logo);
                 const encryptedData = await encryptData(code, data);
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
-        async setSmmtDetails(combinedPayload) {
-            let code = systematicFourCharCode('SmmtDetails');
+        async setSmmtDetails(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('SmmtDetails');
             if (combinedPayload.SmmtDetails) {
                 const data = JSON.stringify(combinedPayload.SmmtDetails);
                 const encryptedData = await encryptData(code, data);
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
-        async setVehicleDimension(combinedPayload) {
-            let code = systematicFourCharCode('VehicleDimension');
+        async setVehicleDimension(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('VehicleDimension');
             if (combinedPayload.TechnicalDetails && combinedPayload.TechnicalDetails.Dimensions) {
                 const data = JSON.stringify(combinedPayload.TechnicalDetails.Dimensions);
                 const encryptedData = await encryptData(code, data);
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
-        async setVehicleRegistration(combinedPayload) {
-            let code = systematicFourCharCode('VehicleRegistration');
+        async setVehicleRegistration(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('VehicleRegistration');
             if (combinedPayload.VehicleRegistration) {
                 const data = JSON.stringify(combinedPayload.VehicleRegistration);
-                
+
                 const encryptedData = await encryptData(code, data);
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
-        async setMotVed(combinedPayload) {
-            let code = systematicFourCharCode('VehicleMotVed');
+        async setMotVed(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('VehicleMotVed');
             if (combinedPayload.VehicleStatus && combinedPayload.VehicleStatus.MotVed) {
                 const data = JSON.stringify(combinedPayload.VehicleStatus.MotVed);
                 const encryptedData = await encryptData(code, data);
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
-        async setVehicleGeneralInfo(combinedPayload) {
-            let code = systematicFourCharCode('VehicleGeneralInfo');
+        async setVehicleGeneralInfo(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('VehicleGeneralInfo');
             if (combinedPayload.TechnicalDetails && combinedPayload.TechnicalDetails.General) {
                 const data = JSON.stringify(combinedPayload.TechnicalDetails.General);
                 const encryptedData = await encryptData(code, data);
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
-        async setPerformance(combinedPayload) {
-            let code = systematicFourCharCode('Performance');
+        async setPerformance(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('Performance');
             if (combinedPayload.TechnicalDetails && combinedPayload.TechnicalDetails.Performance) {
                 const data = JSON.stringify(combinedPayload.TechnicalDetails.Performance);
                 const encryptedData = await encryptData(code, data);
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
-        async setClassificationDetails(combinedPayload) {
-            let code = systematicFourCharCode('VehicleClassificationDetails');
+        async setClassificationDetails(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('VehicleClassificationDetails');
             if (combinedPayload.ClassificationDetails) {
                 const data = JSON.stringify(combinedPayload.ClassificationDetails);
                 const encryptedData = await encryptData(code, data);
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
-        async setVehicleHistory(combinedPayload) {
-            let code = systematicFourCharCode('VehicleHistory');
+        async setVehicleHistory(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('VehicleHistory');
             if (combinedPayload.VehicleHistory) {
                 const data = JSON.stringify(combinedPayload.VehicleHistory);
                 const encryptedData = await encryptData(code, data);
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
-        async setMOTHistory(combinedPayload) {
-            let code = systematicFourCharCode('MOTHistory');
+        async setMOTHistory(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('MOTHistory');
             if (combinedPayload.MotHistory) {
                 const data = JSON.stringify(combinedPayload.MotHistory.RecordList);
                 const encryptedData = await encryptData(code, data);
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
-        async setMOTAdditionalInfo(combinedPayload) {
-            let code = systematicFourCharCode('MOTAdditionalInfo');
+        async setMileageHistory(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('MileageHistory');
+            if (combinedPayload.MileageHistory) {
+                const data = JSON.stringify(combinedPayload.MileageHistory);
+                const encryptedData = await encryptData(code, data);
+                localStorage.setItem(code, JSON.stringify(encryptedData));
+            }
+        },
+        async setMOTSummary(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('MOTSummary');
+            const history = combinedPayload.MotHistory;
+            if (history?.Summary) {
+                // RecordCount rides along with the summary rather than with the records:
+                // on a locked report the two differ, and the gap is the padlock count.
+                const data = JSON.stringify({
+                    RecordCount: history.RecordCount ?? history.RecordList?.length ?? 0,
+                    ...history.Summary,
+                });
+                const encryptedData = await encryptData(code, data);
+                localStorage.setItem(code, JSON.stringify(encryptedData));
+            }
+        },
+        async setMOTAdditionalInfo(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('MOTAdditionalInfo');
             if (combinedPayload.MotHistory) {
                 const data = JSON.stringify(combinedPayload.MotHistory?.AdditionalInformation);
                 const encryptedData = await encryptData(code, data);
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
-        async setAllowFullReport(combinedPayload) {
-            if (combinedPayload.allow_full_report) {
-                this.allowFullReport = combinedPayload.allow_full_report;
-            }
+        async setAllowFullReport(combinedPayload: CarLookupPayload): Promise<void> {
+            // Assigned every lookup, not only when true: the backend sends this flag on
+            // every response, so a free anonymous search after a paid one has to clear it.
+            this.allowFullReport = !!combinedPayload.allow_full_report;
         }
         ,
-        async setFullReportText(text) {
+        async setFullReportText(text: string): Promise<void> {
             this.getFullReportText = text;
         },
-        async setVehicleValuationList(combinedPayload) {
-            let code = systematicFourCharCode('VehicleValuationsList');
+        async setVehicleValuationList(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('VehicleValuationsList');
             if (combinedPayload && combinedPayload.ValuationList) {
                 const data = JSON.stringify(combinedPayload.ValuationList);
                 const encryptedData = await encryptData(code, data);
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
-        async setStolenRecord(combinedPayload){
-            let stolenData = {};
-            let code = systematicFourCharCode('vehicleStolenRecords');
-            
-            if (combinedPayload.Stolen || (combinedPayload.StolenMiaftrRecordCount > 0)) {
-                stolenData['Stolen'] = combinedPayload['Stolen'];
-                stolenData['StolenInfoSource'] = combinedPayload['StolenInfoSource'];
-                stolenData['StolenStatus'] = combinedPayload['StolenStatus'];
-                stolenData['StolenPoliceForce'] = combinedPayload['StolenPoliceForce'];
-                stolenData['StolenDate'] = combinedPayload['StolenDate'];
-                stolenData['StolenMiaftrRecordCount'] = combinedPayload['StolenMiaftrRecordCount'];
-                stolenData['StolenMiaftrRecordList'] = combinedPayload['StolenMiaftrRecordList'];
-                
+        async setStolenRecord(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('vehicleStolenRecords');
+
+            if (combinedPayload.Stolen || (combinedPayload.StolenMiaftrRecordCount ?? 0) > 0) {
+                const stolenData: StolenRecord = {
+                    Stolen: combinedPayload.Stolen,
+                    StolenInfoSource: combinedPayload.StolenInfoSource,
+                    StolenStatus: combinedPayload.StolenStatus,
+                    StolenPoliceForce: combinedPayload.StolenPoliceForce,
+                    StolenDate: combinedPayload.StolenDate,
+                    StolenMiaftrRecordCount: combinedPayload.StolenMiaftrRecordCount,
+                    StolenMiaftrRecordList: combinedPayload.StolenMiaftrRecordList,
+                };
+
                 const data = JSON.stringify(stolenData);
                 const encryptedData = await encryptData(code, data);
 
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
-        async setWriteOffRecords(combinedPayload){
-            let writtenOffData = {}
-            let code = systematicFourCharCode('vehicleWriteOffRecords');
-            if (combinedPayload.WrittenOff || (combinedPayload.WriteOffRecordCount > 0)) {
-                writtenOffData['WrittenOff'] = combinedPayload['WrittenOff'];
-                writtenOffData['WriteOffDate'] = combinedPayload['WriteOffDate'];
-                writtenOffData['WriteOffCategory'] = combinedPayload['WriteOffCategory'];
-                writtenOffData['WriteOffRecordList'] = combinedPayload['WriteOffRecordList'];
-                writtenOffData['WriteOffRecordCount'] = combinedPayload['WriteOffRecordCount'];
+        async setWriteOffRecords(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('vehicleWriteOffRecords');
+            if (combinedPayload.WrittenOff || (combinedPayload.WriteOffRecordCount ?? 0) > 0) {
+                const writtenOffData: WriteOffRecord = {
+                    WrittenOff: combinedPayload.WrittenOff,
+                    WriteOffDate: combinedPayload.WriteOffDate,
+                    WriteOffCategory: combinedPayload.WriteOffCategory,
+                    WriteOffRecordList: combinedPayload.WriteOffRecordList,
+                    WriteOffRecordCount: combinedPayload.WriteOffRecordCount,
+                };
 
                 const data = JSON.stringify(writtenOffData);
                 const encryptedData = await encryptData(code, data);
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
-        async setFinanceRecords(combinedPayload){
-            let financeRecords = {}
-            let code = systematicFourCharCode('vehicleFinanceRecords');
-            if (combinedPayload.FinanceRecordCount > 0) {
-                financeRecords['FinanceRecordCount'] = combinedPayload['FinanceRecordCount'];
-                financeRecords['FinanceRecordList'] = combinedPayload['FinanceRecordList'];
+        async setFinanceRecords(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('vehicleFinanceRecords');
+            if ((combinedPayload.FinanceRecordCount ?? 0) > 0) {
+                const financeRecords: FinanceRecords = {
+                    FinanceRecordCount: combinedPayload.FinanceRecordCount ?? 0,
+                    FinanceRecordList: combinedPayload.FinanceRecordList ?? [],
+                };
                 const data = JSON.stringify(financeRecords);
                 const encryptedData = await encryptData(code, data);
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
-        async setRiskRecords(combinedPayload){
-            let riskfData = {}
-            let code = systematicFourCharCode('vehicleRiskRecords');
-            if (combinedPayload.HighRiskRecordCount > 0) {
-                riskfData['HighRiskRecordCount'] = combinedPayload['HighRiskRecordCount'];
-                riskfData['HighRiskRecordList'] = combinedPayload['HighRiskRecordList'];
-                const data = JSON.stringify(riskfData);
+        async setRiskRecords(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('vehicleRiskRecords');
+            if ((combinedPayload.HighRiskRecordCount ?? 0) > 0) {
+                const riskData: RiskRecords = {
+                    HighRiskRecordCount: combinedPayload.HighRiskRecordCount ?? 0,
+                    HighRiskRecordList: combinedPayload.HighRiskRecordList ?? [],
+                };
+                const data = JSON.stringify(riskData);
                 const encryptedData = await encryptData(code, data);
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
-        async setNumberOfLooksUp(combinedPayload){
-            let code = systematicFourCharCode('numberOfLooksUp');
-            if (combinedPayload.total_lookup > 0) {
+        async setNumberOfLooksUp(combinedPayload: CarLookupPayload): Promise<void> {
+            const code = systematicFourCharCode('numberOfLooksUp');
+            if ((combinedPayload.total_lookup ?? 0) > 0) {
                 const data = JSON.stringify(combinedPayload.total_lookup);
                 const encryptedData = await encryptData(code, data);
                 localStorage.setItem(code, JSON.stringify(encryptedData));
             }
         },
 
-        async cleanupLocalStorage() {
+        async cleanupLocalStorage(): Promise<void> {
             const keysToRemove = [
                 'VehicleImageUrl', 'VehicleLogo', 'SmmtDetails', 'VehicleDimension',
                 'VehicleRegistration', 'VehicleMotVed', 'VehicleGeneralInfo', 'Performance',
-                'VehicleClassificationDetails', 'VehicleHistory', 'MOTHistory', 'MOTAdditionalInfo', 'VehicleValuationsList',
-                'vehicleStolenRecords', 'vehicleWriteOffRecords', 'vehicleRiskRecords', 
+                'VehicleClassificationDetails', 'VehicleHistory', 'MOTHistory', 'MOTSummary', 'MileageHistory', 'MOTAdditionalInfo', 'VehicleValuationsList',
+                'vehicleStolenRecords', 'vehicleWriteOffRecords', 'vehicleRiskRecords',
                 'vehicleFinanceRecords', 'numberOfLooksUp', 'reg_number','car_reg_number'
             ];
-        
+
             keysToRemove.forEach(key => {
                 const storageKey = systematicFourCharCode(key);
                 localStorage.removeItem(storageKey);
@@ -575,6 +638,8 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
         }
     },
     persist: {
-        paths: ["reg_number", "getFullReportText"],
+        // allowFullReport has to survive a refresh - the report body is read back from
+        // localStorage, so without this the page reloads into a locked report.
+        pick: ["reg_number", "getFullReportText", "allowFullReport"],
     },
 });

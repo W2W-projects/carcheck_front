@@ -59,20 +59,23 @@ onMounted(async () => {
 });
 
 function getPrice(priceType: string = '12month'): string {
-  if (!MOTVed.value?.VedRate?.Standard) return 'N/A';
+  const standardRate = MOTVed.value?.VedRate?.Standard;
+  if (!standardRate) return 'N/A';
+
+  const annualRate = Number(standardRate.TwelveMonth);
 
   switch (priceType.toLowerCase()) {
     case '12month':
-      return MOTVed.value.VedRate.Standard.TwelveMonth || 'N/A';
+      return standardRate.TwelveMonth == null ? 'N/A' : String(standardRate.TwelveMonth);
     case '6month':
-      return MOTVed.value.VedRate?.Standard?.SixMonth || 'N/A';
+      return standardRate.SixMonth == null ? 'N/A' : String(standardRate.SixMonth);
     case 'monthly':
-      return MOTVed.value.VedRate?.Standard?.TwelveMonth
-        ? (MOTVed.value.VedRate.Standard.TwelveMonth * 1.05 / 12).toFixed(2)
+      return Number.isFinite(annualRate)
+        ? (annualRate * 1.05 / 12).toFixed(2)
         : 'N/A';
     case 'total':
-      return MOTVed.value.VedRate?.Standard?.TwelveMonth
-        ? (MOTVed.value.VedRate.Standard.TwelveMonth * 1.05).toFixed(2)
+      return Number.isFinite(annualRate)
+        ? (annualRate * 1.05).toFixed(2)
         : 'N/A';
     default:
       return 'N/A';

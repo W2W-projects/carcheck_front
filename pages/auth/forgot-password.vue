@@ -76,7 +76,6 @@ const handleLoginSubmit = async () => {
         }
     } catch (error) {
         errorMessage.value = error?.data?.message || error?.response?.message || "An unexpected error occurred while trying to log in.";
-        console.log("error:", errorMessage.value);
     } finally {
         forgotPassword.value = "Submit";
         isProcessing.value = false;

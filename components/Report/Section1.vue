@@ -12,6 +12,8 @@ const vehicle_image = computed(() => carRegistrationSearchStore.vehicleImageUrl)
 const smmtDetail = computed(() => carRegistrationSearchStore.smmtDetails);
 const totalNumberOfLooksUp = computed(() => carRegistrationSearchStore.totalNumberOfLooksUp);
 
+const { isShowAble } = useIsShowAble();
+
 onMounted(async () => {
   await carRegistrationSearchStore.fetchVehicleLogo();
   await carRegistrationSearchStore.fetchVehicleImageUrl();
@@ -51,7 +53,7 @@ onMounted(async () => {
             <label class="font-extralight">
               Number of look ups: &nbsp;
             </label>
-            <p class="font-bold" v-if="hasSubscription?.active">{{ totalNumberOfLooksUp }}</p>
+            <p class="font-bold" v-if="isShowAble">{{ totalNumberOfLooksUp }}</p>
             <Hashed v-else />
           </div>
         </div>

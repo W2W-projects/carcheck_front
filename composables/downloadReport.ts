@@ -1,6 +1,5 @@
 import { ref } from "vue";
 import { navigateTo } from "nuxt/app";
-import ApiService from "~/services/apiService";
 
 const reportDate = () => {
   const date = new Date();
@@ -10,7 +9,7 @@ const reportDate = () => {
 };
 
 const toRegNumber = (car: any): string | null =>
-  (typeof car === "string" ? car : car?.reg_number || car?.details?.vrm) ||
+  (typeof car === "string" ? car : car?.reg_number) ||
   (import.meta.client ? localStorage.getItem("reg_number") : null);
 
 export const useDownloadReport = () => {
@@ -58,14 +57,7 @@ export const useDownloadReport = () => {
         return { success: false };
       }
 
-      const response = await ApiService.post(
-        "users/download-report",
-        {
-          email: authStore.user?.email,
-          reg_number: toRegNumber(car),
-        },
-        tokenStore.getToken
-      );
+      const response = await authStore.fetchReportLink(toRegNumber(car));
 
       if (!response.success || !response.payload) {
         throw new Error("Failed to retrieve the report data.");
