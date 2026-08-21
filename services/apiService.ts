@@ -3,11 +3,6 @@ import type { ApiErrorBody, ApiRequestError } from "~/types/models";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
-/**
- * Every Laravel call goes through Nuxt's own server at /api/service/*, which forwards it
- * to the backend (see server/api/service/[...].ts). Same origin, so no CORS and no
- * backend URL in the bundle; the browser only ever supplies who it is.
- */
 const PROXY_PREFIX = "/api/service";
 
 const guestToken = (): string | null => {
@@ -41,8 +36,6 @@ const ApiService = {
     if (tokenToUse) headers.Authorization = `Bearer ${tokenToUse}`;
 
     try {
-      // $fetch, not fetch: it resolves the relative URL during SSR too, and it leaves an
-      // empty 204 body as null instead of throwing on JSON.parse.
       return await $fetch<T>(`${PROXY_PREFIX}/${endpoint.replace(/^\/+/, "")}`, {
         method,
         headers,
@@ -54,7 +47,6 @@ const ApiService = {
 
       console.error(`${method} ${endpoint} error:`, failure.status, failure.data?.message);
 
-      // Same shape the callers already read: error.data.message, error.data.errors.
       throw {
         status: failure.status ?? failure.statusCode ?? 0,
         data: failure.data ?? { message: "The request could not be completed." },

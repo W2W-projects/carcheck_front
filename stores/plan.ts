@@ -13,7 +13,6 @@ export const usePlanStore = defineStore("plan", {
   state: (): PlanState => ({
     selectedPlan: null,
     plans: [],
-    // Neither is persisted, so a page load fetches once and prices stay fresh.
     plansLoaded: false,
     plansRequest: null,
   }),
@@ -39,14 +38,6 @@ export const usePlanStore = defineStore("plan", {
       this.selectedPlan = plan;
     },
 
-    /**
-     * One request per page load, however many components ask.
-     *
-     * The catalogue used to be fetched by whoever needed it: /pricing renders
-     * <PlanSection />, which fetches, and then fetches again itself. A "have we got
-     * plans yet" boolean cannot catch that - both hooks run before either response
-     * lands - so callers share the in-flight promise instead.
-     */
     async fetchPlans(): Promise<Plan[]> {
       if (this.plansLoaded) return this.plans;
 
@@ -58,7 +49,6 @@ export const usePlanStore = defineStore("plan", {
             ),
           )
           .finally(() => {
-            // Cleared either way: a failed fetch has to be retryable.
             this.plansRequest = null;
           });
       }

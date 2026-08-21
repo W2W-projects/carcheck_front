@@ -19,7 +19,6 @@ export interface ApiErrorBody {
   message?: string;
   error?: string;
   errors?: Record<string, string[]>;
-  /** Seconds to wait, set by the proxy on a 429. */
   retry_after?: number;
   code?: string;
   status?: number;
@@ -117,8 +116,6 @@ export interface Currency {
   created_at: string;
 }
 
-/** Mirrors PlanResource. The feature lists the pricing page renders come from
- *  `static/features.json`, not from here, so the API stopped sending its own. */
 export interface Plan {
   id: number;
   name: string;
@@ -131,8 +128,6 @@ export interface Plan {
   currency: Pick<Currency, "symbol">;
 }
 
-/** Mirrors SubscriptionResource - login, payment/process and payment/subscription all
- *  return this shape into the same `currentSubscription` slot. */
 export interface Subscription {
   name?: string | null;
   status?: string | null;
@@ -164,7 +159,6 @@ export interface LoginPayload {
   subscription: Subscription | "" | null;
 }
 
-/** Mirrors CustomPlanResource. `pricePerCheck` is derived in DiscountWidgets.vue. */
 export interface CustomPlan {
   id: number;
   name: string;
@@ -185,9 +179,6 @@ export interface CustomPlanPurchase {
   error_type?: string;
 }
 
-/** users/check-email-exist. An unknown address is registered on the spot and comes
- *  back logged in; a known one comes back as `existingUser` with nothing else. The
- *  new user carries no request counts yet - the account is seconds old. */
 export type EmailCheckPayload =
   | { user_type: "existingUser" }
   | {
@@ -207,8 +198,6 @@ export interface BillingDetails {
   name: string;
 }
 
-/** payment/token/create. A single-offer purchase settles inside the intent and so
- *  returns the refreshed counts instead of a `paymentStatus` to confirm against. */
 export interface PaymentIntentPayload {
   clientSecret: string;
   customerId: string;
@@ -216,8 +205,6 @@ export interface PaymentIntentPayload {
   hasSubscription?: SubscriptionStatus;
 }
 
-/** payment/process. `car_data` is a re-lookup of the registration paid for, in the
- *  same shape a search returns, so the report is ready by the time we redirect. */
 export interface SubscriptionPurchasePayload {
   subscription: Subscription | null;
   hasSubscription: SubscriptionStatus;
@@ -265,12 +252,6 @@ export interface MotRecord {
   MileageAnomalyDetected?: boolean;
 }
 
-/**
- * The overview figures above the MOT records, counted server-side over every test on
- * record. A locked report is only sent the records it displays, so these cannot be
- * derived from RecordList any more - RecordCount is the number of slots, RecordList is
- * the ones with data behind them, and the difference is what gets a padlock.
- */
 export interface MotSummary {
   RecordCount: number;
   FailedTestCount: number;
@@ -280,11 +261,6 @@ export interface MotSummary {
   LongestDaysOutOfMot: number;
 }
 
-/**
- * The odometer series mileage.vue charts. Kept apart from MotHistory so the chart can
- * stay complete at every tier while the MOT records ship only what the report displays -
- * one dated number per test, already resolved to Unit, instead of a whole record.
- */
 export interface MileageHistory {
   Unit: "mi" | "km" | string;
   Readings: Array<{ TestDate: string | null; Odometer: number }>;
@@ -297,8 +273,6 @@ export interface MotHistory {
   AdditionalInformation?: Record<string, unknown> | null;
 }
 
-/** Mirrors CarListResource - what a dashboard card renders, and nothing else.
- *  `checkMonths` is the months this car was MOT'd in, for the garage filter. */
 export interface CarDetails {
   make?: string | null;
   fuelType?: string | null;
@@ -316,8 +290,6 @@ export interface CarListItem {
   details: CarDetails;
 }
 
-/** Mirrors CarDetailResource - the two things "See more" shows that its card does not.
- *  Fetched per car when the modal opens, not for the whole garage on page load. */
 export interface CarDetail {
   id: number;
   details: {

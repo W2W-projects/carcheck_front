@@ -38,6 +38,33 @@
                 "slug": "mot-history"
             }
         ],
+        "more": [
+            {
+                "id": 12,
+                "title": "Write off",
+                "icon": "warning.svg"
+            },
+            {
+                "id": 7,
+                "title": "Finance History",
+                "icon": "financial-history.svg"
+            },
+            {
+                "id": 8,
+                "title": "Tax Records",
+                "icon": "tax-records.svg"
+            },
+            {
+                "id": 9,
+                "title": "Technical data",
+                "icon": "technicaldata.svg"
+            },
+            {
+                "id": 10,
+                "title": "Vehicle Valuation",
+                "icon": "valuation.svg"
+            }
+        ],
         "items": [
             {
                 "id": 1,
@@ -99,7 +126,7 @@
             {
                 "id": 4,
                 "title": "MOT Check",
-                "icon": "Mot-history.svg"
+                "icon": "mot-history.svg"
             },
             {
                 "id": 5,

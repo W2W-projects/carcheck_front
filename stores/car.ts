@@ -67,8 +67,6 @@ export const useCarStore = defineStore("car", {
       return this.userCarsList;
     },
 
-    /** The colour and last few MOT tests for one car - what "See more" adds to a card.
-     *  The list endpoint deliberately does not carry this. */
     async fetchCarDetail(carId: number): Promise<CarDetail | null> {
       const response = await ApiService.get<ApiDataResponse<CarDetail>>(
         `v1/fetch-users-car-detail/${carId}`,
@@ -98,7 +96,6 @@ export const useCarStore = defineStore("car", {
       });
     },
 
-    /** Settles a custom-plan purchase that Stripe sent back for authentication. */
     confirmPaymentIntent(
       paymentIntentId: string,
     ): Promise<ApiPayloadResponse<PaymentIntentConfirmation>> {

@@ -514,8 +514,6 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
             const code = systematicFourCharCode('MOTSummary');
             const history = combinedPayload.MotHistory;
             if (history?.Summary) {
-                // RecordCount rides along with the summary rather than with the records:
-                // on a locked report the two differ, and the gap is the padlock count.
                 const data = JSON.stringify({
                     RecordCount: history.RecordCount ?? history.RecordList?.length ?? 0,
                     ...history.Summary,
@@ -533,8 +531,6 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
             }
         },
         async setAllowFullReport(combinedPayload: CarLookupPayload): Promise<void> {
-            // Assigned every lookup, not only when true: the backend sends this flag on
-            // every response, so a free anonymous search after a paid one has to clear it.
             this.allowFullReport = !!combinedPayload.allow_full_report;
         }
         ,
@@ -638,8 +634,6 @@ export const useCarRegistrationSearchStore = defineStore('carRegistrationSearch'
         }
     },
     persist: {
-        // allowFullReport has to survive a refresh - the report body is read back from
-        // localStorage, so without this the page reloads into a locked report.
         pick: ["reg_number", "getFullReportText", "allowFullReport"],
     },
 });

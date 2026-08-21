@@ -55,7 +55,6 @@ const handleGetFullReport = async () => {
     try {
         const response = await authStore.checkEmailExists({ email: form.email });
         if (response.success && response.payload) {
-            // The store has already signed a newly created user in by this point.
             if (response.payload.user_type === "newlyCreatedUser") {
                 // navigateTo('payment/plans');
                 navigateTo('pricing');

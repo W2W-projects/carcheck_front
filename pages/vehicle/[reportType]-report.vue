@@ -6,10 +6,6 @@ const vbrand_logo = computed(() => carRegistrationSearchStore.vbrand_logo);
 const errorMessage = ref(null);
 const reportText = ref("Download Report")
 
-onMounted(() => {
-    // console.log("vbrand_logo: ", vbrand_logo.value);
-});
-
 const { downloadReport: runDownload, isDownloading, isAnyDownloading, errorMessage: downloadError, reportDate } = useDownloadReport();
 
 const downloadReport = async () => {
@@ -48,7 +44,6 @@ const downloadReport = async () => {
                 <Features></Features>
             </div>
         </div>
-        <!-- additional components follow the same pattern -->
         <VehicleGeneralInformation />
         <VehicleEngineAndFuel />
         <VehicleDamageHistory />

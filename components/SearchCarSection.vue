@@ -1,25 +1,10 @@
 <script setup>
+import featureData from '@/static/features.json';
 
-const addedMoreFeatures = reactive([]);
+const addedMoreFeatures = ref([]);
 const isAddMoreBtnHidden = ref(false);
-const moreFeatures = async () => {
-  addedMoreFeatures.push(
-    {
-      "id": 12, "title": "Write off", "icon": "warning.svg"
-    },
-    {
-      "id": 7, "title": "Finance History", "icon": "financial-history.svg"
-    },
-    {
-      "id": 8, "title": "Tax Records", "icon": "tax-records.svg"
-    },
-    {
-      "id": 9, "title": "Technical data", "icon": "technicaldata.svg"
-    },
-    {
-      "id": 10, "title": "Vehicle Valuation", "icon": "valuation.svg"
-    }
-  );
+const moreFeatures = () => {
+  addedMoreFeatures.value = featureData.features.more;
   isAddMoreBtnHidden.value = true;
 }
 </script>

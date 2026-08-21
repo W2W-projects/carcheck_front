@@ -128,8 +128,6 @@ export const useSubscriptionStore = defineStore("subscription", {
       return response.payload;
     },
 
-    /** No argument: the backend cancels the caller's own subscription, found from their
-     *  customer row, so the Stripe id no longer travels out and back. */
     cancelSubscription(): Promise<ApiPayloadResponse<Subscription>> {
       return ApiService.post<ApiPayloadResponse<Subscription>>("payment/subscription/cancel", {});
     },

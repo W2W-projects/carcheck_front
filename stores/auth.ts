@@ -137,9 +137,6 @@ const useAuthStore = defineStore("auth", {
       );
     },
 
-    /** An unknown address is registered on the spot and comes back already logged in,
-     *  so the session is established here the way makeLogin does rather than by the
-     *  caller. A known address only reports back - it still has to enter a password. */
     async checkEmailExists(form: EmailForm): Promise<ApiPayloadResponse<EmailCheckPayload>> {
       const response = await ApiService.post<ApiPayloadResponse<EmailCheckPayload>>(
         "users/check-email-exist",
@@ -160,8 +157,6 @@ const useAuthStore = defineStore("auth", {
       return response;
     },
 
-    /** The email is taken from the session rather than the caller: the backend only
-     *  ever generates a report for the signed-in user anyway. */
     fetchReportLink(regNumber: string | null): Promise<ApiPayloadResponse<ReportLink>> {
       if (!this.user?.email) throw new Error("Cannot download a report without a user email.");
 
