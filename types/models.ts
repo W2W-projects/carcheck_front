@@ -19,6 +19,11 @@ export interface ApiErrorBody {
   message?: string;
   error?: string;
   errors?: Record<string, string[]>;
+  /** Seconds to wait, set by the proxy on a 429. */
+  retry_after?: number;
+  code?: string;
+  status?: number;
+  success?: false;
 }
 
 export interface ApiRequestError {

@@ -3,27 +3,20 @@ import type { ApiErrorBody, ApiRequestError } from "~/types/models";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
-const appEnv = import.meta.env.VITE_APP_ENV as string | undefined;
-const baseUrl = import.meta.env.VITE_LOCAL_BASE_URL as string | undefined;
-const testBaseUrl = import.meta.env.VITE_TEST_BASE_URL as string | undefined;
-const productionUrl = import.meta.env.VITE_PROD_BASE_URL as string | undefined;
-
-const setBaseUrl = (environment?: string): string => {
-  const urls: Record<string, string> = {
-    local: baseUrl || "http://localhost/api",
-    dev: testBaseUrl || "https://dev-back.car-check.info/api",
-    prod: productionUrl || "https://car-check.io/api",
-  };
-
-  return urls[environment || "local"] || "http://localhost/api";
-};
+/**
+ * Every Laravel call goes through Nuxt's own server at /api/service/*, which forwards it
+ * to the backend (see server/api/service/[...].ts). Same origin, so no CORS and no
+ * backend URL in the bundle; the browser only ever supplies who it is.
+ */
+const PROXY_PREFIX = "/api/service";
 
 const guestToken = (): string | null => {
   if (typeof localStorage === "undefined") return null;
 
   let existing = localStorage.getItem("guest_token");
   if (!existing) {
-    existing = crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    existing =
+      crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     localStorage.setItem("guest_token", existing);
   }
 
@@ -47,24 +40,25 @@ const ApiService = {
     if (guest) headers["X-Guest-Token"] = guest;
     if (tokenToUse) headers.Authorization = `Bearer ${tokenToUse}`;
 
-    const options: RequestInit = { method, headers };
-    if (data !== null) options.body = JSON.stringify(data);
-
     try {
-      const response = await fetch(`${setBaseUrl(appEnv)}/${endpoint}`, options);
-      const responseData = (await response.json()) as T;
-
-      if (!response.ok) {
-        throw {
-          status: response.status,
-          data: responseData as ApiErrorBody,
-        } satisfies ApiRequestError;
-      }
-
-      return responseData;
+      // $fetch, not fetch: it resolves the relative URL during SSR too, and it leaves an
+      // empty 204 body as null instead of throwing on JSON.parse.
+      return await $fetch<T>(`${PROXY_PREFIX}/${endpoint.replace(/^\/+/, "")}`, {
+        method,
+        headers,
+        body: data === null ? undefined : data,
+        retry: 0,
+      });
     } catch (error) {
-      console.error(`${method} ${endpoint} error:`, error);
-      throw error;
+      const failure = error as { status?: number; statusCode?: number; data?: ApiErrorBody };
+
+      console.error(`${method} ${endpoint} error:`, failure.status, failure.data?.message);
+
+      // Same shape the callers already read: error.data.message, error.data.errors.
+      throw {
+        status: failure.status ?? failure.statusCode ?? 0,
+        data: failure.data ?? { message: "The request could not be completed." },
+      } satisfies ApiRequestError;
     }
   },
 

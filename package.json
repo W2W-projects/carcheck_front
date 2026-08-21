@@ -12,7 +12,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "start": "node .output/server/index.mjs",
-    "typecheck:stores": "tsc --project tsconfig.stores.json --noEmit"
+    "typecheck:stores": "tsc --project tsconfig.stores.json --noEmit",
+    "test:proxy": "node --experimental-strip-types --no-warnings server/utils/sanitizeBackendError.test.mjs"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.3.1",
