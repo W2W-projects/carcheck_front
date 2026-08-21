@@ -24,6 +24,15 @@ const riskRecords = computed(() => carRegistrationSearch.riskRecords);
 const finances = computed(() => carRegistrationSearch.financeRecords);
 
 const { isShowAble } = useIsShowAble();
+const {
+  carousel,
+  currentSlide,
+  updateCurrentSlide,
+  goToSlide,
+  startDrag,
+  drag,
+  endDrag,
+} = useCarousel();
 
 </script>
 
@@ -31,15 +40,15 @@ const { isShowAble } = useIsShowAble();
 <template>
   <report-wrapper class="py-9">
     <div class="flex items-center justify-between text-black ">
-      <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
-        <svg width="27" height="23" viewBox="0 0 27 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <div class="flex items-center space-x-2 cursor-pointer md:space-x-4" @click="toggleTableVisibility">
+        <svg class="w-5 h-auto md:w-[27px]" width="27" height="23" viewBox="0 0 27 23" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
             d="M25.667 20.274L14.5847 1.11888C13.7227 -0.369805 12.313 -0.374534 11.4509 1.11415L0.367892 20.2764C-0.49419 21.7651 0.211437 23 1.93481 23H24.1C25.8234 23 26.529 21.7627 25.667 20.274ZM4.22869 19.8918L13.0178 4.70939L21.8062 19.8918H4.22869ZM13.0249 16.3699C12.2348 16.3699 11.6824 16.916 11.6824 17.7191C11.6824 18.5221 12.2197 19.0683 12.9949 19.0683H13.0249C13.8301 19.0683 14.3524 18.4922 14.3524 17.7191C14.3374 16.916 13.8159 16.3699 13.0249 16.3699ZM12.1747 15.2287H13.8752L14.2031 8.46303H11.8468L12.1747 15.2287Z"
             fill="#0F1829" />
         </svg>
 
 
-        <p class="flex items-center justify-center text-2xl font-bold">
+        <p class="flex items-center justify-center text-xl font-bold md:text-2xl">
           RISK ASSESSMENTS
         </p>
         <span>
@@ -56,8 +65,11 @@ const { isShowAble } = useIsShowAble();
       </svg>
     </div>
     <div v-show="isTableVisible" class="space-y-4 text-black">
-      <div class="grid grid-cols-1 mt-10 lg:grid-cols-3 gap-x-5 gap-y-5 lg:gap-y-0">
-        <div class="flex items-center py-3 bg-white rounded">
+      <div ref="carousel"
+        class="flex gap-5 -ml-[5px] w-[calc(100%+2.5625rem)] mt-8 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide cursor-grab select-none active:cursor-grabbing lg:ml-0 lg:w-auto lg:grid lg:grid-cols-3 lg:gap-x-5 lg:gap-y-0 lg:mt-10 lg:overflow-visible lg:cursor-auto"
+        @scroll.passive="updateCurrentSlide" @pointerdown="startDrag" @pointermove="drag" @pointerup="endDrag"
+        @pointercancel="endDrag" @pointerleave="endDrag">
+        <div class="flex items-center min-w-[calc(100vw-4.125rem)] h-[8.25rem] py-3 overflow-hidden bg-white rounded snap-start lg:min-w-0 lg:h-auto">
           <div class="flex items-center justify-center w-1/2">
             <svg width="149" height="76" viewBox="0 0 149 76" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -72,14 +84,14 @@ const { isShowAble } = useIsShowAble();
             </svg>
           </div>
           <div class="w-1/2">
-            <h2 class="text-7xl font-bold text-[#FFA500]">
+            <h2 class="text-6xl font-bold text-[#FFA500] lg:text-7xl">
               <span v-if="isShowAble">{{ writeOff ? writeOff['WriteOffRecordCount'] : 0 }}</span>
               <hashed contain="zero" v-else></hashed>
             </h2>
-            <p class="text-3xl font-light"> WRITE-OFF <br /> RECORD</p>
+            <p class="text-xl font-light lg:text-3xl"> WRITE-OFF <br /> RECORD</p>
           </div>
         </div>
-        <div class="flex items-center py-3 bg-white rounded">
+        <div class="flex items-center min-w-[calc(100vw-4.125rem)] h-[8.25rem] py-3 overflow-hidden bg-white rounded snap-start lg:min-w-0 lg:h-auto">
           <div class="flex items-center justify-center w-1/2">
             <svg width="113" height="100" viewBox="0 0 113 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -88,14 +100,14 @@ const { isShowAble } = useIsShowAble();
             </svg>
           </div>
           <div class="w-1/2">
-            <h2 class="text-7xl font-bold text-[#EF343A]">
+            <h2 class="text-6xl font-bold text-[#EF343A] lg:text-7xl">
               <span v-if="isShowAble">{{ riskRecords ? riskRecords['HighRiskRecordCount'] : 0 }}</span>
               <hashed contain="zero" v-else></hashed>
             </h2>
-            <p class="text-3xl font-light"> HIGH RISK <br /> RECORD</p>
+            <p class="text-xl font-light lg:text-3xl"> HIGH RISK <br /> RECORD</p>
           </div>
         </div>
-        <div class="flex items-center py-3 bg-white rounded">
+        <div class="flex items-center min-w-[calc(100vw-4.125rem)] h-[8.25rem] py-3 overflow-hidden bg-white rounded snap-start lg:min-w-0 lg:h-auto">
           <div class="w-1/2 ">
             <svg width="167" height="118" viewBox="0 0 167 118" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" clip-rule="evenodd"
@@ -104,18 +116,24 @@ const { isShowAble } = useIsShowAble();
             </svg>
           </div>
           <div class="w-1/2">
-            <h2 class="text-7xl font-bold text-[#FF7400]">
+            <h2 class="text-6xl font-bold text-[#FF7400] lg:text-7xl">
               <span v-if="isShowAble">{{ finances ? finances['FinanceRecordCount'] : 0 }}</span>
               <hashed contain="zero" type="X" v-else></hashed>
             </h2>
-            <p class="text-3xl font-light">FINANCE <br /> RECORD</p>
+            <p class="text-xl font-light lg:text-3xl">FINANCE <br /> RECORD</p>
           </div>
         </div>
       </div>
-      <div class="flex flex-col items-center justify-between lg:flex-row">
-        <p class="text-2xl font-extralight">Read more about this car’s risks by unlocking the full report</p>
+      <div class="flex justify-center gap-1 mt-4 lg:hidden">
+        <button v-for="index in 3" :key="index" type="button" :aria-label="`Show risk assessment ${index}`"
+          class="w-2 h-2 border border-gray-500 rounded-full"
+          :class="currentSlide === index - 1 ? 'bg-[#FF7400] border-[#FF7400]' : 'bg-transparent'"
+          @click="goToSlide(index - 1)"></button>
+      </div>
+      <div class="flex flex-col items-center justify-between mt-5 lg:flex-row">
+        <p class="hidden text-2xl font-extralight lg:block">Read more about this car’s risks by unlocking the full report</p>
         <Includes-get-full-report :show-form="isAuthenticated"
-          get-full-report="Get full report"></Includes-get-full-report>
+          get-full-report="Download Report" class="w-full lg:w-72"></Includes-get-full-report>
       </div>
     </div>
   </report-wrapper>

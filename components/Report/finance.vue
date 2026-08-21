@@ -39,8 +39,8 @@ const { isShowAble } = useIsShowAble();
 <template>
   <report-wrapper class="py-8">
     <div class="flex items-center justify-between text-black">
-      <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
-        <svg width="24" height="26" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <div class="flex items-center space-x-2 cursor-pointer md:space-x-4" @click="toggleTableVisibility">
+        <svg class="w-5 h-auto md:w-6" width="24" height="26" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g clip-path="url(#clip0_230_6359)">
             <path
               d="M11.725 5.83167L11.7451 4.96399C11.7451 4.89337 11.7651 4.83283 11.7952 4.77229L13.5288 1.13007C13.659 0.867754 13.619 0.575166 13.4286 0.363292C13.2382 0.141328 12.9576 0.0606143 12.687 0.141328L10.1116 0.948468C9.81102 1.03927 9.49036 1.04936 9.18973 0.958558L5.9129 0.0303465C5.64234 -0.0503675 5.37177 0.0303465 5.1914 0.25231C5.01102 0.464184 4.96092 0.746683 5.08117 0.998915L6.65445 4.61087C6.68451 4.6714 6.69453 4.73194 6.69453 4.79247V5.83167H11.735H11.725Z"
@@ -63,7 +63,7 @@ const { isShowAble } = useIsShowAble();
         </svg>
 
 
-        <p class="flex items-center justify-center text-2xl font-bold">
+        <p class="flex items-center justify-center text-xl font-bold md:text-2xl">
           FINANCE
         </p>
         <span>
@@ -207,11 +207,11 @@ td {
 
 th {
   font-weight: bold;
-  padding: 0.25rem 1.5rem;
+  padding: 0.5rem 1rem;
 }
 
 td {
-  padding: 0.68rem 1.5rem;
+  padding: 0.68rem 1rem;
 }
 
 /* tr:nth-child(even) {
@@ -220,5 +220,15 @@ td {
 
 .header-row th {
   text-transform: uppercase;
+}
+
+@media (min-width: 768px) {
+  th {
+    padding: 0.25rem 1.5rem;
+  }
+
+  td {
+    padding-inline: 1.5rem;
+  }
 }
 </style>

@@ -25,7 +25,7 @@ definePageMeta({
 </script>
 
 <template>
-  <div class="bg-[#EEEEEE] ">
+  <div class="report-page overflow-x-hidden bg-[#EEEEEE]">
 
     <!-- Section 1 -->
     <ReportSection1 id="report" />
@@ -64,4 +64,8 @@ definePageMeta({
 
 </template>
 
-<style></style>
+<style scoped>
+.report-page {
+  font-family: 'TT Norms Pro', sans-serif;
+}
+</style>

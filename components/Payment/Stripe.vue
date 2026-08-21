@@ -35,7 +35,7 @@ const style = {
         color: '#32325D',
         fontSize: '16px',
         '::placeholder': {
-            color: '#AAB7C4',
+            color: '#BEC0C6',
         }
     },
     invalid: {
@@ -50,11 +50,11 @@ onMounted(async () => {
 
     if (stripe) {
         elements = stripe.elements();
-        cardNumberElement = elements.create('cardNumber', { style: { base: { color: '#32325D', fontSize: '16px' } } });
+        cardNumberElement = elements.create('cardNumber', { placeholder: '0000 0000 0000 0000', style });
         cardNumberElement.mount('#card-number-element');
-        cardExpiryElement = elements.create('cardExpiry', { style });
+        cardExpiryElement = elements.create('cardExpiry', { placeholder: '01/25', style });
         cardExpiryElement.mount('#card-expiry-element');
-        cardCvcElement = elements.create('cardCvc', { style });
+        cardCvcElement = elements.create('cardCvc', { placeholder: '584', style });
         cardCvcElement.mount('#card-cvc-element');
 
     }
@@ -129,7 +129,7 @@ async function handleCheckoutClick() {
             let selectedPlan = plan.getSelectedPlan;
             if (selectedPlan.plan_code === "single-offer") {
                 let payload = response.payload;
-                successMessage.value = "Payment done successfully.";
+                successMessage.value = "Payment successful.";
                 if (payload?.hasSubscription) {
                     await subscriptionStore.setHasSubscription(payload.hasSubscription);
                 }
@@ -171,10 +171,10 @@ async function createSubscription(selectedPlan) {
             planId: selectedPlan.id,
             regNumber: registrationSearchStore.reg_number,
         });
-        if (response.success) {
-            successMessage.value = "Payment done successfully.";
-            buttonProcess.value = "DONE!";
-        }
+        // if (response.success) {
+        //     successMessage.value = "Payment done successfully.";
+        //     buttonProcess.value = "DONE!";
+        // }
         let payload = response.payload;
         // set/change request_count, one_off_request_count, request_count_trial to user
         if (payload?.hasSubscription) {
@@ -241,41 +241,41 @@ watch(errorMessage, (newErrorMessage) => {
             <span class="alert alert-danger">{{ errorMessage }}</span>
         </div>
 
-        <div class="w-full mb-4">
-            <label for="cardholder-name" class="block mb-2 text-sm">Cardholder's Name</label>
-            <div class="flex items-center py-1 border-2 border-[#0F1829] rounded-lg w-full overflow-hidden ">
-                <div class="px-3 border-r border-black">
-                    <img src="/assets/svg/cardName.svg" alt="" />
+        <div class="w-full mb-3 lg:mb-4">
+            <label for="cardholder-name" class="block mb-0.5 text-[13px] leading-5 lg:mb-1 lg:text-[17.5px] lg:leading-6">Cardholder’s Name</label>
+            <div class="flex items-center h-[45px] border-2 border-[#0F1829] rounded-[7px] w-full overflow-hidden lg:h-[60px] lg:rounded-lg">
+                <div class="flex items-center justify-center w-14 h-[23px] border-r border-black shrink-0 lg:w-16 lg:h-[30px]">
+                    <img src="/assets/svg/cardName.svg" class="object-contain w-[30px] h-[23px] lg:w-10 lg:h-[30px]" alt="" />
                 </div>
-                <input v-model="cardholderName" type="text" id="cardholder-name" placeholder="Name on card"
-                    class="w-full p-2 uppercase bg-transparent placeholder:text-[#AAB7C4] md:p-3 focus:border-none focus:outline-none active:border-none active:outline-none focus:ring-0 focus:ring-offset-0" />
+                <input v-model="cardholderName" type="text" id="cardholder-name" placeholder="John Doe"
+                    class="w-full p-2 bg-transparent placeholder:text-[#BEC0C6] md:p-3 focus:border-none focus:outline-none active:border-none active:outline-none focus:ring-0 focus:ring-offset-0" />
             </div>
         </div>
-        <div class="w-full mb-4">
-            <label for="card-number-element" class="block mb-2 text-sm">Card Number</label>
-            <div class="flex items-center py-2 border-2 border-[#0F1829] rounded-lg overflow-hidden ">
-                <div class="px-3 border-r border-black">
-                    <img src="/assets/svg/cardNumber.svg" alt="" />
+        <div class="w-full mb-3 lg:mb-4">
+            <label for="card-number-element" class="block mb-0.5 text-[13px] leading-5 lg:mb-1 lg:text-[17.5px] lg:leading-6">Card Number</label>
+            <div class="flex items-center h-[45px] border-2 border-[#0F1829] rounded-[7px] overflow-hidden lg:h-[60px] lg:rounded-lg">
+                <div class="flex items-center justify-center w-14 h-6 border-r border-black shrink-0 lg:w-16 lg:h-8">
+                    <img src="/assets/svg/cardNumber.svg" class="object-contain w-[30px] h-6 lg:w-10 lg:h-8" alt="" />
                 </div>
                 <div id="card-number-element" class="w-full p-2 border-none md:p-3">
                 </div>
             </div>
         </div>
-        <div class="flex w-full mb-4 space-x-3">
-            <div class="w-1/2">
-                <label for="card-expiry-element" class="block mb-2 text-sm">Expiry</label>
-                <div class="flex items-center py-2 border-2 border-[#0F1829] rounded-lg overflow-hidden ">
-                    <div class="px-5 border-r border-black">
-                        <img src="/assets/svg/cardExpiry.svg" alt="" class="scale-150" />
+        <div class="grid w-full grid-cols-[142px_1fr] gap-[15px] mb-4 lg:grid-cols-[188px_1fr] lg:gap-6">
+            <div>
+                <label for="card-expiry-element" class="block text-[13px] leading-5 lg:text-[17.5px] lg:leading-6">Expiry</label>
+                <div class="flex items-center h-[45px] border-2 border-[#0F1829] rounded-[7px] overflow-hidden lg:h-[60px] lg:rounded-lg">
+                    <div class="flex items-center justify-center w-14 h-[26px] border-r border-black shrink-0 lg:w-16 lg:h-[34px]">
+                        <img src="/assets/svg/cardExpiry.svg" alt="" class="object-contain w-[25px] h-[26px] lg:w-[33px] lg:h-[34px]" />
                     </div>
                     <div id="card-expiry-element" class="w-full p-2 border-none md:p-3">
                     </div>
                 </div>
             </div>
 
-            <div class="w-1/2">
-                <label for="card-cvc-element" class="block mb-2 text-sm">CVV</label>
-                <div class="flex items-center py-2 border-2 border-[#0F1829] rounded-lg overflow-hidden ">
+            <div>
+                <label for="card-cvc-element" class="block text-[13px] leading-5 lg:text-[17.5px] lg:leading-6">CVV</label>
+                <div class="flex items-center h-[45px] border-2 border-[#0F1829] rounded-[7px] overflow-hidden lg:h-[60px] lg:rounded-lg">
                     <!-- <div class="px-3 border-r border-black">
                         <img src="/assets/svg/cardCvv.svg" alt="" />
 
@@ -286,9 +286,9 @@ watch(errorMessage, (newErrorMessage) => {
             </div>
         </div>
         <div class="flex items-center justify-center w-full space-x-2">
-            <input type="checkbox" v-model="termsAccepted" id="agree-terms" class="mr-2 w-[1.35rem] h-[1.35rem]"
+            <input type="checkbox" v-model="termsAccepted" id="agree-terms" class="mr-2 w-4 h-4 lg:w-[1.35rem] lg:h-[1.35rem]"
                 style="border:1px solid #0F1829 !important; border-radius: 30% !important;" />
-            <label for="agree-terms" class="flex-1 font-thin">
+            <label for="agree-terms" class="flex-1 text-[15px] font-thin leading-[1.15] lg:text-[20px]">
                 I agree to the
                 <a href="/terms" target="_blank" class="text-brand"> privacy policy</a>
                 and
@@ -301,16 +301,17 @@ watch(errorMessage, (newErrorMessage) => {
             {{ formValidationMessage }}
         </div>
 
-        <div class="flex items-center justify-center h-12 mt-5">
+        <div class="flex items-center justify-center h-[35px] mt-5 lg:h-[46px]">
             <div v-if="successMessage"
                 class="relative px-4 py-3 text-green-700 bg-green-100 border border-green-400 rounded" role="alert">
                 <span class="block sm:inline">{{ successMessage }}</span>
                 <br>
             </div>
             <button v-else type="submit" :disabled="loading" :aria-busy="loading"
-                class="flex items-center justify-center w-full gap-2 px-3 py-3 text-lg font-bold text-center text-white rounded-lg hover:bg-brand/90 focus:ring-4 focus:outline-none focus:ring-blue-300 bg-brand disabled:cursor-not-allowed"
+                class="flex items-center justify-center w-full h-[35px] gap-2 px-3 text-[15px] font-bold text-center text-white rounded-[6px] hover:bg-brand/90 focus:ring-4 focus:outline-none focus:ring-blue-300 bg-brand disabled:cursor-not-allowed lg:h-[46px] lg:text-[20px] lg:rounded-lg"
                 :class="loading ? 'opacity-70' : ''">
-                <span v-if="loading" class="w-5 h-5 border-2 rounded-full border-white/40 border-t-white animate-spin" aria-hidden="true"></span>
+                <span v-if="loading" class="w-5 h-5 border-2 rounded-full border-white/40 border-t-white animate-spin"
+                    aria-hidden="true"></span>
                 {{ loading ? 'PROCESSING...' : buttonProcess }}
             </button>
         </div>

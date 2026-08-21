@@ -34,8 +34,8 @@ function getChartHeight() {
 </script>
 <template>
   <report-wrapper>
-    <div class=" text-black flex flex-col md:flex-row items-center justify-between">
-      <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
+    <div class="grid grid-cols-[1fr_auto] items-center text-black md:flex md:flex-row md:justify-between">
+      <div class="flex items-center space-x-2 cursor-pointer md:space-x-4" @click="toggleTableVisibility">
         <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g clip-path="url(#clip0_230_6081)">
             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -64,7 +64,7 @@ function getChartHeight() {
           </defs>
         </svg>
 
-        <p class="text-2xl font-bold flex items-center justify-center">
+        <p class="flex items-center justify-center text-xl font-bold md:text-2xl">
           VALUATION DETAILS
         </p>
         <span>
@@ -73,8 +73,8 @@ function getChartHeight() {
         </span>
       </div>
 
-      <small>Unlock all valuation details on the full report</small>
-      <Includes-get-full-report :show-form="isAuthenticated"
+      <small class="hidden md:block">Unlock all valuation details on the full report</small>
+      <Includes-get-full-report class="hidden md:block" :show-form="isAuthenticated"
         get-full-report="Get full report"></Includes-get-full-report>
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="8" cy="8" r="8" fill="#BDBDBD" />
@@ -82,11 +82,13 @@ function getChartHeight() {
         <rect x="6.66602" y="2.66663" width="2.66667" height="2.66667" rx="1.33333" fill="white" />
       </svg>
     </div>
-    <div v-show="isTableVisible" class="text-black my-10 w-full">
+    <div v-show="isTableVisible" class="w-full my-6 text-black md:my-10">
 
       <ClientOnly>
         <chart-bar :data="chartData" :height="getChartHeight()" width="100%" />
       </ClientOnly>
+      <Includes-get-full-report :show-form="isAuthenticated" get-full-report="Download Report"
+        class="w-full mt-6 md:hidden"></Includes-get-full-report>
     </div>
   </report-wrapper>
 </template>

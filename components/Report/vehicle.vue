@@ -22,6 +22,15 @@ const toggleTableVisibility = () => {
 }
 
 const { isShowAble } = useIsShowAble();
+const {
+  carousel,
+  currentSlide,
+  updateCurrentSlide,
+  goToSlide,
+  startDrag,
+  drag,
+  endDrag,
+} = useCarousel();
 
 onMounted(async () => {
   await Promise.all([
@@ -37,8 +46,8 @@ onMounted(async () => {
 <template>
   <report-wrapper class="py-8">
     <div class="flex items-center justify-between text-black ">
-      <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
-        <svg width="24" height="26" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <div class="flex items-center space-x-2 cursor-pointer md:space-x-4" @click="toggleTableVisibility">
+        <svg class="w-5 h-auto md:w-6" width="24" height="26" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
             d="M16.9729 10.2482C16.9832 10.2352 16.9936 10.223 17.0031 10.21C16.991 10.2057 16.9789 10.2013 16.9668 10.197C16.9694 10.2135 16.9711 10.2308 16.9729 10.2482ZM1.14641 18.8983C1.14641 18.8983 4.36319 22.3264 4.68538 24.2781L5.10864 25.8126L9.18144 26L9.28077 25.123C9.28077 25.123 10.427 23.0282 10.1264 21.1666C10.1264 21.1666 10.4719 20.9654 8.53186 17.6249C8.53186 17.6249 6.98912 13.9356 7.11437 12.9962C7.11437 12.9962 6.57018 10.6073 5.79622 10.4867C5.79622 10.4867 4.45993 10.2681 5.18466 13.6537L5.45416 16.8737C5.45416 16.8737 4.05136 15.8648 3.99089 14.0909L3.31195 9.6826C3.31195 9.6826 4.41761 4.10843 2.4948 4.0026L0.756841 9.67045C0.756841 9.67045 0.53571 10.5743 0.518434 12.2641L0.00706709 16.9457C0.00706709 16.9457 -0.161373 17.7047 1.14641 18.8983ZM7.02799 10.2482C7.02972 10.2308 7.03145 10.2135 7.03404 10.197C7.02195 10.2013 7.00985 10.2048 6.99776 10.21C7.00726 10.223 7.01763 10.2352 7.02799 10.2482ZM13.8736 21.1649C13.573 23.0264 14.7192 25.1213 14.7192 25.1213L14.8186 25.9983L18.8914 25.8109L19.3146 24.2764C19.6368 22.3247 22.8536 18.8965 22.8536 18.8965C24.1614 17.7029 23.9929 16.9439 23.9929 16.9439L23.4824 12.2624C23.4652 10.5726 23.244 9.66872 23.244 9.66872L21.5043 4C19.5815 4.1067 20.6872 9.67999 20.6872 9.67999L20.0082 14.0883C19.9478 15.8614 18.545 16.8711 18.545 16.8711L18.8145 13.6511C19.5401 10.2646 18.2029 10.4841 18.2029 10.4841C17.4298 10.6047 16.8856 12.9936 16.8856 12.9936C17.0109 13.933 15.4681 17.6223 15.4681 17.6223C13.5281 20.9636 13.8736 21.1649 13.8736 21.1649Z"
             fill="#0F1829" />
@@ -58,7 +67,7 @@ onMounted(async () => {
             d="M14 3.42157C14 3.18914 13.6988 3 13.3289 3L10.6711 3C10.3012 3 10 3.18914 10 3.42157L10 4L14 4L14 3.42157ZM12.0044 3.75682C11.7809 3.75682 11.6003 3.64323 11.6003 3.50288C11.6003 3.36252 11.7809 3.24869 12.0044 3.24869C12.228 3.24869 12.4085 3.36227 12.4085 3.50288C12.4085 3.64348 12.228 3.75682 12.0044 3.75682Z"
             fill="#0F1829" />
         </svg>
-        <p class="flex items-center justify-center text-2xl font-bold">
+        <p class="flex items-center justify-center text-xl font-bold md:text-2xl">
           VEHICLE HISTORY
         </p>
         <span>
@@ -78,15 +87,18 @@ onMounted(async () => {
       </svg>
     </div>
     <div v-show="isTableVisible" class="space-y-4 text-black">
-      <div class="grid grid-cols-1 mt-10 lg:grid-cols-3 gap-x-5 gap-y-5 lg:gap-y-0">
-        <div class="bg-white rounded flex items-center overflow-hidden h-[10.5rem]">
+      <div ref="carousel"
+        class="flex gap-5 -ml-[5px] w-[calc(100%+2.5625rem)] mt-8 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide cursor-grab select-none active:cursor-grabbing lg:ml-0 lg:w-auto lg:grid lg:grid-cols-3 lg:gap-x-5 lg:gap-y-0 lg:mt-10 lg:overflow-visible lg:cursor-auto"
+        @scroll.passive="updateCurrentSlide" @pointerdown="startDrag" @pointermove="drag" @pointerup="endDrag"
+        @pointercancel="endDrag" @pointerleave="endDrag">
+        <div class="bg-white rounded flex items-center overflow-hidden h-[8.25rem] min-w-[calc(100vw-4.125rem)] snap-start lg:min-w-0 lg:h-[10.5rem]">
           <div class="flex flex-col items-center w-1/2">
-            <h2 class="text-7xl font-bold text-[#FFA500]">
+            <h2 class="text-6xl font-bold text-[#FFA500] lg:text-7xl">
               <span v-if="isShowAble">{{ numberOfPreviousKeepers > 9 ? numberOfPreviousKeepers : '0' +
                 numberOfPreviousKeepers }}</span>
               <hashed contain="zero" v-else></hashed>
             </h2>
-            <p class="text-2xl font-light"> PREVIOUS <br /> OWNERS</p>
+            <p class="text-xl font-light lg:text-2xl"> PREVIOUS <br /> OWNERS</p>
           </div>
           <div class="flex items-center justify-center w-1/2">
             <svg class="translate-x-4" width="198" height="105" viewBox="0 0 198 105" fill="none"
@@ -116,13 +128,13 @@ onMounted(async () => {
             </svg>
           </div>
         </div>
-        <div class="bg-white rounded flex items-center overflow-hidden h-[10.5rem]">
+        <div class="bg-white rounded flex items-center overflow-hidden h-[8.25rem] min-w-[calc(100vw-4.125rem)] snap-start lg:min-w-0 lg:h-[10.5rem]">
           <div class="flex flex-col items-center w-1/2">
-            <h2 class="text-7xl font-bold text-[#EF343A]">
+            <h2 class="text-6xl font-bold text-[#EF343A] lg:text-7xl">
               <span v-if="isShowAble">{{ theftReports > 9 ? theftReports : '0' + theftReports }}</span>
               <hashed contain="zero" v-else></hashed>
             </h2>
-            <p class="text-2xl font-light"> THEFT <br /> REPORT</p>
+            <p class="text-xl font-light lg:text-2xl"> THEFT <br /> REPORT</p>
           </div>
           <div class="flex items-center justify-center w-1/2">
             <svg class="translate-y-4" width="194" height="187" viewBox="0 0 194 187" fill="none"
@@ -146,13 +158,13 @@ onMounted(async () => {
             </svg>
           </div>
         </div>
-        <div class="bg-white rounded flex items-center overflow-hidden h-[10.5rem]">
+        <div class="bg-white rounded flex items-center overflow-hidden h-[8.25rem] min-w-[calc(100vw-4.125rem)] snap-start lg:min-w-0 lg:h-[10.5rem]">
           <div class="flex flex-col items-center w-1/2">
-            <h2 class="text-7xl font-bold text-[#FF7400]">
+            <h2 class="text-6xl font-bold text-[#FF7400] lg:text-7xl">
               <span v-if="isShowAble">{{ plateChangesCount > 9 ? plateChangesCount : '0' + plateChangesCount }}</span>
               <hashed contain="zero" v-else></hashed>
             </h2>
-            <p class="text-2xl font-light">PLATE <br /> CHANGES</p>
+            <p class="text-xl font-light lg:text-2xl">PLATE <br /> CHANGES</p>
           </div>
           <div class="w-1/2">
             <svg width="256" height="132" viewBox="0 0 256 132" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -200,10 +212,16 @@ onMounted(async () => {
           </div>
         </div>
       </div>
-      <div class="flex flex-col items-center justify-between lg:flex-row">
-        <p class="text-2xl font-extralight">Read more about this car’s risks by unlocking the full report</p>
+      <div class="flex justify-center gap-1 mt-4 lg:hidden">
+        <button v-for="index in 3" :key="index" type="button" :aria-label="`Show vehicle history ${index}`"
+          class="w-2 h-2 border border-gray-500 rounded-full"
+          :class="currentSlide === index - 1 ? 'bg-[#FF7400] border-[#FF7400]' : 'bg-transparent'"
+          @click="goToSlide(index - 1)"></button>
+      </div>
+      <div class="flex flex-col items-center justify-between mt-5 lg:flex-row">
+        <p class="hidden text-2xl font-extralight lg:block">Read more about this car’s risks by unlocking the full report</p>
         <Includes-get-full-report :show-form="isAuthenticated"
-          get-full-report="Get full report"></Includes-get-full-report>
+          get-full-report="Download Report" class="w-full lg:w-72"></Includes-get-full-report>
       </div>
     </div>
   </report-wrapper>

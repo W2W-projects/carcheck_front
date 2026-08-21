@@ -13,7 +13,9 @@ useHead({
 
 <template>
   <div class="bg-checkout min-h-screen" style="--checkout-bg: url('/images/webp/bg-checkout.webp')">
-    <Header />
+    <header class="flex h-24 items-start px-8 pt-12 lg:h-32 lg:items-center lg:px-[9.12rem] lg:pt-0">
+      <img src="/svg/logo.svg" class="w-[5.25rem] lg:w-[9.15rem]" alt="Car Check">
+    </header>
     <main>
       <NuxtPage />
     </main>
@@ -33,10 +35,9 @@ useHead({
   left: 0;
   width: 100%;
   height: 100%;
-  background: var(--checkout-bg) no-repeat center center;
-  background-repeat: no-repeat !important;
-  background-size: 120%;
-  opacity: 2%;
+  background: var(--checkout-bg) no-repeat center / cover;
+  mix-blend-mode: color-burn;
+  opacity: 10%;
   z-index: 1;
 }
 

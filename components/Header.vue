@@ -21,8 +21,10 @@ const currentPath = computed(() => route.name);
 
 <template>
   <nav class="relative">
-    <div class="flex flex-wrap items-center justify-between mx-auto py-6 lg:py-10 px-4 sm:px-8 lg:px-[9.12rem]">
-      <AppLogo class="w-[7.5rem] sm:w-[9.15rem]" />
+    <div
+      class="flex flex-wrap items-center justify-between mx-auto sm:px-8 lg:py-10 lg:px-[9.12rem]"
+      :class="currentPath === 'report' ? 'px-8 pt-12 pb-8' : 'px-4 py-6'">
+      <AppLogo :class="currentPath === 'report' ? 'w-[5.25rem] sm:w-[9.15rem]' : 'w-[7.5rem] sm:w-[9.15rem]'" />
 
       <!-- Mobile toggle button with improved styling -->
       <button type="button"

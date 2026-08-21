@@ -8,14 +8,10 @@ const MOTVed = computed(() => carRegistrationSearchStore.motVed);
 const vehicleRegistration = computed(() => carRegistrationSearchStore.vehicleRegistration);
 
 const co2label = ref<number | null>(null);
+const co2Rail = ref<HTMLElement | null>(null);
 
 const toggleTableVisibility = () => {
   isTableVisible.value = !isTableVisible.value;
-};
-
-const getClass = (min: number, max: number) => {
-  if (co2label.value === null) return 'py-7';
-  return co2label.value >= min && co2label.value <= max ? 'border-4 border-black py-6' : 'py-7';
 };
 
 const isClassActive = (min: number, max: number) => {
@@ -31,6 +27,16 @@ const co2Bands = [
   { label: "J-K", min: 186, max: 225, color: "#F77725", co2Value: 225 },
   { label: "L", min: 226, max: Infinity, color: "#E01E20", co2Value: 226 },
 ];
+
+const activeBandIndex = computed(() => co2Bands.findIndex(band => isClassActive(band.min, band.max)));
+
+const centreCo2Band = () => {
+  const rail = co2Rail.value;
+  const band = rail?.firstElementChild?.children[activeBandIndex.value] as HTMLElement | undefined;
+  if (!rail || !band) return;
+
+  rail.scrollLeft = Math.max(0, band.offsetLeft - (rail.clientWidth - band.clientWidth) / 2);
+};
 
 function setCo2label(value: number | null) {
   co2label.value = value;
@@ -55,6 +61,8 @@ onMounted(async () => {
 
   if (emissions !== undefined && emissions !== null) {
     setCo2label(emissions);
+    await nextTick();
+    centreCo2Band();
   }
 });
 
@@ -90,8 +98,8 @@ const { isShowAble } = useIsShowAble();
 
   <report-wrapper class="py-9">
     <div class="flex items-center justify-between text-black ">
-      <div class="flex items-center space-x-4 cursor-pointer" @click.prevent="toggleTableVisibility">
-        <svg xmlns="http://www.w3.org/2000/svg" width="23" height="31" viewBox="0 0 23 31" fill="none">
+      <div class="flex items-center space-x-2 cursor-pointer md:space-x-4" @click.prevent="toggleTableVisibility">
+        <svg class="w-5 h-auto md:w-[23px]" xmlns="http://www.w3.org/2000/svg" width="23" height="31" viewBox="0 0 23 31" fill="none">
           <ellipse cx="11.6741" cy="7.22998" rx="6.00804" ry="6" fill="white" />
           <path
             d="M0 1.46634V2.32268H2.94835V1.46634C2.94835 0.656919 2.29055 0 1.48005 0C0.669546 0 0 0.656919 0 1.46634Z"
@@ -106,7 +114,7 @@ const { isShowAble } = useIsShowAble();
             d="M20.9315 30.2297C21.8007 30.2297 22.5173 29.5258 22.5173 28.646V27.1797H7.70503C7.81075 27.473 7.86948 27.7897 7.86948 28.1181C7.86948 28.9628 7.50534 29.7252 6.89453 30.2297H20.9315Z"
             fill="#0F1829" />
         </svg>
-        <p class="flex items-center justify-center text-2xl font-bold">TAX CALCULATION</p>
+        <p class="flex items-center justify-center text-xl font-bold md:text-2xl">TAX CALCULATION</p>
         <span>
           <img v-if="isTableVisible" src="/svg/chev-down.svg" alt="">
           <img v-else src="/svg/chev-up.svg" alt="">
@@ -114,7 +122,7 @@ const { isShowAble } = useIsShowAble();
       </div>
     </div>
 
-    <div v-show="isTableVisible" class="text-black space-y-14">
+    <div v-show="isTableVisible" class="space-y-6 text-black md:space-y-14">
       <div>
         <table class="w-full mt-8 text-black">
           <tbody>
@@ -127,7 +135,7 @@ const { isShowAble } = useIsShowAble();
               <td>{{ MOTVed?.VedCo2Band || 'N/A' }}</td>
             </tr>
             <tr>
-              <th>Single payment (12 months)</th>
+              <th><span class="md:hidden">Single payment</span><span class="hidden md:inline">Single payment (12 months)</span></th>
               <td>
                 <p v-if="isShowAble">
                   {{ getPrice('12month') }}
@@ -136,7 +144,7 @@ const { isShowAble } = useIsShowAble();
               </td>
             </tr>
             <tr>
-              <th>Single six month payment</th>
+              <th><span class="md:hidden">6 Month Payment</span><span class="hidden md:inline">Single six month payment</span></th>
 
               <td>
                 <p v-if="isShowAble">{{ getPrice('6month') }}
@@ -145,7 +153,7 @@ const { isShowAble } = useIsShowAble();
               </td>
             </tr>
             <tr>
-              <th>Total payable by 12 monthly installments</th>
+              <th><span class="md:hidden">12 Month Payment</span><span class="hidden md:inline">Total payable by 12 monthly installments</span></th>
               <td>
                 <p v-if="isShowAble">{{ getPrice('total') }}</p>
                 <Hashed contain="stars" v-else />
@@ -155,24 +163,27 @@ const { isShowAble } = useIsShowAble();
         </table>
       </div>
 
-      <div v-if="co2label !== null" class="relative flex items-center justify-center mt-20 lg:px-20">
-        <div class="grid grid-cols-7 gap-0 relative w-[70rem]">
-          <div v-for="band in co2Bands" :key="band.label" :class="getClass(band.min, band.max)"
-            :style="{ backgroundColor: band.color }"
-            class="relative flex flex-col items-center space-y-3 text-2xl text-center">
-
+      <div v-if="co2label !== null" ref="co2Rail"
+        class="relative -mx-9 w-[calc(100%+4.5rem)] overflow-x-auto py-[17px] scrollbar-hide md:mx-0 md:w-full">
+        <div class="flex w-max md:mx-auto">
+          <div v-for="band in co2Bands" :key="band.label" :style="{ backgroundColor: band.color }"
+            class="relative flex h-[133px] w-[94px] shrink-0 flex-col items-center text-center text-[23px] leading-none text-white md:w-40"
+            :class="isClassActive(band.min, band.max) ? 'border-[3px] border-[#0F1829]' : ''">
             <div v-if="isClassActive(band.min, band.max)"
-              class="hidden lg:block absolute -top-6 bg-black scale-[106%] text-white text-sm py-1 w-full text-center">
+              class="absolute -top-[17px] -left-[3px] flex h-[17px] w-[calc(100%+6px)] items-center justify-center bg-[#0F1829] text-[11px] font-bold leading-none text-white">
               YOUR LABEL
             </div>
-
-            <div class="w-full font-bold text-white border-b">{{ band.label }}</div>
-            <div class="text-white">{{ band.min }}</div>
-            <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M1 1L6 6" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-              <path d="M6 6L11 1" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <div class="text-white">{{ band.max === Infinity ? band.co2Value + "+" : band.max }}</div>
+            <div class="flex h-[45px] w-full shrink-0 items-center justify-center border-b border-white font-medium">
+              {{ band.label }}
+            </div>
+            <div class="flex flex-1 flex-col items-center justify-around py-2">
+              <span>{{ band.min }}</span>
+              <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L6 6" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M6 6L11 1" stroke="#292929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span>{{ band.max === Infinity ? band.co2Value + "+" : band.max }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -199,7 +210,7 @@ const { isShowAble } = useIsShowAble();
             <tr>
               <th>CO2 Label</th>
               <td v-if="MOTVed?.VedCo2Band">{{ MOTVed?.VedCo2Band }}</td>
-              <td v-else>{{ co2label ? getCo2LabelBand(co2label) : 'N/A' }}</td>
+              <td v-else>{{ co2label !== null ? getCo2LabelBand(co2label) : 'N/A' }}</td>
             </tr>
           </tbody>
         </table>
@@ -218,7 +229,7 @@ td {
   border: 1px solid #ddd;
   text-align: left;
   width: 50%;
-  padding: 0.68rem 1.5rem;
+  padding: 0.68rem 1rem;
 }
 
 /* tr:nth-child(even) {
@@ -229,7 +240,10 @@ td {
   text-transform: uppercase;
 }
 
-.grid {
-  grid-template-columns: repeat(7, 1fr);
+@media (min-width: 768px) {
+  th,
+  td {
+    padding-inline: 1.5rem;
+  }
 }
 </style>

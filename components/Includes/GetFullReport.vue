@@ -14,7 +14,6 @@ const form = reactive({
     password: '',
 });
 const getFullReportButton = ref('Get full report');
-const getFullReportY = ref('Get full report');
 
 // Props
 const props = defineProps({
@@ -31,6 +30,7 @@ const props = defineProps({
         default: true,
     }
 });
+const getFullReportY = ref(props.getFullReport);
 const { downloadReport: runDownload, isDownloading, isAnyDownloading, errorMessage: downloadError } = useDownloadReport();
 
 const downloadReport = async () => {
@@ -42,8 +42,8 @@ const downloadReport = async () => {
         return;
     }
 
-    getFullReportButton.value = "Get full report";
-    getFullReportY.value = "Get full report";
+    getFullReportButton.value = props.getFullReport;
+    getFullReportY.value = props.getFullReport;
     errorMessage.value = downloadError.value;
     if (errorMessage.value) {
         setTimeout(() => { errorMessage.value = ""; }, 3000);
@@ -63,11 +63,11 @@ const handleGetFullReport = async () => {
                 getFullReportY.value = "Submit";
             }
         } else {
-            getFullReportY.value = "Get full report";
+            getFullReportY.value = props.getFullReport;
             throw new Error('Failed to retrieve the report data.');
         }
     } catch (error) {
-        getFullReportY.value = "Get full report";
+        getFullReportY.value = props.getFullReport;
         errorMessage.value = error?.data?.message || 'Error occurred while verifying email.';
     }
 };
@@ -117,7 +117,7 @@ const handleLoginSubmit = async () => {
         const response = await authStore.makeLogin(form);
         if (!response.success) {
             errorMessage.value = "Login failed.";
-            getFullReportY.value = "Get full report";
+            getFullReportY.value = props.getFullReport;
         } else {
             let payload = response.payload;
             showPasswordField.value = false;
@@ -132,10 +132,10 @@ const handleLoginSubmit = async () => {
             } else {
                 navigateTo('payment/plans');
             }
-            getFullReportY.value = "Get full report";
+            getFullReportY.value = props.getFullReport;
         }
     } catch (error) {
-        getFullReportY.value = "Get full report";
+        getFullReportY.value = props.getFullReport;
         errorMessage.value = error?.data?.message || 'Something went wrong. Please try again!';
     }
 };

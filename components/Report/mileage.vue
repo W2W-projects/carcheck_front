@@ -71,9 +71,9 @@ function getChartHeight() {
 
 <template>
   <report-wrapper class="text-black pt-7">
-    <div class="flex items-center justify-between text-black ">
-      <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
-        <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div class="flex items-center justify-between text-black">
+      <div class="flex items-center space-x-2 cursor-pointer md:space-x-4" @click="toggleTableVisibility">
+        <svg class="w-6 h-6 md:w-[27px] md:h-[27px]" width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g clip-path="url(#clip0_230_6081)">
             <path fill-rule="evenodd" clip-rule="evenodd"
               d="M13.1011 0.832886C20.3434 0.832886 26.2022 6.69432 26.2022 13.9164C26.2022 21.1386 20.3434 27 13.1011 27C5.85881 27 0 21.1386 0 13.9164C0 6.69432 5.86929 0.832886 13.1011 0.832886Z"
@@ -101,7 +101,7 @@ function getChartHeight() {
           </defs>
         </svg>
 
-        <p class="flex items-center justify-center text-2xl font-bold">
+        <p class="flex items-center justify-center text-xl font-bold md:text-2xl">
           MILEAGE
         </p>
         <span>
@@ -119,9 +119,9 @@ function getChartHeight() {
     </div>
 
     <div v-show="isTableVisible" class="space-y-3">
-      <div class="flex flex-col pb-3 md:flex-row md:space-x-12 lg:px-8 mt-11">
+      <div class="grid grid-cols-[6rem_1fr] gap-y-3 pb-3 mt-4 md:flex md:flex-row md:space-x-12 lg:px-8 md:mt-11">
         <div class="text-black">
-          <h4 class="text-xl font-bold">
+          <h4 class="text-2xl font-bold leading-6 md:text-xl">
             Current <br /> Mileage
           </h4>
         </div>
@@ -129,7 +129,7 @@ function getChartHeight() {
         <!-- ---------------------------------------------------- -->
 
         <div>
-          <h3 class="text-2xl">
+          <h3 class="text-[30px] leading-8 text-[#FF7400] md:text-2xl md:text-black">
             {{ totalOdometerReading }}
           </h3>
           <small>
@@ -142,7 +142,7 @@ function getChartHeight() {
 
         <!-- ---------------------------------------------------- -->
 
-        <div class="flex flex-col flex-1">
+        <div class="flex flex-col flex-1 col-span-2 text-xs md:text-sm">
           <small><span class="text-gray-500">Total registration:</span> <b>{{ totalRegistrations }}</b></small>
           <small><span class="text-gray-500">Odometer:</span> <b>{{ totalOdometerReading }} In {{
             odometerUnitLabel }}</b></small>
@@ -151,13 +151,13 @@ function getChartHeight() {
 
         <!-- ---------------------------------------------------- -->
 
-        <div class="flex flex-col items-center justify-center flex-1 space-y-2">
-          <p class="font-thin text-gray-500" v-if="!hasSubscription?.active">Check for mileage anomalies in full report</p>
+        <div class="flex flex-col items-center justify-center flex-1 col-span-2 space-y-2">
+          <p class="hidden font-thin text-gray-500 md:block" v-if="!hasSubscription?.active">Check for mileage anomalies in full report</p>
           <Includes-get-full-report :show-form="isAuthenticated"
-            get-full-report="Get full report"></Includes-get-full-report>
+            get-full-report="Download Report" class="w-full"></Includes-get-full-report>
         </div>
       </div>
-      <div class="pt-10 border-t">
+      <div class="pt-6 md:pt-10 md:border-t">
         <client-only>
           <chart-line v-if="chartLoaded" :data="chartData" :unit="odometerUnitLabel" :height="getChartHeight()"
             width="100%" />

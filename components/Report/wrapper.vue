@@ -4,7 +4,7 @@ const props = defineProps<{
 }>()
 </script>
 <template>
-  <section class="xl:px-[8.25rem] px-5 max-w-screen-2xl mx-auto w-full" :class="props.class">
+  <section class="w-full max-w-screen-2xl px-9 mx-auto md:px-5 xl:px-[8.25rem]" :class="props.class">
     <slot />
   </section>
 </template>
