@@ -124,7 +124,8 @@
     </div>
   </div>
 
-  <CarDetailsModal v-if="selectedCar" v-model:isOpen="isModalOpen" :car="selectedCar" @download="downloadReport" />
+  <CarDetailsModal v-if="selectedCar" v-model:isOpen="isModalOpen" :car="selectedCar"
+    :is-downloading="isDownloading" :is-any-downloading="isAnyDownloading" @download="downloadReport" />
 </template>
 
 <script lang="ts" setup>
@@ -138,7 +139,7 @@ defineProps({
 });
 
 const { isModalOpen, selectedCar, showCarDetailsModal } = useCarDetails();
-const { downloadReport } = useDownloadReport();
+const { downloadReport, isDownloading, isAnyDownloading } = useDownloadReport();
 
 function handleSeeMoreClick(data: any) {
   showCarDetailsModal(data);

@@ -15,13 +15,6 @@ onMounted(async () => {
 });
 const motHistory = computed(() => store.decryptedMOTHistory);
 
-const data = ref([
-    { id: 1, first_name: "Jeanette", last_name: "Penddreth", gender: "Female", phone: 7878787878 },
-    { id: 2, first_name: "Giavani", last_name: "Frediani", gender: "Male", phone: 8878787878 },
-    { id: 3, first_name: "Noell", last_name: "Bea", gender: "Female", phone: 9878787878 },
-    { id: 4, first_name: "Willard", last_name: "Valek", gender: "Male", phone: 6878787878 }
-]);
-
 const handleExpandRow = (index) => {
     expandedRow.value = expandedRow.value === index ? null : index;
     showArrow.value = !showArrow.value;

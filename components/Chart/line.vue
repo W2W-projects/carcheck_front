@@ -3,20 +3,25 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, onBeforeUnmount, ref, computed, watch } from 'vue';
 import { Chart, LineController, LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
 
 // Define Props
-const props = defineProps<{
-  data: { label: string; value: number }[];
-  class?: string;
-  height?: number | string;
-  width?: number | string;
-}>();
+const props = withDefaults(
+  defineProps<{
+    data: { label: string; value: number }[];
+    class?: string;
+    height?: number | string;
+    width?: number | string;
+    unit?: string;
+  }>(),
+  { unit: 'miles' }
+);
 
 // Computed properties for chart data
 const labels = computed(() => props.data.map((item) => item.label));
 const values = computed(() => props.data.map((item) => item.value));
+const datasetLabel = computed(() => `Mileage (${props.unit})`);
 const height = computed(() => convertToNumber(props.height));
 const width = computed(() => convertToNumber(props.width));
 
@@ -31,17 +36,18 @@ Chart.register(LineController, LineElement, PointElement, CategoryScale, LinearS
 
 // Chart reference
 const chartCanvas = ref<HTMLCanvasElement | null>(null);
+let chart: Chart | null = null;
 
 // Initialize Chart on Mount
 onMounted(() => {
   if (chartCanvas.value) {
-    new Chart(chartCanvas.value, {
+    chart = new Chart(chartCanvas.value, {
       type: 'line',
       data: {
         labels: labels.value,
         datasets: [
           {
-            label: 'Mileage (km)',
+            label: datasetLabel.value,
             data: values.value,
             borderColor: '#F94144',
             backgroundColor: 'rgba(249, 65, 68, 0.2)',
@@ -58,7 +64,17 @@ onMounted(() => {
             beginAtZero: true,
             ticks: {
               callback: function (value) {
-                return `${value.toLocaleString()} mi`; // Format Y-axis values with currency
+                const miles = Number(value);
+                return miles ? `${miles / 1000}K` : '0';
+              },
+            },
+          },
+          x: {
+            ticks: {
+              callback(value) {
+                const label = labels.value[Number(value)];
+                const [, month, year] = label?.split('/') ?? [];
+                return month && year ? `${month}/${year}` : label;
               },
             },
           },
@@ -74,7 +90,7 @@ onMounted(() => {
                 return `Date: ${tooltipItems[0].label}`; // Show the label (Date or category)
               },
               label: function (tooltipItem) {
-                return `Mileage: ${tooltipItem.raw.toLocaleString()}`; // Show the value in currency format
+                return `Mileage: ${tooltipItem.raw.toLocaleString()} ${props.unit}`;
               },
             },
           },
@@ -82,6 +98,24 @@ onMounted(() => {
       },
     });
   }
+});
+
+watch(
+  [() => props.data, () => props.unit],
+  () => {
+    if (!chart) return;
+
+    chart.data.labels = labels.value;
+    chart.data.datasets[0].data = values.value;
+    chart.data.datasets[0].label = datasetLabel.value;
+    chart.update();
+  },
+  { deep: true }
+);
+
+onBeforeUnmount(() => {
+  chart?.destroy();
+  chart = null;
 });
 </script>
 

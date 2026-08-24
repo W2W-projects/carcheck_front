@@ -19,7 +19,7 @@
                             {{ carData.make || car?.details?.make }}
                             {{ carData.makeModel || car?.details?.makeModel }}
                         </h3>
-                        <p class="font-bold">{{ carData.vrm || car?.reg_number }}</p>
+                        <p class="font-bold">{{ car?.reg_number }}</p>
                     </div>
                 </div>
 
@@ -32,7 +32,7 @@
                                 <img :src="carData.vbrand_logo || car?.details?.vbrand_logo" alt="Brand Logo"
                                     class="h-8">
                             </div>
-                            <img :src="carData.imageUrl || car?.image" alt="Vehicle Image"
+                            <img :src="car?.image" alt="Vehicle Image"
                                 class="w-full h-auto rounded">
                         </div>
 
@@ -44,7 +44,7 @@
                                 </div>
                                 <div><span class="font-medium">Model:</span> {{ carData.makeModel ||
                                     car?.details?.makeModel }}</div>
-                                <div><span class="font-medium">VRM:</span> {{ carData.vrm || car?.reg_number }}</div>
+                                <div><span class="font-medium">VRM:</span> {{ car?.reg_number }}</div>
                                 <div><span class="font-medium">Year:</span> {{ carData.yearOfManufacture ||
                                     car?.details?.yearOfManufacture }}</div>
                                 <div><span class="font-medium">Fuel Type:</span> {{ carData.fuelType ||
@@ -97,9 +97,11 @@
                     <button @click="close" class="px-4 py-2 text-gray-800 bg-gray-200 rounded hover:bg-gray-300">
                         Close
                     </button>
-                    <button @click="downloadFullReport"
-                        class="px-4 py-2 text-white rounded bg-primary hover:bg-primary-dark">
-                        Download Full Report
+                    <button @click="downloadFullReport" :disabled="isAnyDownloading" :aria-busy="isDownloading"
+                        class="flex items-center justify-center gap-2 px-4 py-2 text-white rounded bg-brand hover:bg-brand-600 disabled:cursor-not-allowed"
+                        :class="isDownloading ? 'opacity-70' : isAnyDownloading ? 'opacity-80' : ''">
+                        <span v-if="isDownloading" class="w-5 h-5 border-2 rounded-full border-white/40 border-t-white animate-spin" aria-hidden="true"></span>
+                        {{ isDownloading ? 'Downloading...' : 'Download Full Report' }}
                     </button>
                 </div>
             </div>
@@ -116,6 +118,14 @@ const props = defineProps({
         required: true
     },
     isOpen: {
+        type: Boolean,
+        default: false
+    },
+    isDownloading: {
+        type: Boolean,
+        default: false
+    },
+    isAnyDownloading: {
         type: Boolean,
         default: false
     }

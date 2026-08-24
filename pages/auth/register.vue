@@ -1,10 +1,5 @@
 <script setup>
 const auth = useAuthStore();
-const { $listen } = useNuxtApp();
-
-$listen('user:loggedIn', (user) => {
-    console.log('A user was registered!', user)
-})
 
 definePageMeta({
     title: 'Create new user',
@@ -31,7 +26,6 @@ const registerButtonText = ref("Submit");
 const handleRegisterSubmit = async () => {
     registerButtonText.value = "Processing...";
     try {
-        console.log("form: ", form);
         if (form.password !== form.password_confirmation) {
             errors.value.password_confirmation = ['Passwords do not match'];
             return;

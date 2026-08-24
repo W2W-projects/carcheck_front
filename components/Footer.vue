@@ -85,14 +85,14 @@ const currentUser = computed(() => authStore.getCurrentUser);
               class="w-full py-2 px-3 sm:px-4 text-[#0F1829] bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your email" />
             <button
-              class="px-3 py-2 -ml-2 text-white rounded-md sm:px-4 sm:py-3 bg-primary hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              class="px-3 py-2 -ml-2 text-white rounded-md sm:px-4 sm:py-3 bg-brand hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
               <img src="assets/svg/arrow-right.svg" alt="Arrow Right" class="w-3 sm:w-4" />
             </button>
           </div>
           <div>
             <p class="mt-3 text-base font-thin text-gray-600 sm:mt-4 sm:text-lg">Get in touch with someone</p>
             <NuxtLink
-              class="inline-block px-5 py-1 mt-2 text-lg font-bold text-white rounded-sm sm:px-6 sm:text-xl bg-primary"
+              class="inline-block px-5 py-1 mt-2 text-lg font-bold text-white rounded-sm sm:px-6 sm:text-xl bg-brand"
               to="#check">
               Start Checking
             </NuxtLink>

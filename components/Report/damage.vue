@@ -43,14 +43,6 @@ const failedTests = computed(() => {
     : [];
 });
 
-// Helper function to get failure category (from FailureReasonList)
-function getFailureCategory(failureList) {
-  if (failureList && failureList.length > 0) {
-    return failureList.map(failure => failure).join(", ");
-  }
-  return "No failure category";
-}
-
 // Helper function to get failure type (from AnnotationDetailsList or custom)
 function getFailureType(annotationList) {
   if (annotationList && annotationList.length > 0) {
@@ -60,14 +52,23 @@ function getFailureType(annotationList) {
 }
 
 const { isShowAble } = useIsShowAble();
+const {
+  carousel,
+  currentSlide,
+  updateCurrentSlide,
+  goToSlide,
+  startDrag,
+  drag,
+  endDrag,
+} = useCarousel();
 </script>
 
 
 <template>
   <report-wrapper class="py-11">
     <div class="flex items-center justify-between text-black">
-      <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
-        <svg width="34" height="16" viewBox="0 0 34 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <div class="flex items-center space-x-2 cursor-pointer md:space-x-4" @click="toggleTableVisibility">
+        <svg class="w-6 h-auto md:w-[34px]" width="34" height="16" viewBox="0 0 34 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g clip-path="url(#clip0_245_136)">
             <path
               d="M24.861 12.5833L25.9599 10.4092H29.1462C28.519 9.65057 27.5692 9.16663 26.5044 9.16663C25.173 9.16663 24.0166 9.92849 23.4494 11.0386H8.76488C8.29082 10.4011 7.53071 9.98828 6.67335 9.98828C5.23577 9.98828 4.07129 11.1501 4.07129 12.5825C4.07129 14.0149 5.23658 15.1767 6.67335 15.1767C7.46831 15.1767 8.17899 14.8212 8.6563 14.2614L23.5199 14.2557C24.1074 15.2963 25.2257 15.996 26.5036 15.9984C27.5676 15.9968 28.5157 15.5136 29.143 14.7558H25.9583L24.8594 12.5817L24.861 12.5833ZM7.54124 14.1329H5.74711L4.85004 12.5833L5.74711 11.0345H7.54124L8.43831 12.5833L7.54124 14.1329Z"
@@ -84,7 +85,7 @@ const { isShowAble } = useIsShowAble();
         </svg>
 
 
-        <p class="flex items-center justify-center text-2xl font-bold">
+        <p class="flex items-center justify-center text-xl font-bold md:text-2xl">
           DAMAGE HISTORY
         </p>
         <span>
@@ -99,8 +100,8 @@ const { isShowAble } = useIsShowAble();
         <rect x="6.66602" y="2.66663" width="2.66667" height="2.66667" rx="1.33333" fill="white" />
       </svg>
     </div>
-    <div v-show="isTableVisible" class="flex flex-row w-full pt-4 space-x-8">
-      <div class="lg:w-2/3">
+    <div v-show="isTableVisible" class="flex flex-col w-full pt-4 md:flex-row md:space-x-8">
+      <div class="order-2 w-full md:order-1 lg:w-2/3">
         <!-- 
         <template v-if="subscription?.plan?.plan_code === '48h-basic-subscription' && hasSubscription?.onTrial">
           <table class="w-full text-black">
@@ -176,7 +177,7 @@ const { isShowAble } = useIsShowAble();
             <tbody>
               <tr>
                 <th>Date</th>
-                <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{
+                <td v-if="isShowAble">{{
                   test.TestDate }}</td>
                 <td v-else>
                   <Hashed contain="stars" />
@@ -184,15 +185,19 @@ const { isShowAble } = useIsShowAble();
               </tr>
               <tr>
                 <th>Category</th>
-                <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{
-                  getFailureCategory(test.FailureReasonList) }}</td>
+                <td v-if="isShowAble">
+                  <ul v-if="test.FailureReasonList?.length" class="list-disc space-y-2 pl-5">
+                    <li v-for="(category, categoryIndex) in test.FailureReasonList" :key="categoryIndex">{{ category }}</li>
+                  </ul>
+                  <span v-else>No failure category</span>
+                </td>
                 <td v-else>
                   <Hashed contain="stars" />
                 </td>
               </tr>
               <tr>
                 <th>Type</th>
-                <td v-if="hasSubscription?.active && (user.request_count > 0 || user.one_off_request_count > 0)">{{
+                <td v-if="isShowAble">{{
                   getFailureType(test.AnnotationDetailsList) }}</td>
                 <td v-else>
                   <Hashed contain="stars" />
@@ -268,8 +273,28 @@ const { isShowAble } = useIsShowAble();
           </h3>
         </div>
       </div>
-      <div class="justify-center hidden w-1/3 h-full md:flex">
-        <img src="/images/png/report/damage.png" alt="">
+      <div class="order-1 w-full mb-5 md:hidden">
+        <div ref="carousel"
+          class="flex w-[calc(100%+2.375rem)] h-[251px] overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide cursor-grab select-none active:cursor-grabbing"
+          @scroll.passive="updateCurrentSlide" @pointerdown="startDrag" @pointermove="drag" @pointerup="endDrag"
+          @pointercancel="endDrag" @pointerleave="endDrag">
+          <div class="relative h-[251px] min-w-full overflow-hidden snap-start">
+            <img src="/images/png/report/damage-mobile.png" alt="Rear damage locations"
+              class="absolute top-0 left-0 max-w-none w-[324px] h-[251px]">
+          </div>
+          <div class="relative flex items-start justify-center h-[251px] min-w-full overflow-hidden snap-start">
+            <img src="/images/png/report/damage.png" alt="Front damage locations" class="w-[158px] h-auto">
+          </div>
+        </div>
+        <div class="flex justify-center gap-1 mt-2">
+          <button v-for="index in 2" :key="index" type="button" :aria-label="`Show damage view ${index}`"
+            class="w-2 h-2 border border-gray-500 rounded-full"
+            :class="currentSlide === index - 1 ? 'bg-[#FF7400] border-[#FF7400]' : 'bg-transparent'"
+            @click="goToSlide(index - 1)"></button>
+        </div>
+      </div>
+      <div class="justify-center hidden w-1/3 h-full md:flex md:order-2">
+        <img src="/images/png/report/damage.png" alt="Damage locations">
       </div>
     </div>
   </report-wrapper>
@@ -288,11 +313,11 @@ td {
 
 th {
   font-weight: bold;
-  padding: 0.25rem 1.5rem;
+  padding: 0.5rem 1rem;
 }
 
 td {
-  padding: 0.68rem 1.5rem;
+  padding: 0.68rem 1rem;
 }
 
 /* tr:nth-child(even) {
@@ -301,5 +326,15 @@ td {
 
 .header-row th {
   text-transform: uppercase;
+}
+
+@media (min-width: 768px) {
+  th {
+    padding: 0.25rem 1.5rem;
+  }
+
+  td {
+    padding-inline: 1.5rem;
+  }
 }
 </style>

@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+
 export default {
   content: [
     "./components/**/*.{js,vue,ts}",
@@ -10,16 +11,14 @@ export default {
   ],
   theme: {
     extend: {
-      textColor: {
-        primary: "#FF7400",
+      colors: {
+        "brand": "#FF7400",
+        "primary-orange": "#FF7400"
       },
       backgroundColor: {
-        primary: "#FF7400",
+        "brand": "#FF7400",
+        "primary-orange": "#FF7400"
       },
-      borderColor: {
-        primary: "#FF7400",
-      },
-
       fontFamily: {
         roboto: ["Roboto", "sans-serif"],
       },

@@ -28,9 +28,7 @@ const startChecking = (plan) => {
 };
 
 onMounted(async () => {
-  if (!planStore.plansFetched) {
-    await planStore.fetchPlans();
-  }
+  await planStore.fetchPlans();
 });
 
 </script>
@@ -98,7 +96,7 @@ onMounted(async () => {
         </h1>
 
         <div v-if="plan.plan_code === 'premium'"
-          class="text-[0.5rem] font-bold bg-primary text-[#0F1829] px-2 py-[0.2rem] rounded">
+          class="text-[0.5rem] font-bold bg-brand text-[#0F1829] px-2 py-[0.2rem] rounded">
           Most popular
         </div>
       </div>

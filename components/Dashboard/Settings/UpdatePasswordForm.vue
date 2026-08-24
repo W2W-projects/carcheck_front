@@ -58,7 +58,7 @@ const updatePassword = async () => {
                     <label for="current-password" class="block text-sm font-medium text-gray-700">Current
                         Password</label>
                     <div class="flex items-center justify-around gap-x-2">
-                        <div class="flex items-center justify-center w-10 h-10 my-auto rounded-md bg-primary">
+                        <div class="flex items-center justify-center w-10 h-10 my-auto rounded-md bg-brand">
 
                             <img src="/assets/svg/lock-closed.svg" alt="">
 
@@ -74,7 +74,7 @@ const updatePassword = async () => {
                 <div>
                     <label for="new-password" class="block text-sm font-medium text-gray-700">New Password</label>
                     <div class="flex items-center justify-around gap-x-2">
-                        <div class="flex items-center justify-center w-10 h-10 my-auto rounded-md bg-primary">
+                        <div class="flex items-center justify-center w-10 h-10 my-auto rounded-md bg-brand">
 
                             <img src="/assets/svg/lock-closed.svg" alt="">
 
@@ -90,7 +90,7 @@ const updatePassword = async () => {
                     <label for="password-confirmation" class="block text-sm font-medium text-gray-700">Confirm
                         Password</label>
                     <div class="flex items-center justify-around gap-x-2">
-                        <div class="flex items-center justify-center w-10 h-10 my-auto rounded-md bg-primary">
+                        <div class="flex items-center justify-center w-10 h-10 my-auto rounded-md bg-brand">
 
                             <img src="/assets/svg/lock-closed.svg" alt="">
 
@@ -107,7 +107,7 @@ const updatePassword = async () => {
         <div class="flex items-center justify-between px-8 mt-5 mb-4 text-black md:mt-0 bg-primary-blue">
             <p class="hidden md:block">Update your password</p>
             <button
-                class="flex items-center justify-center space-x-2 text-white rounded bg-primary w-full md:w-[7.3125rem] h-[2.1875rem]"
+                class="flex items-center justify-center space-x-2 text-white rounded bg-brand w-full md:w-[7.3125rem] h-[2.1875rem]"
                 :disabled="processing">
                 <span>
                     <img src="/assets/svg/update.svg" alt="">

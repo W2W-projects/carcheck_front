@@ -21,8 +21,10 @@ const currentPath = computed(() => route.name);
 
 <template>
   <nav class="relative">
-    <div class="flex flex-wrap items-center justify-between mx-auto py-6 lg:py-10 px-4 sm:px-8 lg:px-[9.12rem]">
-      <AppLogo class="w-[7.5rem] sm:w-[9.15rem]" />
+    <div
+      class="flex flex-wrap items-center justify-between mx-auto sm:px-8 lg:py-10 lg:px-[9.12rem]"
+      :class="currentPath === 'report' ? 'px-8 pt-12 pb-8' : 'px-4 py-6'">
+      <AppLogo :class="currentPath === 'report' ? 'w-[5.25rem] sm:w-[9.15rem]' : 'w-[7.5rem] sm:w-[9.15rem]'" />
 
       <!-- Mobile toggle button with improved styling -->
       <button type="button"
@@ -74,7 +76,7 @@ const currentPath = computed(() => route.name);
           <div v-if="isAuthenticated" class="pb-4 mb-4 border-b border-gray-100">
             <div class="flex items-center mb-3 space-x-3">
               <div
-                class="flex items-center justify-center flex-shrink-0 w-10 h-10 overflow-hidden rounded-full bg-gradient-to-br from-blue-300 to-primary/30">
+                class="flex items-center justify-center flex-shrink-0 w-10 h-10 overflow-hidden rounded-full bg-gradient-to-br from-blue-300 to-brand/30">
                 <AppLogo class="w-full scale-90" />
               </div>
               <div class="flex-1 min-w-0">
@@ -90,12 +92,12 @@ const currentPath = computed(() => route.name);
             <!-- Account navigation buttons -->
             <div class="flex items-center space-x-2">
               <NuxtLink to="/dashboard"
-                class="inline-flex items-center justify-center flex-1 px-3 py-2 space-x-4 text-sm font-medium text-white transition-colors rounded-lg bg-primary hover:bg-primary/90 active:bg-primary/80">
+                class="inline-flex items-center justify-center flex-1 px-3 py-2 space-x-4 text-sm font-medium text-white transition-colors rounded-lg bg-brand hover:bg-brand/90 active:bg-brand/80">
                 <span>Dashboard</span>
                 <img src="/images/svg/icon-home.svg" class="w-3" alt="">
               </NuxtLink>
               <NuxtLink to="/dashboard/settings"
-                class="inline-flex items-center justify-center flex-1 px-3 py-2 space-x-4 text-sm font-medium text-gray-700 transition-colors rounded-lg bg-primary/50 hover:bg-gray-200 active:bg-gray-300">
+                class="inline-flex items-center justify-center flex-1 px-3 py-2 space-x-4 text-sm font-medium text-gray-700 transition-colors rounded-lg bg-brand/50 hover:bg-gray-200 active:bg-gray-300">
                 <span>Garage</span>
                 <img src="/images/svg/icon-garage.svg" class="w-5" alt="">
               </NuxtLink>
@@ -112,7 +114,7 @@ const currentPath = computed(() => route.name);
             <!-- Login/Register button when not authenticated -->
             <li v-if="!isAuthenticated" class="pb-3 mb-2 border-b border-gray-100">
               <NuxtLink to="/login"
-                class="flex justify-center items-center px-4 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 active:bg-primary/80 transition-colors">
+                class="flex justify-center items-center px-4 py-2.5 text-sm font-medium text-white bg-brand rounded-lg hover:bg-brand/90 active:bg-brand/80 transition-colors">
                 Login / Register
               </NuxtLink>
             </li>

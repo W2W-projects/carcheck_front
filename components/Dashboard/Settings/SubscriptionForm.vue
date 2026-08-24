@@ -19,9 +19,9 @@ function formatData(date) {
     return new Date(date).toLocaleDateString('en-US', options);
 }
 
-function cancelSubscription(id) {
+function cancelSubscription() {
     const email = user.value?.email;
-    useSubscriptionStore().cancelSubscription(id)
+    useSubscriptionStore().cancelSubscription()
         .then(() => {
             subscriptionStore.fetchUserSubscription(email);
         })
@@ -94,9 +94,9 @@ onMounted(() => {
                     </p>
                 </div>
 
-                <button @click="cancelSubscription(subscription?.original_id)" :disabled="processing"
+                <button @click="cancelSubscription()" :disabled="processing"
                     v-show="isSubscriptionActive"
-                    class="flex items-center justify-center w-full px-4 py-2 mt-6 mb-5 space-x-2 text-white bg-primary rounded-lg shadow-md md:mb-0 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                    class="flex items-center justify-center w-full px-4 py-2 mt-6 mb-5 space-x-2 text-white bg-brand rounded-lg shadow-md md:mb-0 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed">
                     <svg width="25" height="27" viewBox="0 0 25 27" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
                             d="M14.5331 2.93559C12.4067 2.36582 10.1677 2.36582 8.04124 2.93559C7.37221 3.11486 6.68452 2.71783 6.50526 2.04879C6.32599 1.37975 6.72302 0.692069 7.39206 0.512801C9.94379 -0.170934 12.6306 -0.170934 15.1823 0.512801C15.8513 0.692069 16.2484 1.37975 16.0691 2.04879C15.8898 2.71783 15.2021 3.11486 14.5331 2.93559ZM18.6314 3.30438C19.0503 2.75276 19.837 2.64516 20.3886 3.06404C21.9829 4.27466 23.3196 5.79117 24.3205 7.52478C24.6668 8.12462 24.4613 8.89163 23.8614 9.23795C23.2616 9.58427 22.4946 9.37875 22.1483 8.77891C21.3142 7.33423 20.2003 6.07048 18.8717 5.06163C18.3201 4.64274 18.2125 3.856 18.6314 3.30438ZM11.2872 6.27065C6.43871 6.27065 2.50826 10.2011 2.50826 15.0496C2.50826 19.898 6.43871 23.8285 11.2872 23.8285C16.1356 23.8285 20.0661 19.898 20.0661 15.0496C20.0661 10.2011 16.1356 6.27065 11.2872 6.27065ZM0 15.0496C0 8.81583 5.05344 3.76239 11.2872 3.76239C17.5209 3.76239 22.5743 8.81583 22.5743 15.0496C22.5743 21.2833 17.5209 26.3367 11.2872 26.3367C5.05344 26.3367 0 21.2833 0 15.0496ZM6.85315 10.6155C7.34292 10.1258 8.13699 10.1258 8.62676 10.6155L11.2872 13.276L13.9476 10.6155C14.4374 10.1258 15.2314 10.1258 15.7212 10.6155C16.211 11.1053 16.211 11.8994 15.7212 12.3892L13.0608 15.0496L15.7212 17.71C16.211 18.1997 16.211 18.9938 15.7212 19.4836C15.2314 19.9734 14.4374 19.9734 13.9476 19.4836L11.2872 16.8232L8.62676 19.4836C8.13699 19.9734 7.34292 19.9734 6.85315 19.4836C6.36338 18.9938 6.36338 18.1997 6.85315 17.71L9.51357 15.0496L6.85315 12.3892C6.36338 11.8994 6.36338 11.1053 6.85315 10.6155Z"

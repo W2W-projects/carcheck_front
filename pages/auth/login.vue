@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive } from 'vue';
-import { useCarStore } from '@/stores/car.js';
+import { useCarStore } from '@/stores/car';
 const auth = useAuthStore();
 const token = useTokenStore();
 const carStore = useCarStore();
@@ -67,7 +67,11 @@ const handleLoginSubmit = async () => {
             if (hasSubscription.active || user.request_count > 0) {
                 const reg_number = localStorage.getItem('reg_number');
                 reg_number ? navigateTo('/report') : navigateTo('/');
-                carStore.setRequestCounts(user.request_count);
+                carStore.setRequestCounts({
+                    request_count: user.request_count,
+                    one_off_request_count: user.one_off_request_count,
+                    request_count_trial: user.request_count_trial,
+                });
             } else {
                 navigateTo('/payment/plans');
             }
@@ -76,7 +80,6 @@ const handleLoginSubmit = async () => {
         }
     } catch (error) {
         errorMessage.value = error?.data?.message || error?.response?.message || "An unexpected error occurred while trying to log in.";
-        console.log("error:", errorMessage.value);
     } finally {
         loginSubmit.value = "Submit";
         isProcessing.value = false;
@@ -121,7 +124,7 @@ const navigateToForgotPassword = () => navigateTo('/auth/password-reset-token');
                         <ButtonPrimary :disabled="isProcessing">{{ loginSubmit }}</ButtonPrimary>
 
                         <NuxtLink to="/auth/password-reset-token">
-                            <small class="underline cursor-pointer text-primary hover:text-primary/90">
+                            <small class="underline cursor-pointer text-brand hover:text-brand/90">
                                 Forgot Password
                             </small>
                         </NuxtLink>

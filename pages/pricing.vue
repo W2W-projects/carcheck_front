@@ -46,10 +46,11 @@ function replaceText(text) {
 </script>
 <template>
   <!-- intro -->
-  <section class=" panoramic-bg">
+  <section class="panoramic-bg" style="background-image: url('/images/webp/panoramic-city.webp')">
     <div class="flex flex-wrap items-center justify-center mx-auto lg:px-[9.12rem] px-8 max-w-screen-2xl">
       <div
-        class="flex flex-col lg:items-start items-center lg:text-start text-center justify-center w-full h-[23rem] car-bg">
+        class="flex flex-col lg:items-start items-center lg:text-start text-center justify-center w-full h-[23rem] car-bg"
+        style="--car-bg: url('/images/webp/bg-pricing-car.webp')">
         <p class="text-[2.8rem] leading-tight tracking-wider -translate-y-4 text-black">Just choose
           <br />
           <span class="text-[3rem] tracking-wide"><b>the best report</b> for you</span>
@@ -102,7 +103,7 @@ function replaceText(text) {
           <th class="h-[3.26rem] flex items-center justify-center rounded flex-1 border border-black text-[#0F1829]">
             Basic report</th>
           <th
-            class="h-[3.26rem] flex items-center justify-center rounded flex-1 border border-primary bg-primary text-[#0F1829]">
+            class="h-[3.26rem] flex items-center justify-center rounded flex-1 border border-brand bg-brand text-[#0F1829]">
             Premium
             report</th>
           <th
@@ -190,7 +191,6 @@ function replaceText(text) {
 
 <style scoped>
 .panoramic-bg {
-  background-image: url("/images/webp/panoramic-city.webp");
   background-size: 100%;
   background-position: bottom;
   background-repeat: no-repeat;
@@ -198,7 +198,7 @@ function replaceText(text) {
 
 @media (min-width: 768px) {
   .car-bg {
-    background-image: url("/images/webp/bg-pricing-car.webp");
+    background-image: var(--car-bg);
     background-size: 65%;
     background-position: 103% 96%;
     background-repeat: no-repeat;

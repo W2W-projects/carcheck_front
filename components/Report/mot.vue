@@ -1,11 +1,5 @@
 <script lang="ts" setup>
 import { differenceInCalendarDays, parse } from 'date-fns';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import { Autoplay, Navigation, Pagination } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/vue';
-const modules = [Autoplay, Pagination, Navigation];
 
 import { useAuthStore } from '~/stores/auth';
 import { useSubscriptionStore } from '@/stores/subscription';
@@ -13,54 +7,34 @@ import { useSubscriptionStore } from '@/stores/subscription';
 const subscriptionStore = useSubscriptionStore();
 const hasSubscription = computed(() => subscriptionStore.hasSubscription);
 
-const totalMotChecks = ref(0);
-const failPercentage = ref(0);
-const lastMotDate = ref(null);
+
 const expiryDate = ref(null);
-const totalAdviceItems = ref(0);
-const totalFailedItems = ref(0);
-const longestPeriodBetweenTests = ref(0);
 const mostRecentMOT = ref(null);
 const clickedMotHistory = ref(0);
-const longestPeriodOutOfMot = ref(0);
-const slidesPerView = ref(0);
 const errorMessage = ref("");
 const isTableVisible = ref(true);
 const isAuthenticated = useAuthStore().isAuthenticated;
 
 const carRegistrationSearchStore = useCarRegistrationSearchStore();
+const { odometerReading, odometerLabel } = useOdometer();
 
-const motHistory = computed(() => {
-  if (!carRegistrationSearchStore.MOTHistory || carRegistrationSearchStore.MOTHistory.length === 0) {
-    return [];
-  }
+const summary = computed(() => carRegistrationSearchStore.MOTSummary);
 
-  let reversedHistory = [...carRegistrationSearchStore.MOTHistory].reverse();
+const motHistory = computed(() =>
+  [...(carRegistrationSearchStore.MOTHistory ?? [])].reverse()
+);
 
-  //filter for fail percentage
-  let failedItem = reversedHistory.filter((item) => {
-    return item.TestResult !== "Pass";
-  })
-  if (failedItem.length > 0) {
-    totalFailedItems.value = failedItem.length;
-    let failedRaw = failedItem.length / reversedHistory.length;
-    failPercentage.value = Math.round(failedRaw * 100);
-  }
+const totalMotChecks = computed(() => summary.value?.RecordCount ?? motHistory.value.length);
 
-  // advice item
-  let adviceCount = 0;
-  reversedHistory.forEach(item => {
-    if (item.AdvisoryNoticeCount > 0) {
-      adviceCount++;
-    }
-  });
-  totalAdviceItems.value = adviceCount;
+const lockedCount = computed(() => Math.max(totalMotChecks.value - motHistory.value.length, 0));
 
-  let locked = reversedHistory.filter((_, index) => isMOThistoryLocked(index));
-  let unlocked = reversedHistory.filter((_, index) => !isMOThistoryLocked(index));
+const failPercentage = computed(() => summary.value?.FailPercentage ?? 0);
+const totalFailedItems = computed(() => summary.value?.FailedTestCount ?? 0);
+const totalAdviceItems = computed(() => summary.value?.AdvisoryTestCount ?? 0);
+const longestPeriodBetweenTests = computed(() => summary.value?.LongestDaysBetweenTests ?? 0);
+const longestPeriodOutOfMot = computed(() => summary.value?.LongestDaysOutOfMot ?? 0);
 
-  return [...locked, ...unlocked];
-});
+const recordAt = (index: number) => motHistory.value[index - lockedCount.value] ?? null;
 
 const toggleTableVisibility = () => {
   isTableVisible.value = !isTableVisible.value;
@@ -68,107 +42,54 @@ const toggleTableVisibility = () => {
 
 onMounted(async () => {
   try {
-    await carRegistrationSearchStore.fetchMOTHistory();
-    if (motHistory.value && motHistory.value.length > 0) {
+    await Promise.all([
+      carRegistrationSearchStore.fetchMOTHistory(),
+      carRegistrationSearchStore.fetchMOTSummary(),
+    ]);
+
+    if (motHistory.value.length > 0) {
       expiryDate.value = motHistory.value[motHistory.value.length - 1]?.ExpiryDate || "";
-      lastMotDate.value = motHistory.value.length[0]?.TestDate || "";
-      totalMotChecks.value = motHistory.value.length;
-      mostRecentMOT.value = motHistory.value[0];
-      clickedMotHistory.value = 0;
-      calculateLongestPeriodBetTests(motHistory.value);
-      slidesPerView.value = motHistory.value.length;
-
       setDefaultMotRecord();
-
-      calculateLongestPeriodBetTests(motHistory.value);
-      calculateLongestDaysOutOfMOT();
-
     }
   } catch (error) {
     console.error('Error fetching MOTHistory:', error);
   }
 });
 
-const displayedMOTHistory = computed(() => {
-  return motHistory.value;
-});
-
 function isMOThistoryLocked(index: number) {
-  if (!motHistory.value || motHistory.value.length === 0) {
-    return true;
-  }
-
-  let hasSub = hasSubscription.value;
-  const isSubscribed =
-    hasSub.active &&
-    (hasSub.one_off_request_count > 0 || hasSub.request_count > 0 || hasSub.request_count_trial > 0);
-
-  const totalRecords = motHistory.value.length;
-
-  if (totalRecords <= 5) {
-    return false;
-  }
-
-  if (index >= totalRecords - 5) {
-    return false;
-  }
-
-  return !isSubscribed;
+  return recordAt(index) === null;
 }
 
 
-const navigationOptions = {
-  nextEl: '.swiper-button-custom-next',
-  prevEl: '.swiper-button-custom-prev',
-};
-
-let swiperInstance = null;
 let motHistoryIndex = ref(0);
 
-const onSwiper = (swiper) => {
-  swiperInstance = swiper;
-  swiper.slideTo(motHistoryIndex.value, 800);
+const scrollToCurrentMot = () => {
+  nextTick(() => document.getElementById(`mot-page-${motHistoryIndex.value}`)
+    ?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }));
 };
 
-const nextSlide = () => {
-  if (!motHistory.value || motHistory.value.length === 0) return; // Prevent errors
+const step = (direction: 1 | -1) => {
+  let index = motHistoryIndex.value + direction;
 
-  let nextIndex = motHistoryIndex.value + 1;
-
-  while (nextIndex < motHistory.value.length && isMOThistoryLocked(nextIndex)) {
-    nextIndex++; // Skip locked records
+  while (index >= 0 && index < totalMotChecks.value && isMOThistoryLocked(index)) {
+    index += direction;
   }
 
-  if (nextIndex < motHistory.value.length) {
-    motHistoryIndex.value = nextIndex;
-    clickedMotHistory.value = nextIndex;
-    mostRecentMOT.value = motHistory.value[nextIndex];
+  if (index >= 0 && index < totalMotChecks.value) {
+    selectSlot(index);
   }
 
-  if (swiperInstance) {
-    swiperInstance.slideTo(motHistoryIndex.value, 800);
-  }
+  scrollToCurrentMot();
 };
 
-const prevSlide = () => {
-  if (!motHistory.value || motHistory.value.length === 0) return; // Prevent errors
+const nextSlide = () => step(1);
+const prevSlide = () => step(-1);
 
-  let prevIndex = motHistoryIndex.value - 1;
-
-  while (prevIndex >= 0 && isMOThistoryLocked(prevIndex)) {
-    prevIndex--; // Skip locked records
-  }
-
-  if (prevIndex >= 0) {
-    motHistoryIndex.value = prevIndex;
-    clickedMotHistory.value = prevIndex;
-    mostRecentMOT.value = motHistory.value[prevIndex]; // Update table
-  }
-
-  if (swiperInstance) {
-    swiperInstance.slideTo(motHistoryIndex.value, 800);
-  }
-};
+function selectSlot(index: number) {
+  motHistoryIndex.value = index;
+  clickedMotHistory.value = index;
+  mostRecentMOT.value = recordAt(index);
+}
 
 function handleSliderIndexClick(index: number) {
   if (isMOThistoryLocked(index)) {
@@ -177,40 +98,14 @@ function handleSliderIndexClick(index: number) {
     return;
   }
 
-  motHistoryIndex.value = index;
-  clickedMotHistory.value = index;
-  mostRecentMOT.value = motHistory.value[index];
+  selectSlot(index);
+  scrollToCurrentMot();
 }
 
 function clearErrorMessage() {
   setTimeout(() => {
     errorMessage.value = null;
   }, 5000);
-}
-
-function calculateLongestPeriodBetTests(motHistory) {
-  if (!motHistory || motHistory.length < 2) return 0;
-  for (let i = 1; i < motHistory.length; i++) {
-
-    const prevTestDate = parse(motHistory[i - 1].TestDate, "dd/MM/yyyy", new Date());
-    const currentTestDate = parse(motHistory[i].TestDate, "dd/MM/yyyy", new Date());
-
-    const daysDifference = differenceInCalendarDays(currentTestDate, prevTestDate);
-    if (daysDifference > longestPeriodBetweenTests.value) {
-      longestPeriodBetweenTests.value = daysDifference;
-    }
-  }
-
-  return longestPeriodBetweenTests.value;
-}
-
-function calculateLongestDaysOutOfMOT() {
-  motHistory.value.forEach(item => {
-    if (Number(item.DaysOutOfMot) > longestPeriodOutOfMot.value) {
-      longestPeriodOutOfMot.value = Number(item.DaysOutOfMot);
-    }
-  });
-
 }
 
 function calculateDaysSinceLastTest(currentMOT) {
@@ -221,40 +116,21 @@ function calculateDaysSinceLastTest(currentMOT) {
 }
 
 function setDefaultMotRecord() {
-  if (!motHistory.value || motHistory.value.length === 0) return;
-
-  let hasSub = hasSubscription.value;
-  const isSubscribed =
-    hasSub.active &&
-    (hasSub.one_off_request_count > 0 || hasSub.request_count > 0 || hasSub.request_count_trial > 0);
-
-  // Determine the default index
-  if (!isSubscribed) {
-    if (motHistory.value.length > 5) {
-      motHistoryIndex.value = Math.max(motHistory.value.length - 5, 0);
-    } else {
-      motHistoryIndex.value = 0;
-    }
-  } else {
-    motHistoryIndex.value = 0;
-  }
-
-  mostRecentMOT.value = motHistory.value[motHistoryIndex.value];
-  clickedMotHistory.value = motHistoryIndex.value;
+  selectSlot(lockedCount.value);
 }
 </script>
 
 <template>
-  <report-wrapper>
-    <div class="flex flex-col items-center justify-between text-black md:flex-row">
-      <div class="flex items-center space-x-4 cursor-pointer" @click="toggleTableVisibility">
-        <svg width="23" height="28" viewBox="0 0 23 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <report-wrapper class="pt-8">
+    <div class="grid grid-cols-[1fr_auto] items-center gap-y-7 text-black md:flex md:flex-row md:justify-between">
+      <div class="flex items-center space-x-2 cursor-pointer md:space-x-4" @click="toggleTableVisibility">
+        <svg class="w-5 h-auto md:w-[23px]" width="23" height="28" viewBox="0 0 23 28" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
             d="M7.56511 21.1951H18.633V20.0436H7.56511V21.1951ZM18.633 14.4323H7.56511V15.5839H18.633V14.4323ZM18.633 8.53345H7.56511V9.82883H18.633V8.53345ZM4.15707 10.8446C4.23275 10.9205 4.33452 10.9625 4.4389 10.9625C4.45804 10.9625 4.47717 10.9607 4.49631 10.958C4.6207 10.9393 4.72943 10.8633 4.79119 10.7508L6.3108 7.97598C6.4204 7.77676 6.35168 7.52751 6.15684 7.41495C6.12813 7.39798 6.09769 7.3819 6.06638 7.3819H5.84718C5.74801 7.52573 5.66016 7.47391 5.60623 7.57308L4.34409 9.87528L3.32724 8.85684C3.16719 8.69693 2.91146 8.69961 2.75576 8.86399C2.60005 9.02837 2.60353 9.29102 2.76358 9.45093L4.15707 10.8446ZM20.3709 2.48981H19.3924C19.4045 2.63365 19.4176 2.53448 19.4298 2.57647L19.4898 2.75068L19.5107 2.80785L19.5141 2.80339C19.5185 2.81947 19.5202 2.83287 19.5246 2.84895L19.9491 4.30246C20.4301 4.58029 20.7354 5.08683 20.7354 5.68986L20.7353 23.6732C20.7353 24.5907 20.0873 25.5555 19.1948 25.5555H11.0918H2.98878C2.09632 25.5555 1.40045 24.5907 1.40045 23.6732L1.40054 5.68896C1.40054 5.12168 1.64236 4.63747 2.06858 4.35159L2.59831 2.52734C2.60527 2.50322 2.59223 2.63365 2.59918 2.48981H1.82415C0.80122 2.48981 9.50484e-05 3.22416 9.50484e-05 4.27655L0 25.0722C0 26.1246 0.801125 27.1377 1.82493 27.1377H20.4169C21.4416 27.1377 22.1349 26.1246 22.1349 25.0722L22.135 4.27655C22.135 3.22416 21.3956 2.48981 20.3709 2.48981ZM4.15707 22.2163C4.23275 22.2922 4.33452 22.3342 4.4389 22.3342C4.45804 22.3342 4.47717 22.3324 4.49631 22.3297C4.6207 22.311 4.72943 22.235 4.79119 22.1225L6.3108 19.3486C6.4204 19.1484 6.35168 18.8956 6.15684 18.783C5.96286 18.6705 5.71583 18.742 5.60623 18.9412L4.34409 21.2452L3.32724 20.2276C3.16719 20.0686 2.91146 20.0713 2.75576 20.2357C2.60005 20.4 2.60353 20.6627 2.76358 20.8226L4.15707 22.2163ZM4.15707 16.572C4.23275 16.6479 4.33452 16.6899 4.4389 16.6899C4.45804 16.6899 4.47717 16.6881 4.49631 16.6854C4.6207 16.6667 4.72943 16.5907 4.79119 16.4782L6.3108 13.7034C6.4204 13.5032 6.35168 13.2504 6.15684 13.1379C5.96286 13.0253 5.71583 13.0968 5.60623 13.296L4.34409 15.6L3.32724 14.5824C3.16719 14.4225 2.91146 14.4261 2.75576 14.5905C2.60005 14.7549 2.60353 15.0175 2.76358 15.1774L4.15707 16.572ZM4.29886 5.94268H17.7101C18.2407 5.94268 18.8252 5.35216 18.6713 4.79828L18.0989 3.01601C17.9354 2.44157 17.6683 2.05743 17.1377 2.05743H13.1878C13.0912 0.762043 12.1492 0 11.0045 0C9.85976 0 8.91772 0.762043 8.82117 2.05743H4.87121C4.34061 2.05743 4.07531 2.38172 3.91004 2.95883L3.33768 4.8626C3.18894 5.3611 3.76825 5.94268 4.29886 5.94268ZM11.0045 0.980024C11.6229 0.980024 12.1361 1.62593 12.2275 2.05743H9.7806C9.87368 1.62593 10.386 0.980024 11.0045 0.980024Z"
             fill="#0F1829" />
         </svg>
 
-        <p class="flex items-center justify-center text-2xl font-bold">
+        <p class="flex items-center justify-center text-xl font-bold md:text-2xl">
           MOT HISTORY
         </p>
         <span>
@@ -271,7 +147,7 @@ function setDefaultMotRecord() {
         </span>
       </div>
       <!-- ------------------------------- -->
-      <div class="flex items-center justify-center flex-1 space-x-4">
+      <div class="flex items-center justify-between order-3 col-span-2 space-x-4 md:order-none md:justify-center md:flex-1">
         <div>
           <p>Total MOT checks</p>
           <small><span class="font-extralight">Last MOT:</span> {{ mostRecentMOT ? mostRecentMOT['TestDate'] : ''
@@ -280,8 +156,8 @@ function setDefaultMotRecord() {
         <h3 class="text-3xl">{{ totalMotChecks }}</h3>
       </div>
       <!-- ------------------------------- -->
-      <div class="flex flex-col items-center justify-start flex-1 space-y-1">
-        <p v-if="!hasSubscription">Unlock more MOT reports on the <a href="#" class="underline">full report</a></p>
+      <div class="flex-col items-center justify-start flex-1 hidden space-y-1 md:flex">
+        <p v-if="!hasSubscription?.active">Unlock more MOT reports on the <a href="#" class="underline">full report</a></p>
         <Includes-get-full-report :show-form="isAuthenticated"
           get-full-report="Get full report"></Includes-get-full-report>
       </div>
@@ -296,10 +172,11 @@ function setDefaultMotRecord() {
     <div v-show="isTableVisible" class="w-full space-y-4 text-black">
       <div class="flex flex-col items-center justify-center lg:flex-row">
         <div class="relative w-full md:w-7/12 lg:w-1/3">
-          <chart-gauge v-if="failPercentage" :failRate="failPercentage" height="30" width="100%" />
-          <chart-gauge v-else :failRate="0" height="30" width="100%" />
+          <chart-gauge :fail-rate="failPercentage" :fail-count="totalFailedItems" :total-count="totalMotChecks" />
         </div>
-        <div class="flex-1 lg:pl-10">
+        <Includes-get-full-report :show-form="isAuthenticated" get-full-report="Download Report"
+          class="w-full mt-5 md:hidden"></Includes-get-full-report>
+        <div class="flex-1 w-full lg:pl-10">
           <table class="w-full mt-6 text-black">
             <thead>
               <tr class="header-row">
@@ -323,7 +200,7 @@ function setDefaultMotRecord() {
               </tr>
               <tr>
                 <th>Longest period between tests</th>
-                <td>{{ longestPeriodBetweenTests ?? "" }} Days</td>
+                <td>{{ longestPeriodBetweenTests }} Days</td>
               </tr>
               <tr>
                 <th>Longest period off test</th>
@@ -336,7 +213,7 @@ function setDefaultMotRecord() {
       <div class="flex items-center justify-between w-full lg:px-5">
         <div class="w-fit">
           <button @click="prevSlide"
-            class="w-8 h-8 border border-black items-center justify-center flex rounded hover:bg-[#FF7400] transition-colors duration-300">
+            class="flex items-center justify-center w-8 h-8 border border-[#0F1829] rounded hover:bg-[#FF7400] transition-colors duration-300">
             <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M6.16123 8.84323C6.06624 8.74836 6.01281 8.61965 6.0127 8.48539V8.22883C6.01425 8.09487 6.06746 7.96668 6.16123 7.87099L9.63161 4.40737C9.69499 4.34346 9.78128 4.30751 9.87129 4.30751C9.96131 4.30751 10.0476 4.34346 10.111 4.40737L10.5903 4.88674C10.6539 4.94896 10.6896 5.03413 10.6896 5.12305C10.6896 5.21196 10.6539 5.29713 10.5903 5.35936L7.58584 8.35711L10.5903 11.3549C10.6543 11.4183 10.6902 11.5045 10.6902 11.5946C10.6902 11.6846 10.6543 11.7709 10.5903 11.8342L10.111 12.3069C10.0476 12.3708 9.96131 12.4067 9.87129 12.4067C9.78128 12.4067 9.69499 12.3708 9.63161 12.3069L6.16123 8.84323Z"
@@ -344,14 +221,17 @@ function setDefaultMotRecord() {
             </svg>
           </button>
         </div>
-        <div class="w-[90%]">
-          <swiper :centeredSlides="false" :slidesPerView="slidesPerView" :autoplay="false" @swiper="onSwiper"
-            :navigation="navigationOptions" :modules="modules" class="mySwiper selection:py-6">
-            <swiper-slide v-for="(_, index) in totalMotChecks" :key="index"
-              @click.prevent="!isMOThistoryLocked(index) ? handleSliderIndexClick(index) : null" class="cursor-pointer">
-
-              <span v-if="isMOThistoryLocked(index)"
-                class="h-8 w-8 items-center justify-center flex rounded bg-[#FFA500]">
+        <div class="min-w-0 w-[90%] overflow-x-auto px-1 py-2">
+          <div class="flex items-center justify-between min-w-full gap-3 w-max">
+            <button v-for="(_, index) in totalMotChecks" :id="`mot-page-${index}`" :key="index" type="button"
+              class="flex items-center justify-center w-8 h-8 shrink-0 rounded cursor-pointer"
+              :class="isMOThistoryLocked(index)
+                ? 'bg-[#FFA500]'
+                : clickedMotHistory === index
+                  ? 'border border-[#FF7400] bg-[#FF7400] text-white'
+                  : 'border border-[#FF7400] text-[#FF7400]'"
+              @click="handleSliderIndexClick(index)">
+              <template v-if="isMOThistoryLocked(index)">
                 <!-- 🔒 Locked Icon -->
                 <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -363,20 +243,14 @@ function setDefaultMotRecord() {
                   <rect x="13.6807" y="14.6592" width="0.00985118" height="0.00985118" stroke="white"
                     stroke-width="2.25" stroke-linejoin="round" />
                 </svg>
-              </span>
-
-              <span v-else class="flex items-center justify-center w-8 h-8 text-sm border border-orange-300 rounded"
-                :class="(clickedMotHistory + 1 === index + 1) ? 'bg-[#FF7400] text-white' : 'text-primary'">
-                <!-- 🔓 Unlock Icon -->
-                #{{ index + 1 }}
-              </span>
-            </swiper-slide>
-
-          </swiper>
+              </template>
+              <span v-else class="text-sm">#{{ index + 1 }}</span>
+            </button>
+          </div>
         </div>
         <div class="w-fit">
           <button @click="nextSlide"
-            class="w-8 h-8 border border-black items-center justify-center flex rounded hover:bg-[#FF7400] transition-colors duration-300">
+            class="flex items-center justify-center w-8 h-8 border border-[#0F1829] rounded hover:bg-[#FF7400] transition-colors duration-300">
             <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M6.16123 8.84323C6.06624 8.74836 6.01281 8.61965 6.0127 8.48539V8.22883C6.01425 8.09487 6.06746 7.96668 6.16123 7.87099L9.63161 4.40737C9.69499 4.34346 9.78128 4.30751 9.87129 4.30751C9.96131 4.30751 10.0476 4.34346 10.111 4.40737L10.5903 4.88674C10.6539 4.94896 10.6896 5.03413 10.6896 5.12305C10.6896 5.21196 10.6539 5.29713 10.5903 5.35936L7.58584 8.35711L10.5903 11.3549C10.6543 11.4183 10.6902 11.5045 10.6902 11.5946C10.6902 11.6846 10.6543 11.7709 10.5903 11.8342L10.111 12.3069C10.0476 12.3708 9.96131 12.4067 9.87129 12.4067C9.78128 12.4067 9.69499 12.3708 9.63161 12.3069L6.16123 8.84323Z"
@@ -433,11 +307,11 @@ function setDefaultMotRecord() {
           </tr>
           <tr>
             <th>Odometer reading</th>
-            <td>{{ mostRecentMOT.OdometerReading }} miles</td>
+            <td>{{ odometerReading(mostRecentMOT) }} {{ odometerLabel(mostRecentMOT) }}</td>
           </tr>
           <tr>
             <th>Mileage since last pass</th>
-            <td>{{ mostRecentMOT.MileageSinceLastPass }} miles</td>
+            <td>{{ mostRecentMOT.MileageSinceLastPass }} {{ odometerLabel(mostRecentMOT) }}</td>
           </tr>
           <tr>
             <th>Days since last test</th>
@@ -445,11 +319,16 @@ function setDefaultMotRecord() {
           </tr>
           <tr>
             <th>Major failures</th>
-            <td>{{ mostRecentMOT.MajorFailures || 'None' }}</td>
+            <td>{{ mostRecentMOT.FailureReasonList?.length ? mostRecentMOT.FailureReasonList.join(', ') : 'None' }}</td>
           </tr>
           <tr>
             <th>Advisories</th>
-            <td>{{ mostRecentMOT.Advisories || 'None' }}</td>
+            <td>
+              <ul v-if="mostRecentMOT.AdvisoryNoticeList?.length" class="list-disc space-y-2 pl-5">
+                <li v-for="(advisory, index) in mostRecentMOT.AdvisoryNoticeList" :key="index">{{ advisory }}</li>
+              </ul>
+              <span v-else>None</span>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -472,15 +351,25 @@ td {
 
 th {
   font-weight: 500;
-  padding: 0.25rem 1.5rem;
+  padding: 0.5rem 1rem;
 }
 
 td {
-  padding: 0.68rem 1.5rem;
+  padding: 0.68rem 1rem;
   font-weight: 100;
 }
 
 /* tr:nth-child(even) {
   background-color: #f9f9f9;
 } */
+
+@media (min-width: 768px) {
+  th {
+    padding: 0.25rem 1.5rem;
+  }
+
+  td {
+    padding-inline: 1.5rem;
+  }
+}
 </style>

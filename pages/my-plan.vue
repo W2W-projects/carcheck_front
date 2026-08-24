@@ -39,10 +39,10 @@ function toggleModal() {
     showModal.value = !showModal.value;
 }
 
-async function cancelSubscription(original_id){
+async function cancelSubscription(){
     try {
         isLoading.value = true;
-        let response = await subscriptionStore.cancelSubscription(original_id);
+        let response = await subscriptionStore.cancelSubscription();
         if(response.success){
             currentSubscription.value = response.payload;
         }else{
@@ -72,7 +72,7 @@ async function cancelSubscription(original_id){
                 <p>Expiry date: {{ currentSubscription.ends_at }}</p>
                 <p>Status: {{ currentSubscription.status }}</p>
             </div>
-            <a href="#" v-on:click="cancelSubscription(currentSubscription.original_id)"
+            <a href="#" v-on:click="cancelSubscription()"
                 v-if="currentSubscription.status !=='cancelled'"
                 class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 Cancel

@@ -1,0 +1,16 @@
+{
+  "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "types": ["vite/client", "@pinia/nuxt", "pinia-plugin-persistedstate"]
+  },
+  "include": [
+    "stores/**/*.ts",
+    "services/apiService.ts",
+    "types/models.ts",
+    "composables/useCrypto.js",
+    "composables/useGenerateLocalstorageCode.js"
+  ],
+  "exclude": [".nuxt", ".output", "node_modules"]
+}

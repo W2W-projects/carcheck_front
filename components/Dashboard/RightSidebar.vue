@@ -32,7 +32,7 @@ const full_history = [
   <div class="flex lg:flex-col bg-city bg-white text-black h-full lg:w-[20rem] w-full rounded-lg px-9 py-7 relative">
     <div class="w-3/6 overflow-hidden lg:w-auto">
       <div>
-        <p class="uppercase text-primary text-[0.85rem] font-bold">
+        <p class="uppercase text-brand text-[0.85rem] font-bold">
           make a NEW CHECK
         </p>
         <p class="text-3xl leading-8">

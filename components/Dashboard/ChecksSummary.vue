@@ -1,13 +1,8 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue';
 import { useCarStore } from '@/stores/car';
+import type { RequestCounts } from '~/types/models';
 const carStore = useCarStore();
-
-interface CheckRequests {
-  one_off_request_count: 0;
-  request_count: 0;
-  request_count_trial: 0;
-}
 
 onMounted(async () => {
   try {
@@ -16,7 +11,7 @@ onMounted(async () => {
     console.error("Failed to fetch data on mounted:", error);
   }
 });
-const userRequestCountLeft = computed<CheckRequests>(() => carStore.requestCounts);
+const userRequestCountLeft = computed<RequestCounts>(() => carStore.requestCounts);
 </script>
 
 <template>

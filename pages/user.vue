@@ -1,11 +1,10 @@
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref, computed, reactive } from 'vue';
 import { useAuthStore } from '~/stores/auth';
 const auth = useAuthStore();
 const cars = ref([]);
 const isLoading = ref(false);
-const showModal = ref(false);
-const isOpen = ref(false)
+const modal = ref<HTMLDialogElement | null>(null);
 
 definePageMeta({
     layout: 'admin',
@@ -28,10 +27,6 @@ onMounted(async () => {
         isLoading.value = false;
     }
 });
-
-function toggleModal() {
-    showModal.value = !showModal.value;
-}
 
 </script>
 
@@ -63,8 +58,7 @@ function toggleModal() {
                                         <td class="px-4 py-3"><b>dfdf</b></td>
                                         <td class="px-4 py-3">dfdf sdf</td>
                                         <td class="px-4 py-3">
-                                            <!-- <button @click="toggleModal">Edit</button> -->
-                                            <UButton label="Open" @click="isOpen = true" />
+                                            <button type="button" @click="modal?.showModal()">Open</button>
                                         </td>
                                     </tr>
 
@@ -76,19 +70,18 @@ function toggleModal() {
             </div>
         </div>
         <!-- Main modal -->
-        <UModal v-model="isOpen" prevent-close>
-            <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-500' }">
-                <template #header>
+        <dialog ref="modal" aria-labelledby="user-profile-title" class="w-full max-w-lg rounded-lg p-0 backdrop:bg-black/50">
+            <div class="divide-y divide-gray-100 dark:divide-gray-500">
+                <header class="p-4">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
+                        <h3 id="user-profile-title" class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
                             User Profile
                         </h3>
-                        <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1"
-                            @click="isOpen = false" />
+                        <button type="button" aria-label="Close" class="-my-1 p-2" @click="modal?.close()">&times;</button>
                     </div>
-                </template>
+                </header>
 
-                    <form class="max-w-sm mx-auto">
+                    <form class="max-w-sm mx-auto p-4">
                         <div class="mb-2">
                             <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
                             <input type="email" id="email" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="name@carcheck.com" required />
@@ -110,10 +103,10 @@ function toggleModal() {
                         <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Register new account</button>
                     </form>
 
-                <template #footer>
+                <footer class="p-4">
                     <Placeholder class="h-8" />
-                </template>
-            </UCard>
-        </UModal>
+                </footer>
+            </div>
+        </dialog>
     </div>
 </template>

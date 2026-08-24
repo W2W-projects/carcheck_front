@@ -1,25 +1,10 @@
 <script setup>
+import featureData from '@/static/features.json';
 
-const addedMoreFeatures = reactive([]);
+const addedMoreFeatures = ref([]);
 const isAddMoreBtnHidden = ref(false);
-const moreFeatures = async () => {
-  addedMoreFeatures.push(
-    {
-      "id": 12, "title": "Write off", "icon": "warning.svg"
-    },
-    {
-      "id": 7, "title": "Finance History", "icon": "financial-history.svg"
-    },
-    {
-      "id": 8, "title": "Tax Records", "icon": "tax-records.svg"
-    },
-    {
-      "id": 9, "title": "Technical data", "icon": "technicaldata.svg"
-    },
-    {
-      "id": 10, "title": "Vehicle Valuation", "icon": "valuation.svg"
-    }
-  );
+const moreFeatures = () => {
+  addedMoreFeatures.value = featureData.features.more;
   isAddMoreBtnHidden.value = true;
 }
 </script>
@@ -27,6 +12,7 @@ const moreFeatures = async () => {
 <template>
   <div
     class="lg:px-[9.12rem] overflow-hidden px-4 section-1-bg lg:min-h-[41rem] flex flex-col items-start w-full pt-[5.4%] mx-auto max-w-screen-2xl"
+    style="--section-bg: url('/png/car-find-section-bg-1.png')"
     id="check">
     <h1 class="lg:text-[2.5rem] text-xl text-[#0F1829] md:leading-[2.8rem]">Check it before
       <br />
@@ -54,7 +40,7 @@ const moreFeatures = async () => {
 </template>
 <style scoped>
 .section-1-bg {
-  background-image: url("/png/car-find-section-bg-1.png");
+  background-image: var(--section-bg);
   background-size: cover;
   background-position: 0% 79%;
 }

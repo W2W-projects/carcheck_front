@@ -54,7 +54,8 @@ onMounted(() => {
 
     <!-- Left Sidebar (Hides on small screens) -->
     <div
-      class="bg-panoramic bg-white rounded-lg w-full lg:w-[16.44rem] shadow-sm hidden lg:flex flex-col justify-between px-4 pt-4 pb-8">
+      class="bg-panoramic bg-white rounded-lg w-full lg:w-[16.44rem] shadow-sm hidden lg:flex flex-col justify-between px-4 pt-4 pb-8"
+      style="background-image: url('/images/webp/panoramic-city.webp')">
       <!-- Profile Section - unchanged -->
       <div class="space-y-6">
         <!-- Profile Image with Half Circle - unchanged -->
@@ -63,7 +64,7 @@ onMounted(() => {
           <div
             class="absolute -top-2 left-1/2 transform -translate-x-1/2 w-[11.875rem] h-[11.875rem] rounded-b-full overflow-hidden">
             <div class="w-full h-1/2"></div>
-            <div class="w-full bg-primary h-1/2"></div>
+            <div class="w-full bg-brand h-1/2"></div>
           </div>
           <!-- Profile Image - unchanged -->
           <div
@@ -87,7 +88,7 @@ onMounted(() => {
           <img src="/images/webp/front-facing-car.webp" alt="Car" class="w-full scale-110">
         </div>
         <button
-          class="flex items-center justify-center w-[9.02rem] h-[1.75rem] text-[0.93956rem] py-1 mx-auto space-x-2 font-medium text-black transition-colors bg-white border rounded border-primary hover:bg-red-50">
+          class="flex items-center justify-center w-[9.02rem] h-[1.75rem] text-[0.93956rem] py-1 mx-auto space-x-2 font-medium text-black transition-colors bg-white border rounded border-brand hover:bg-red-50">
           <span>Edit details</span>
         </button>
       </div>
@@ -100,7 +101,7 @@ onMounted(() => {
           class="flex items-end px-1.5 sm:px-3 md:px-6 cursor-pointer gap-x-1 sm:gap-x-2 whitespace-nowrap"
           @click="changeTab(index)">
           <span class="flex items-center justify-center px-0.5 sm:px-1 pt-4 sm:pt-6 md:pt-10 pb-1 rounded-b"
-            :class="{ 'text-black bg-primary': activeTab === index, 'text-gray-400': activeTab !== index }">
+            :class="{ 'text-black bg-brand': activeTab === index, 'text-gray-400': activeTab !== index }">
             <img :src="`/assets/svg/${tab.icon}`" alt="" class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5">
           </span>
 
@@ -119,7 +120,7 @@ onMounted(() => {
       </div>
 
       <!-- Footer Accent -->
-      <div class="w-full h-2 rounded-b-lg bg-primary"></div>
+      <div class="w-full h-2 rounded-b-lg bg-brand"></div>
     </div>
   </div>
 </template>
@@ -127,7 +128,6 @@ onMounted(() => {
 
 <style>
 .bg-panoramic {
-  background-image: url('/images/webp/panoramic-city.webp');
   background-size: 80rem;
   background-position: 40% 85%;
   background-repeat: no-repeat;

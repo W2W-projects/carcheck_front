@@ -1,9 +1,7 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue';
 
-import { useSubscriptionStore } from '@/stores/subscription';
-const subscriptionStore = useSubscriptionStore();
-const hasSubscription = computed(() => subscriptionStore.hasSubscription);
+const { isShowAble } = useIsShowAble();
 
 
 onMounted(async () => {
@@ -27,7 +25,7 @@ definePageMeta({
 </script>
 
 <template>
-  <div class="bg-[#EEEEEE] ">
+  <div class="report-page overflow-x-hidden bg-[#EEEEEE]">
 
     <!-- Section 1 -->
     <ReportSection1 id="report" />
@@ -48,7 +46,7 @@ definePageMeta({
     <ReportFinance />
 
     <!-- Section 8 -->
-    <ReportValuation v-if="hasSubscription.active" />
+    <ReportValuation v-if="isShowAble" />
     <ReportValuationDemo v-else />
 
     <!-- Section 9 -->
@@ -66,4 +64,8 @@ definePageMeta({
 
 </template>
 
-<style></style>
+<style scoped>
+.report-page {
+  font-family: 'TT Norms Pro', sans-serif;
+}
+</style>

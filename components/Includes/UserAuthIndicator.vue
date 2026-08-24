@@ -38,7 +38,7 @@ onUnmounted(() => {
 <template>
   <div class="relative" @click.stop>
     <div class="flex items-center justify-center py-1 px-1 pr-2 rounded space-x-2 transition-all hover:cursor-pointer"
-      :class="[dropdownOpen ? 'bg-primary' : 'bg-gray-300']" @click="toggleDropdown">
+      :class="[dropdownOpen ? 'bg-brand' : 'bg-gray-300']" @click="toggleDropdown">
       <div class="w-9 h-9 rounded overflow-hidden">
         <img src="/images/placeholder/user-icon.png" class="w-full" alt="">
       </div>

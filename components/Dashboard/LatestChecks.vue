@@ -32,12 +32,22 @@ onMounted(async () => {
 
 <template>
     <div class="space-y-4">
-        <!-- Loading State - Improved for mobile -->
-        <div v-if="isLoading" class="py-6 text-center sm:py-8">
-            <div
-                class="inline-block w-5 h-5 border-2 rounded-full sm:w-6 sm:h-6 border-t-primary border-primary-light animate-spin">
+        <div v-if="isLoading" class="grid grid-cols-1 gap-3 sm:gap-4 xs:grid-cols-2 md:grid-cols-3" role="status"
+            aria-label="Loading recent checks">
+            <div v-for="item in 3" :key="item"
+                class="h-[12.5rem] rounded-xl bg-white px-[1.7rem] py-[1.25rem]">
+                <div class="flex justify-between">
+                    <UtilitiesSkeleton class="w-20 h-3" />
+                    <UtilitiesSkeleton class="w-8 h-3" />
+                </div>
+                <UtilitiesSkeleton class="w-32 h-20 mx-auto mt-4" />
+                <div class="flex justify-between mt-4">
+                    <UtilitiesSkeleton class="w-12 h-3" />
+                    <UtilitiesSkeleton class="w-12 h-3" />
+                    <UtilitiesSkeleton class="w-12 h-3" />
+                </div>
             </div>
-            <p class="mt-2 text-[0.85rem] sm:text-[0.9rem]">Fetching your recent checks...</p>
+            <span class="sr-only">Loading recent checks...</span>
         </div>
 
         <!-- Car Grid - Responsive layout improved -->

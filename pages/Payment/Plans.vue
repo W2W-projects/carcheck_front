@@ -47,14 +47,12 @@ onMounted(async () => {
     showLoader.value = true;
     await planStore.fetchPlans();
 
-    // plans
     plans.value = planStore.plans
         .map(item => ({
             ...item,
             price: (parseFloat(item.amount_premium) / 100).toFixed(2)
         }))
         .filter(item => item.status === "active");
-    // unactive plan
     planInactive.value = planStore.plans
         .map(item => ({
             ...item,
@@ -68,7 +66,24 @@ onMounted(async () => {
 
 <template>
     <div class="bg-[#D9D9D9] py-20">
-        <UtilitiesLoadingSpinner v-if="showLoader" />
+        <div v-if="showLoader" class="px-10 md:px-40" role="status" aria-label="Loading plans">
+            <div class="flex items-center justify-between">
+                <div class="space-y-3">
+                    <UtilitiesSkeleton class="w-40 h-5" />
+                    <UtilitiesSkeleton class="w-52 h-7" />
+                </div>
+                <UtilitiesSkeleton class="w-48 h-11" />
+            </div>
+            <div class="grid max-w-5xl grid-cols-1 gap-8 mx-auto mt-10 md:grid-cols-3">
+                <div v-for="item in 3" :key="item" class="p-6 space-y-5 bg-white rounded-xl">
+                    <UtilitiesSkeleton class="w-32 h-5" />
+                    <UtilitiesSkeleton class="w-24 h-10" />
+                    <UtilitiesSkeleton class="w-full h-10" />
+                    <UtilitiesSkeleton v-for="line in 5" :key="line" class="w-full h-4" />
+                </div>
+            </div>
+            <span class="sr-only">Loading plans...</span>
+        </div>
         <div class="flex flex-row items-center justify-between px-10 md:px-40" v-else>
             <div>
                 <h3 class="text-2xl text-gray-800 w-52 text-start">We have the best</h3>
@@ -83,7 +98,6 @@ onMounted(async () => {
         </div>
 
         <div class="flex flex-col items-center justify-center gap-4 px-32 mt-10 md:flex-row md:gap-8">
-            <!-- single offer payment  -->
             <div v-if="hasSubscription?.active" v-for="plan in planInactive" :key="plan.plan_code"
                 @click="selectPlan(plan)" :class="{
                     'bg-[#0F1829] text-white': selectedPlan === plan.plan_code,

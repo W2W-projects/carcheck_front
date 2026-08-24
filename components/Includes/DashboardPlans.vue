@@ -47,14 +47,13 @@ const confirmCancellation = () => {
 };
 
 const cancelSubscription = async () => {
-  if (!subscription.value?.original_id) {
+  if (!subscription.value) {
     console.error("Invalid subscription data.");
     return;
   }
 
   try {
-    const response = await subscriptionStore.cancelSubscription(subscription.value.original_id);
-    console.log("Subscription canceled:", response);
+    await subscriptionStore.cancelSubscription();
     subscriptionStore.setCurrentSubscription(null);
   } catch (error) {
     responseMessage.value = error.data?.message;
