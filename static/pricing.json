@@ -1,0 +1,137 @@
+[
+    {
+        "title": "Vehicle Information",
+        "basic": {
+            "type": "check",
+            "value": true
+        },
+        "premium": {
+            "type": "check",
+            "value": true
+        },
+        "expert": {
+            "type": "check",
+            "value": true
+        }
+    },
+    {
+        "title": "Mileage Check",
+        "basic": {
+            "type": "check",
+            "value": true
+        },
+        "premium": {
+            "type": "check",
+            "value": true
+        },
+        "expert": {
+            "type": "check",
+            "value": true
+        }
+    },
+    {
+        "title": "MoT History",
+        "basic": {
+            "type": "check",
+            "value": true
+        },
+        "premium": {
+            "type": "check",
+            "value": true
+        },
+        "expert": {
+            "type": "check",
+            "value": true
+        }
+    },
+    {
+        "title": "Valuation Details",
+        "basic": {
+            "type": "check",
+            "value": true
+        },
+        "premium": {
+            "type": "check",
+            "value": true
+        },
+        "expert": {
+            "type": "check",
+            "value": true
+        }
+    },
+    {
+        "title": "Tax Calculation",
+        "basic": {
+            "type": "check",
+            "value": true
+        },
+        "premium": {
+            "type": "check",
+            "value": true
+        },
+        "expert": {
+            "type": "check",
+            "value": true
+        }
+    },
+    {
+        "title": "Finance Check",
+        "basic": {
+            "type": "check",
+            "value": false
+        },
+        "premium": {
+            "type": "check",
+            "value": true
+        },
+        "expert": {
+            "type": "check",
+            "value": true
+        }
+    },
+    {
+        "title": "Write Off Record",
+        "basic": {
+            "type": "check",
+            "value": false
+        },
+        "premium": {
+            "type": "check",
+            "value": true
+        },
+        "expert": {
+            "type": "check",
+            "value": true
+        }
+    },
+    {
+        "title": "Theft Report",
+        "basic": {
+            "type": "check",
+            "value": false
+        },
+        "premium": {
+            "type": "check",
+            "value": true
+        },
+        "expert": {
+            "type": "check",
+            "value": true
+        }
+    },
+    {
+        "title": "Plate Changes",
+        "basic": {
+            "type": "check",
+            "value": false
+        },
+        "premium": {
+            "type": "check",
+            "value": true
+        },
+        "expert": {
+            "type": "check",
+            "value": true
+        }
+    }
+]

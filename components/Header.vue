@@ -1,64 +1,192 @@
 <script setup>
+import SearchBar from "~/components/SearchBar.vue";
+
+import { ref } from 'vue';
+
+const isMenuOpen = ref(false);
+
+function toggleMenu() {
+  isMenuOpen.value = !isMenuOpen.value;
+}
 const token = useTokenStore();
 const auth = useAuthStore();
+
+const isAuthenticated = computed(() => {
+  return auth.getCurrentUser;
+});
+
+const route = useRoute();
+const currentPath = computed(() => route.name);
 </script>
 
 <template>
-  <nav class="border-gray-150 dark:bg-gray-900 dark:border-gray-700 shadow">
-    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-      <AppLogo />
+  <nav class="relative">
+    <div
+      class="flex flex-wrap items-center justify-between mx-auto sm:px-8 lg:py-10 lg:px-[9.12rem]"
+      :class="currentPath === 'report' ? 'px-8 pt-12 pb-8' : 'px-4 py-6'">
+      <AppLogo :class="currentPath === 'report' ? 'w-[5.25rem] sm:w-[9.15rem]' : 'w-[7.5rem] sm:w-[9.15rem]'" />
 
-      <div class="flex md:order-2 space-x-2 ">
-        
-        <HeaderSearch></HeaderSearch>
+      <!-- Mobile toggle button with improved styling -->
+      <button type="button"
+        class="inline-flex items-center justify-center w-10 h-10 p-2 text-gray-700 rounded-lg md:hidden focus:outline-none"
+        aria-controls="navbar-cta" aria-expanded="false" @click="toggleMenu">
+        <span class="sr-only">Toggle menu</span>
+        <svg v-if="!isMenuOpen" class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+          viewBox="0 0 17 14">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M1 1h15M1 7h15M1 13h15" />
+        </svg>
+        <svg v-else class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+          viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
 
-        <template v-if="!token.getStatus">
-          <NuxtLink to="/auth/login" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 
-            font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 
-            dark:focus:ring-blue-800">Login</NuxtLink>
-
-          <NuxtLink to="/auth/register" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 
-            font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 
-            dark:focus:ring-blue-800">Register</NuxtLink>
-        </template>
-        <template v-else>
-          <button @click.prevent="auth.logout" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 
-            font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 
-            dark:focus:ring-blue-800">Logout</button>
-        </template>
-
-        <button data-collapse-toggle="navbar-cta" type="button"
-          class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-          aria-controls="navbar-cta" aria-expanded="false">
-          <span class="sr-only">Open main menu</span>
-          <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M1 1h15M1 7h15M1 13h15" />
-          </svg>
-        </button>
-      </div>
-      <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-cta">
+      <!-- Desktop navigation (unchanged) -->
+      <div class="items-center justify-between hidden w-auto md:flex">
         <ul
-          class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+          class="flex items-center font-medium space-x-8 lg:space-x-[2.8rem] rtl:space-x-reverse text-black text-xl tracking-wide">
           <li>
-            <NuxtLink to="/"
-              class="block py-2 px-3 md:p-0 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:dark:text-blue-500"
-              aria-current="page">Home</NuxtLink>
+            <NuxtLink to="/how-it-works" class="p-0 hover:text-orange-500">How It Works</NuxtLink>
           </li>
           <li>
-            <a href="#"
-              class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">About</a>
+            <NuxtLink to="/about" class="p-0 hover:text-orange-500">About Us</NuxtLink>
           </li>
-          <li>
-            <a href="#"
-              class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Services</a>
+          <li v-show="currentPath !== 'pricing'">
+            <NuxtLink href="/pricing" class="p-0 hover:text-orange-500">Pricing</NuxtLink>
           </li>
-          <li>
-            <a href="#"
-              class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
+          <li v-show="currentPath !== 'report'">
+            <NuxtLink href="/report" class="p-0 hover:text-orange-500">Reports</NuxtLink>
+          </li>
+          <li class="flex items-center space-x-4">
+            <includes-user-auth-indicator v-show="isAuthenticated" />
+            <SearchBar width="w-[16.5rem]" input-height="h-[2.35rem]" />
           </li>
         </ul>
       </div>
+
+      <!-- Mobile menu (enhanced) -->
+      <transition enter-active-class="transition duration-200 ease-out" enter-from-class="translate-y-1 opacity-0"
+        enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-150 ease-in"
+        leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
+        <div v-if="isMenuOpen"
+          class="absolute left-0 right-0 z-50 w-full px-4 py-3 bg-white border-t border-gray-100 rounded-b-lg shadow-lg top-full md:hidden">
+
+          <!-- User account section (when logged in) -->
+          <div v-if="isAuthenticated" class="pb-4 mb-4 border-b border-gray-100">
+            <div class="flex items-center mb-3 space-x-3">
+              <div
+                class="flex items-center justify-center flex-shrink-0 w-10 h-10 overflow-hidden rounded-full bg-gradient-to-br from-blue-300 to-brand/30">
+                <AppLogo class="w-full scale-90" />
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">
+                  {{ auth.getCurrentUser?.first_name || auth.getCurrentUser?.name || 'Account' }}
+                </p>
+                <p class="text-xs text-gray-500 truncate">
+                  {{ auth.getCurrentUser?.email || '' }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Account navigation buttons -->
+            <div class="flex items-center space-x-2">
+              <NuxtLink to="/dashboard"
+                class="inline-flex items-center justify-center flex-1 px-3 py-2 space-x-4 text-sm font-medium text-white transition-colors rounded-lg bg-brand hover:bg-brand/90 active:bg-brand/80">
+                <span>Dashboard</span>
+                <img src="/images/svg/icon-home.svg" class="w-3" alt="">
+              </NuxtLink>
+              <NuxtLink to="/dashboard/settings"
+                class="inline-flex items-center justify-center flex-1 px-3 py-2 space-x-4 text-sm font-medium text-gray-700 transition-colors rounded-lg bg-brand/50 hover:bg-gray-200 active:bg-gray-300">
+                <span>Garage</span>
+                <img src="/images/svg/icon-garage.svg" class="w-5" alt="">
+              </NuxtLink>
+            </div>
+          </div>
+
+          <!-- Search bar visible at top of mobile menu -->
+          <div class="w-full pb-4 mb-4 border-b border-gray-100">
+            <SearchBar width="w-full" input-height="h-[2.35rem]" />
+          </div>
+
+          <!-- Mobile navigation links -->
+          <ul class="flex flex-col w-full gap-2 font-medium text-black">
+            <!-- Login/Register button when not authenticated -->
+            <li v-if="!isAuthenticated" class="pb-3 mb-2 border-b border-gray-100">
+              <NuxtLink to="/login"
+                class="flex justify-center items-center px-4 py-2.5 text-sm font-medium text-white bg-brand rounded-lg hover:bg-brand/90 active:bg-brand/80 transition-colors">
+                Login / Register
+              </NuxtLink>
+            </li>
+
+            <!-- Regular navigation items -->
+            <li>
+              <NuxtLink to="/how-it-works"
+                class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-50 active:bg-gray-100">
+                <span class="text-lg">How It Works</span>
+                <svg class="w-4 h-4 ml-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                    clip-rule="evenodd" />
+                </svg>
+              </NuxtLink>
+            </li>
+
+            <li>
+              <NuxtLink to="/about"
+                class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-50 active:bg-gray-100">
+                <span class="text-lg">About Us</span>
+                <svg class="w-4 h-4 ml-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                    clip-rule="evenodd" />
+                </svg>
+              </NuxtLink>
+            </li>
+
+            <li v-show="currentPath !== 'pricing'">
+              <NuxtLink href="/pricing"
+                class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-50 active:bg-gray-100">
+                <span class="text-lg">Pricing</span>
+                <svg class="w-4 h-4 ml-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                    clip-rule="evenodd" />
+                </svg>
+              </NuxtLink>
+            </li>
+
+            <li v-show="currentPath !== 'report'">
+              <NuxtLink href="/report"
+                class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-50 active:bg-gray-100">
+                <span class="text-lg">Reports</span>
+                <svg class="w-4 h-4 ml-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                    clip-rule="evenodd" />
+                </svg>
+              </NuxtLink>
+            </li>
+          </ul>
+
+          <!-- Logout button for mobile (when authenticated) -->
+          <div v-if="isAuthenticated" class="pt-4 mt-4 border-t border-gray-100">
+            <button @click="auth.logout"
+              class="flex items-center justify-center w-full px-3 py-2 text-sm font-medium text-gray-700 transition-colors bg-gray-100 rounded-lg hover:bg-gray-200 active:bg-gray-300">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                class="w-4 h-4 mr-2 text-gray-500">
+                <path fill-rule="evenodd"
+                  d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z"
+                  clip-rule="evenodd" />
+                <path fill-rule="evenodd"
+                  d="M19 10a.75.75 0 00-.75-.75H8.704l1.048-.943a.75.75 0 10-1.004-1.114l-2.5 2.25a.75.75 0 000 1.114l2.5 2.25a.75.75 0 101.004-1.114l-1.048-.943h9.546A.75.75 0 0019 10z"
+                  clip-rule="evenodd" />
+              </svg>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </transition>
     </div>
   </nav>
 </template>
