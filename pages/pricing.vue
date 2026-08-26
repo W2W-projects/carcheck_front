@@ -46,18 +46,21 @@ function replaceText(text) {
 </script>
 <template>
   <!-- intro -->
-  <section class="panoramic-bg" style="background-image: url('/images/webp/panoramic-city.webp')">
-    <div class="flex flex-wrap items-center justify-center mx-auto lg:px-[9.12rem] px-8 max-w-screen-2xl">
+  <section class="panoramic-bg pricing-hero" style="background-image: url('/images/webp/panoramic-city.webp')">
+    <div class="pricing-mobile-city" aria-hidden="true">
+      <img src="/images/webp/panoramic-city.webp" alt="">
+    </div>
+    <div class="pricing-hero-shell flex flex-wrap items-center justify-center mx-auto lg:px-[9.12rem] px-8 max-w-screen-2xl">
       <div
-        class="flex flex-col lg:items-start items-center lg:text-start text-center justify-center w-full h-[23rem] car-bg"
+        class="pricing-hero-content flex flex-col lg:items-start items-center lg:text-start text-center justify-center w-full h-[23rem] car-bg"
         style="--car-bg: url('/images/webp/bg-pricing-car.webp')">
-        <p class="text-[2.8rem] leading-tight tracking-wider -translate-y-4 text-black">Just choose
-          <br />
-          <span class="text-[3rem] tracking-wide"><b>the best report</b> for you</span>
-        </p>
-        <div class="flex flex-col items-center justify-center space-y-4 -translate-y-4">
-          <p class="text-[1.8rem] tracking-wider text-[#2464A6]">We run the checks</p>
-          <div class="mx-auto">
+        <h1 class="pricing-hero-title text-[2.8rem] leading-tight tracking-wider -translate-y-4 text-black">
+          <span>Just choose</span><br class="hidden md:block">
+          <span class="text-[3rem] tracking-wide"><strong>the best report</strong> <span class="pricing-title-tail">for you</span></span>
+        </h1>
+        <div class="pricing-hero-run flex flex-col items-center justify-center space-y-4 -translate-y-4">
+          <p class="pricing-hero-subtitle text-[1.8rem] tracking-wider text-[#2464A6]">We run the checks</p>
+          <div class="pricing-hero-arrow mx-auto">
             <svg class="animate-pulse" width="48" height="62" viewBox="0 0 48 62" fill="none"
               xmlns="http://www.w3.org/2000/svg">
               <path
@@ -72,6 +75,7 @@ function replaceText(text) {
             </svg>
           </div>
         </div>
+        <img class="pricing-hero-car" src="/images/webp/bg-pricing-car.webp" alt="">
       </div>
     </div>
   </section>
@@ -194,6 +198,126 @@ function replaceText(text) {
   background-size: 100%;
   background-position: bottom;
   background-repeat: no-repeat;
+}
+
+.pricing-mobile-city,
+.pricing-hero-car {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .pricing-hero {
+    position: relative;
+    z-index: 0;
+    height: 115cqw;
+    container-type: inline-size;
+    background-image: none !important;
+  }
+
+  .pricing-mobile-city {
+    position: absolute;
+    z-index: -1;
+    top: -75.556cqw;
+    left: 0;
+    display: block;
+    width: 100cqw;
+    height: 214.722cqw;
+    overflow: hidden;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    opacity: .09;
+  }
+
+  .pricing-mobile-city img {
+    position: absolute;
+    top: -47.9%;
+    left: -109.17%;
+    width: 556.67%;
+    height: 172.79%;
+    max-width: none;
+  }
+
+  .pricing-hero-shell {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+  }
+
+  .pricing-hero-content {
+    position: relative;
+    display: block;
+    height: 100%;
+    text-align: left;
+  }
+
+  .pricing-hero-title {
+    position: absolute;
+    top: 13.611cqw;
+    left: 8.889cqw;
+    width: 78.333cqw;
+    margin: 0;
+    transform: none;
+    color: #141414;
+    font-size: 10.017cqw;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 0;
+  }
+
+  .pricing-hero-title > span {
+    display: block;
+    font-size: inherit;
+    letter-spacing: inherit;
+  }
+
+  .pricing-hero-title strong {
+    font-weight: 800;
+  }
+
+  .pricing-title-tail {
+    display: block;
+  }
+
+  .pricing-hero-run {
+    position: absolute;
+    top: 51.667cqw;
+    left: 8.889cqw;
+    display: block;
+    margin: 0;
+    transform: none;
+  }
+
+  .pricing-hero-subtitle {
+    margin: 0;
+    color: #2464a6;
+    font-size: 7.794cqw;
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+
+  .pricing-hero-arrow {
+    width: 13.333cqw;
+    height: 17.222cqw;
+    margin: 6.667cqw 0 0 .278cqw;
+  }
+
+  .pricing-hero-arrow svg {
+    width: 100%;
+    height: 100%;
+    animation: none;
+  }
+
+  .pricing-hero-car {
+    position: absolute;
+    top: 72.778cqw;
+    left: 3.898cqw;
+    display: block;
+    width: 92.164cqw;
+    height: 40.485cqw;
+    max-width: none;
+  }
 }
 
 @media (min-width: 768px) {

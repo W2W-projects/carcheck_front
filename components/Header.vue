@@ -23,13 +23,13 @@ const currentPath = computed(() => route.name);
   <nav class="relative index-header-container">
     <div
       class="flex flex-wrap items-center justify-between mx-auto sm:px-8 lg:py-10 lg:px-[9.12rem]"
-      :class="currentPath === 'report' ? 'px-8 pt-12 pb-8' : currentPath === 'index' ? 'home-header md:py-6' : 'px-4 py-6'">
-      <AppLogo :class="currentPath === 'report' ? 'w-[5.25rem] sm:w-[9.15rem]' : currentPath === 'index' ? 'h-[7.5cqw] w-[23.38cqw] md:h-auto md:w-[9.15rem]' : 'w-[7.5rem] sm:w-[9.15rem]'" />
+      :class="currentPath === 'report' ? 'px-8 pt-12 pb-8' : currentPath === 'index' ? 'home-header md:py-6' : currentPath === 'pricing' ? 'pricing-header md:px-8 md:py-6' : 'px-4 py-6'">
+      <AppLogo :class="currentPath === 'report' ? 'w-[5.25rem] sm:w-[9.15rem]' : currentPath === 'index' ? 'h-[7.5cqw] w-[23.38cqw] md:h-auto md:w-[9.15rem]' : currentPath === 'pricing' ? 'h-[7.5cqw] w-[23.38cqw] md:h-auto md:w-[9.15rem]' : 'w-[7.5rem] sm:w-[9.15rem]'" />
 
       <!-- Mobile toggle button with improved styling -->
       <button type="button"
         class="inline-flex items-center text-gray-700 rounded-lg md:hidden focus:outline-none"
-        :class="currentPath === 'index' ? 'home-menu-button justify-start p-0' : 'h-10 w-10 justify-center p-2'"
+        :class="currentPath === 'index' ? 'home-menu-button justify-start p-0' : currentPath === 'pricing' ? 'pricing-menu-button justify-start p-0' : 'h-10 w-10 justify-center p-2'"
         aria-controls="navbar-cta" :aria-expanded="isMenuOpen" @click="toggleMenu">
         <span class="sr-only">Toggle menu</span>
         <img v-if="!isMenuOpen && currentPath === 'index'" src="/images/home/menu.svg" class="home-menu-icon"
@@ -196,6 +196,7 @@ const currentPath = computed(() => route.name);
 
 <style scoped>
 .index-header-container {
+  z-index: 1;
   container-type: inline-size;
 }
 
@@ -203,5 +204,8 @@ const currentPath = computed(() => route.name);
   .home-header { padding: 13.333cqw 8.889cqw 6.111cqw; }
   .home-menu-button { width: 11.111cqw; height: 7.5cqw; }
   .home-menu-icon { width: 7.361cqw; height: 5.278cqw; transform: translateY(0.278cqw); }
+  .pricing-header { padding: 13.333cqw 12.778cqw 0 8.889cqw; }
+  .pricing-menu-button { width: 7.361cqw; height: 5.278cqw; }
+  .pricing-menu-button svg { width: 100%; height: 100%; }
 }
 </style>
