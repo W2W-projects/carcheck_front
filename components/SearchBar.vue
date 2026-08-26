@@ -28,6 +28,10 @@ const props = defineProps({
   focused: {
     type: Boolean,
     default: false
+  },
+  hero: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -43,7 +47,7 @@ definePageMeta({
   // middleware: ['guest'],
 });
 const vehicle_number = ref("");
-const placeholderText = ref("AB12 CDE");
+const placeholderText = computed(() => props.hero ? "0000 0000" : "AB12 CDE");
 
 const errors = ref([]);
 const errorMessage = ref("");
@@ -146,19 +150,25 @@ const searchForCarReg = async () => {
 
 <template>
   <div class="relative">
-    <div class="relative bg-[#FFA500] py-1 pl-2 pr-1 rounded flex flex-row items-center space-x-1"
-      :class="[props.width]">
-      <div class="flex items-center justify-center mr-[0.27rem]">
-        <img src="assets/svg/uk-flag.svg" class="w-8" alt="UK Flag" />
+    <div class="relative bg-[#FFA500] flex flex-row items-center"
+      :class="[props.width, props.hero ? 'hero-search-shell' : 'py-1 pl-2 pr-1 rounded space-x-1']">
+      <div class="flex items-center justify-center"
+        :class="props.hero ? 'hero-flag absolute' : 'mr-[0.27rem]'">
+        <img src="assets/svg/uk-flag.svg" :class="props.hero ? 'size-full' : 'w-8'" alt="UK Flag" />
       </div>
       <input @keyup.enter="searchForCarReg" @blur="handleBlur" type="text" :placeholder="placeholderText"
         v-model="processedCarNumber" required
-        class="block w-full placeholder-opacity-low custom-spacing py-4 transition text-2xl text-white bg-[#FFA500] rounded hover:bg-brand md:hover:bg-transparent md:hover:text-white md:dark:hover:text-white ring-0 active:ring-0 active:border-transparent outline-none focus:outline-none active:outline-none focus:border-transparent"
-        :class="[props.inputHeight, props.inputWidth]" :autofocus="props.focused" ref="searchInput" />
+        class="block placeholder-opacity-low custom-spacing transition bg-[#FFA500] ring-0 active:ring-0 active:border-transparent outline-none focus:outline-none active:outline-none focus:border-transparent"
+        :class="props.hero
+          ? 'hero-placeholder hero-input absolute border-[#0F1829] py-0 font-bold leading-none text-[#0F1829]'
+          : ['w-full py-4 text-2xl text-white rounded hover:bg-brand md:hover:bg-transparent md:hover:text-white md:dark:hover:text-white', props.inputHeight, props.inputWidth]"
+        :autofocus="props.focused" ref="searchInput" />
 
       <button @click="searchForCarReg"
-        class="bg-[#0F1829] py-1 px-2 rounded hover:bg-white md:hover:bg-transparent md:dark:hover:bg-transparent"
-        :class="[props.buttonClass]">
+        class="bg-[#0F1829] flex items-center justify-center"
+        :class="props.hero
+          ? 'hero-button absolute'
+          : ['py-1 px-2 rounded hover:bg-white md:hover:bg-transparent md:dark:hover:bg-transparent', props.buttonClass]">
         <template v-if="searchTxt">
           <svg class="w-5 h-5 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"
             viewBox="0 0 24 24">
@@ -168,7 +178,8 @@ const searchForCarReg = async () => {
             </path>
           </svg>
         </template>
-        <img src="assets/svg/search-icon.svg" v-else class="w-full" alt="Search car registration" />
+        <img src="assets/svg/search-icon.svg" v-else :class="props.hero ? 'hero-search-icon' : 'w-full'"
+          alt="Search car registration" />
       </button>
     </div>
     <div v-if="errors && errors.length && Array.isArray(errors)"
@@ -195,6 +206,33 @@ const searchForCarReg = async () => {
 
 .placeholder-opacity-low::placeholder {
   opacity: 0.5;
+}
+
+.hero-placeholder::placeholder {
+  opacity: 0.08;
+}
+
+@media screen and (max-width: 767px) {
+  .hero-search-shell { height: 13.892cqw; border-radius: 1.27cqw; }
+  .hero-flag { left: 3.085cqw; top: 4.174cqw; width: 5.807cqw; height: 6.944cqw; }
+  .hero-input {
+    left: 11.796cqw;
+    top: 1.27cqw;
+    width: 55.532cqw;
+    height: 11.252cqw;
+    border-width: 0.181cqw;
+    border-radius: 1.27cqw;
+    padding-inline: 6.667cqw;
+    font-size: 7.094cqw;
+  }
+  .hero-button {
+    left: 68.44cqw;
+    top: 1.429cqw;
+    width: 10.828cqw;
+    height: 11.032cqw;
+    border-radius: 0.817cqw;
+  }
+  .hero-search-icon { width: 7.151cqw; height: 7.151cqw; }
 }
 
 .alert {

@@ -20,19 +20,22 @@ const currentPath = computed(() => route.name);
 </script>
 
 <template>
-  <nav class="relative">
+  <nav class="relative index-header-container">
     <div
       class="flex flex-wrap items-center justify-between mx-auto sm:px-8 lg:py-10 lg:px-[9.12rem]"
-      :class="currentPath === 'report' ? 'px-8 pt-12 pb-8' : 'px-4 py-6'">
-      <AppLogo :class="currentPath === 'report' ? 'w-[5.25rem] sm:w-[9.15rem]' : 'w-[7.5rem] sm:w-[9.15rem]'" />
+      :class="currentPath === 'report' ? 'px-8 pt-12 pb-8' : currentPath === 'index' ? 'home-header md:py-6' : 'px-4 py-6'">
+      <AppLogo :class="currentPath === 'report' ? 'w-[5.25rem] sm:w-[9.15rem]' : currentPath === 'index' ? 'h-[7.5cqw] w-[23.38cqw] md:h-auto md:w-[9.15rem]' : 'w-[7.5rem] sm:w-[9.15rem]'" />
 
       <!-- Mobile toggle button with improved styling -->
       <button type="button"
-        class="inline-flex items-center justify-center w-10 h-10 p-2 text-gray-700 rounded-lg md:hidden focus:outline-none"
-        aria-controls="navbar-cta" aria-expanded="false" @click="toggleMenu">
+        class="inline-flex items-center text-gray-700 rounded-lg md:hidden focus:outline-none"
+        :class="currentPath === 'index' ? 'home-menu-button justify-start p-0' : 'h-10 w-10 justify-center p-2'"
+        aria-controls="navbar-cta" :aria-expanded="isMenuOpen" @click="toggleMenu">
         <span class="sr-only">Toggle menu</span>
-        <svg v-if="!isMenuOpen" class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-          viewBox="0 0 17 14">
+        <img v-if="!isMenuOpen && currentPath === 'index'" src="/images/home/menu.svg" class="home-menu-icon"
+          alt="" aria-hidden="true" />
+        <svg v-else-if="!isMenuOpen" class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+          fill="none" viewBox="0 0 17 14">
           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M1 1h15M1 7h15M1 13h15" />
         </svg>
@@ -190,3 +193,15 @@ const currentPath = computed(() => route.name);
     </div>
   </nav>
 </template>
+
+<style scoped>
+.index-header-container {
+  container-type: inline-size;
+}
+
+@media screen and (max-width: 767px) {
+  .home-header { padding: 13.333cqw 8.889cqw 6.111cqw; }
+  .home-menu-button { width: 11.111cqw; height: 7.5cqw; }
+  .home-menu-icon { width: 7.361cqw; height: 5.278cqw; transform: translateY(0.278cqw); }
+}
+</style>
