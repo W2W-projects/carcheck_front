@@ -287,6 +287,14 @@ import 'swiper/css/pagination';
   max-width: none;
 }
 
+.need-swiper :deep(.swiper-slide-active) .need-photo img {
+  filter: none;
+}
+
+.need-swiper :deep(.swiper-slide-next) .need-photo img {
+  filter: blur(2px);
+}
+
 .need-copy {
   position: absolute;
   z-index: 4;

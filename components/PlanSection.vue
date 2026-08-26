@@ -95,8 +95,45 @@ onMounted(async () => {
     </article>
   </div>
 
-  <div :class="home ? 'hidden md:flex' : 'flex'"
-    class="flex-col items-stretch justify-center gap-4 md:flex-row md:gap-8 lg:gap-x-5"
+  <div v-if="!home" class="pricing-plan-mobile md:hidden">
+    <div class="pricing-billing" aria-label="Billing frequency">
+      <span>Monthly billing</span>
+      <span>Yearly billing</span>
+    </div>
+
+    <div class="pricing-report-list">
+      <article
+        v-for="mobilePlan in mobilePlans"
+        :key="mobilePlan.plan_code"
+        class="plan-card plan-card--featured pricing-report-card"
+        :class="{ 'pricing-report-card--premium': mobilePlan.plan_code === 'premium' }"
+      >
+        <div class="plan-toggle">
+          <h3 class="plan-name">{{ mobilePlan.name }}</h3>
+          <span v-if="mobilePlan.plan_code === 'premium'" class="plan-popular">Most popular</span>
+          <img v-else src="/images/home/plan-chevron.svg" alt="" class="plan-chevron">
+        </div>
+
+        <div class="plan-billing">
+          <p class="plan-price">{{ (mobilePlan.currency?.symbol || '£') + mobilePlan.amount_trial }}</p>
+          <p class="plan-cycle">per user<br>per month</p>
+        </div>
+        <p class="plan-limit">Generate up to <strong>10 reports</strong></p>
+        <button type="button" class="plan-start" @click="startChecking(mobilePlan)">Start checking</button>
+
+        <h4>Included</h4>
+        <p class="plan-included-copy">What’s included with our plan</p>
+        <ul class="plan-features">
+          <li v-for="feature in mobileFeatures" :key="feature.label">
+            <img :src="feature.icon" alt="">
+            <span>{{ feature.label }}</span>
+          </li>
+        </ul>
+      </article>
+    </div>
+  </div>
+
+  <div class="hidden flex-col items-stretch justify-center gap-4 md:flex md:flex-row md:gap-8 lg:gap-x-5"
     style="min-height: 500px;">
 
     <!-- <div v-if="hasSubscription?.active" v-for="plan in InActivePlans" :key="plan.plan_code"
@@ -242,6 +279,87 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.pricing-plan-mobile {
+  position: relative;
+  width: 100%;
+  height: 310.556cqw;
+  color: #0f1829;
+  font-family: "TT Norms Pro", sans-serif;
+}
+
+.pricing-billing {
+  position: absolute;
+  top: 0;
+  left: 9.167cqw;
+  display: flex;
+  box-sizing: border-box;
+  width: 43.386cqw;
+  height: 6.646cqw;
+  overflow: hidden;
+  border: .177cqw solid #0f1829;
+  border-radius: .878cqw;
+  font-size: 2.617cqw;
+  font-weight: 500;
+  line-height: 6.292cqw;
+  white-space: nowrap;
+}
+
+.pricing-billing span {
+  flex: 1;
+  text-align: center;
+}
+
+.pricing-billing span:first-child {
+  flex: 0 0 22.822cqw;
+  background: #0f1829;
+  color: white;
+}
+
+.pricing-report-list {
+  position: absolute;
+  top: 13.611cqw;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4.722cqw;
+  width: 100%;
+}
+
+.pricing-report-card.plan-card--featured {
+  flex: 0 0 95.833cqw;
+  left: 8.056cqw;
+  width: 81.667cqw;
+  height: 95.833cqw;
+  border: .278cqw solid #0f1829;
+  background: white;
+  box-shadow: none;
+  color: #000;
+  transition: none;
+}
+
+.pricing-report-card.plan-card--featured.pricing-report-card--premium {
+  border: 0;
+  background: #0f1829;
+  box-shadow: 0 1.3cqw 1.3cqw rgb(0 0 0 / 24%);
+  color: #eee;
+}
+
+.pricing-report-card.plan-card--featured .plan-name {
+  left: 8.333cqw;
+}
+
+.pricing-report-card.plan-card--featured .plan-billing {
+  left: 7.5cqw;
+  gap: .833cqw;
+}
+
+.pricing-report-card.plan-card--featured .plan-chevron {
+  top: 9.167cqw;
+  right: 6.944cqw;
+  width: 2.778cqw;
+  height: 1.389cqw;
+}
+
 .plan-mobile {
   position: relative;
   display: flex;
