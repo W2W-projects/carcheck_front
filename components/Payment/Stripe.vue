@@ -16,6 +16,7 @@ const envConfig = useRuntimeConfig();
 
 const stripePromise = loadStripe(envConfig.public.stripe_public_key as string);
 const loading = ref(false);
+const done = ref(false);
 const termsAccepted = ref(false);
 const cardholderName = ref('');
 const buttonProcess = ref('Get report');
@@ -60,7 +61,7 @@ onMounted(async () => {
     }
 });
 async function handleCheckoutClick() {
-    if (loading.value || successMessage.value) return;
+    if (loading.value || done.value) return;
     buttonProcess.value = "PROCESSING...";
     try {
         resetError();
@@ -137,6 +138,7 @@ async function handleCheckoutClick() {
                 if (regNumber) {
                     await registrationSearchStore.searchCarRegNumber(regNumber);
                 }
+                done.value = true;
                 setTimeout(() => {
                     buttonProcess.value = "DONE!";
                     navigateTo('/report');
@@ -154,8 +156,10 @@ async function handleCheckoutClick() {
         console.error({ error });
         buttonProcess.value = "PROCESS";
     } finally {
-        loading.value = false;
-        buttonProcess.value = "PROCESS";
+        if (!done.value) {
+            loading.value = false;
+            buttonProcess.value = "PROCESS";
+        }
     }
 }
 
@@ -202,6 +206,7 @@ async function createSubscription(selectedPlan) {
         // } else {
         //     navigateTo('/vehicle/single-offer-report');
         // }
+        done.value = true;
         setTimeout(() => {
             successMessage.value = "Payment successful.";
             navigateTo('/report');
@@ -307,7 +312,7 @@ watch(errorMessage, (newErrorMessage) => {
                 <span class="block sm:inline">{{ successMessage }}</span>
                 <br>
             </div>
-            <button v-else type="submit" :disabled="loading" :aria-busy="loading"
+            <button v-else type="submit" :disabled="loading || done" :aria-busy="loading"
                 class="flex items-center justify-center w-full h-[35px] gap-2 px-3 text-[15px] font-bold text-center text-white rounded-[6px] hover:bg-brand/90 focus:ring-4 focus:outline-none focus:ring-blue-300 bg-brand disabled:cursor-not-allowed lg:h-[46px] lg:text-[20px] lg:rounded-lg"
                 :class="loading ? 'opacity-70' : ''">
                 <span v-if="loading" class="w-5 h-5 border-2 rounded-full border-white/40 border-t-white animate-spin"
