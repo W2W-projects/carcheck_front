@@ -154,7 +154,7 @@ const searchForCarReg = async () => {
       :class="[props.width, props.hero ? 'hero-search-shell' : 'py-1 pl-2 pr-1 rounded space-x-1']">
       <div class="flex items-center justify-center"
         :class="props.hero ? 'hero-flag absolute' : 'mr-[0.27rem]'">
-        <img src="assets/svg/uk-flag.svg" :class="props.hero ? 'size-full' : 'w-8'" alt="UK Flag" />
+        <img src="/assets/svg/uk-flag.svg" :class="props.hero ? 'size-full' : 'w-8'" alt="UK Flag" />
       </div>
       <input @keyup.enter="searchForCarReg" @blur="handleBlur" type="text" :placeholder="placeholderText"
         v-model="processedCarNumber" required
@@ -178,7 +178,7 @@ const searchForCarReg = async () => {
             </path>
           </svg>
         </template>
-        <img src="assets/svg/search-icon.svg" v-else :class="props.hero ? 'hero-search-icon' : 'w-full'"
+        <img src="/assets/svg/search-icon.svg" v-else :class="props.hero ? 'hero-search-icon' : 'w-full'"
           alt="Search car registration" />
       </button>
     </div>
@@ -233,6 +233,27 @@ const searchForCarReg = async () => {
     border-radius: 0.817cqw;
   }
   .hero-search-icon { width: 7.151cqw; height: 7.151cqw; }
+
+  .mobile-vin-search .hero-search-shell { height: auto; aspect-ratio: 240 / 41.5; border-radius: 4px; }
+  .mobile-vin-search .hero-flag { left: 3.83%; top: 30.1%; width: 7.2%; height: 22.2%; }
+  .mobile-vin-search .hero-input {
+    left: 14.67%;
+    top: 9.2%;
+    width: 69%;
+    height: 81%;
+    border-width: 1px;
+    border-radius: 4px;
+    padding-inline: 8.3%;
+    font-size: clamp(18px, 5.9vw, 21px);
+  }
+  .mobile-vin-search .hero-button {
+    left: 85.1%;
+    top: 10.4%;
+    width: 13.45%;
+    height: 79.3%;
+    border-radius: 3px;
+  }
+  .mobile-vin-search .hero-search-icon { width: 66%; height: 66%; }
 }
 
 .alert {

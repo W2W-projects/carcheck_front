@@ -19,7 +19,6 @@ const auth = useAuthStore();
 const handleLogout = async () => {
   try {
     await auth.logout();
-    navigateTo('/')
   } catch (error) {
     console.log("login error: ", error);
     errors.value = error?.data?.errors

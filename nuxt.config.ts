@@ -16,6 +16,10 @@ export default defineNuxtConfig({
   plugins: ["~/plugins/fontawesome.js", "~/plugins/eventBus.js"],
 
   vite: {
+    optimizeDeps: {
+      include: ["swiper/vue", "swiper/modules", "chart.js", "date-fns"],
+    },
+
     build: {
       rolldownOptions: {
         checks: { pluginTimings: false },

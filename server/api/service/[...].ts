@@ -11,6 +11,8 @@ const FORWARDED_REQUEST_HEADERS = [
   "accept-language",
   "x-guest-token",
   "x-request-id",
+  "if-none-match",
+  "if-modified-since",
 ] as const;
 
 /** Copied back from Laravel. Compression and length headers are deliberately absent:

@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import ApiService from "~/services/apiService";
-import { useCarRegistrationSearchStore } from "~/stores/carRegistrationSearch";
 import { useSubscriptionStore } from "~/stores/subscription";
 import { useTokenStore } from "~/stores/token";
 import type {
@@ -50,10 +49,6 @@ const useAuthStore = defineStore("auth", {
       this.user = user;
     },
 
-    removeUser(): void {
-      this.user = null;
-    },
-
     async makeLogin(form: LoginForm): Promise<ApiPayloadResponse<LoginPayload>> {
       const response = await ApiService.post<ApiPayloadResponse<LoginPayload>>("login", form);
       const payload = response.payload;
@@ -73,23 +68,22 @@ const useAuthStore = defineStore("auth", {
 
     async logout(): Promise<void> {
       const tokenStore = useTokenStore();
-      const carRegistrationSearchStore = useCarRegistrationSearchStore();
 
       try {
         await ApiService.post<ApiMessageResponse>("logout", null, tokenStore.token);
       } catch (error) {
         console.warn("Remote logout failed; clearing the local session.", error);
       }
-      this.removeUser();
-      tokenStore.removeToken();
-      await useSubscriptionStore().setHasSubscription({
-        auth: false,
-        active: false,
-        subscription_type: null,
-        request_count: 0,
-        one_off_request_count: 0,
-        request_count_trial: 0,
-      });
+
+      if ("caches" in window) {
+        const names = await caches.keys();
+        await Promise.all(names.map((name) => caches.delete(name)));
+      }
+
+      if (navigator.serviceWorker) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((registration) => registration.unregister()));
+      }
 
       localStorage.clear();
       sessionStorage.clear();
@@ -98,26 +92,9 @@ const useAuthStore = defineStore("auth", {
           .replace(/^ +/, "")
           .replace(/=.*/, `=;expires=${new Date(0).toUTCString()};path=/`);
       });
-
-      if ("caches" in window) {
-        const names = await caches.keys();
-        await Promise.all(names.map((name) => caches.delete(name)));
-      }
-
-      const applicationCache = (
-        window as Window & { applicationCache?: { abort: () => void } }
-      ).applicationCache;
-      applicationCache?.abort();
-
-      if (navigator.serviceWorker) {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(registrations.map((registration) => registration.unregister()));
-      }
-
       window.performance?.clearResourceTimings?.();
-      carRegistrationSearchStore.$reset();
-      this.$reset();
-      window.location.reload();
+
+      window.location.href = "/auth/login";
     },
 
     fetchUserRolesAndPermissions(): Promise<ApiPayloadResponse<RolesAndPermissions>> {

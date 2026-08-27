@@ -10,35 +10,30 @@ definePageMeta({
 </script>
 
 <template>
-  <div class="flex flex-col w-full h-full space-y-6 lg:flex-row lg:space-x-7 lg:space-y-0">
-    <div class="relative flex flex-col flex-1 h-full space-y-5">
+  <div class="flex flex-col w-full h-full lg:flex-row lg:space-x-7 lg:space-y-0">
+    <div class="relative flex flex-col md:space-y-5 lg:flex-1 lg:h-full">
       <dashboard-checks-summary></dashboard-checks-summary>
-      <div class="h-auto md:h-[15rem] 2xl:h-[16.5rem] space-y-1">
-        <div class="flex items-center justify-between w-full px-2">
-          <p class="text-base font-bold text-black md:text-lg">Latest Checks</p>
+      <div class="h-auto mt-[14px] md:mt-0 md:h-[15rem] 2xl:h-[16.5rem]">
+        <div class="flex items-center justify-between w-full pl-[7.5vw] pr-[5vw] md:px-2">
+          <p class="text-[17px] font-bold text-[#0F1829] md:text-lg">Latest Checks</p>
           <NuxtLink to="/dashboard/garage" class="flex items-center space-x-1">
-            <p class="text-[0.65rem] font-bold text-[#949494]">See more</p>
+            <p class="text-[11px] font-bold text-[#949494]">See more</p>
             <span>
-              <img src="/public/images/svg/icon-chev-right.svg" alt="">
+              <img src="/images/svg/icon-chev-right.svg" alt="">
             </span>
           </NuxtLink>
         </div>
-        <div class="h-full">
+        <div class="h-full mt-[10px] md:mt-1">
           <dashboard-latest-checks></dashboard-latest-checks>
         </div>
       </div>
-      <dashboard-discount-widgets></dashboard-discount-widgets>
+      <dashboard-discount-widgets class="mt-[23px] md:mt-0"></dashboard-discount-widgets>
     </div>
-    <dashboard-right-sidebar class="hidden lg:flex"></dashboard-right-sidebar>
+    <dashboard-right-sidebar class="mt-[11px] lg:mt-0"></dashboard-right-sidebar>
   </div>
 </template>
 
 <style scoped>
-.bg-city {
-  background: url('/public/images/png/dashboard/city.png'), white;
-  background-size: cover;
-}
-
 .outlined-text {
 
   color: white;

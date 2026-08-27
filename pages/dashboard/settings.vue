@@ -46,8 +46,8 @@ onMounted(() => {
           <img src="/images/webp/user.webp" class="object-cover w-full" alt="User profile">
         </div>
         <div>
-          <h2 class="text-lg font-bold text-gray-800">{{ user.name }}</h2>
-          <p class="text-sm text-gray-600">{{ user.email }}</p>
+          <h2 class="text-lg font-bold text-gray-800">{{ user?.name }}</h2>
+          <p class="text-sm text-gray-600">{{ user?.email }}</p>
         </div>
       </div>
     </div>
@@ -75,8 +75,8 @@ onMounted(() => {
 
         <!-- User Info - unchanged -->
         <div class="space-y-2 text-center">
-          <h2 class="text-2xl font-bold text-gray-800">{{ user.name }}</h2>
-          <p class="text-sm text-gray-600">{{ user.email }}</p>
+          <h2 class="text-2xl font-bold text-gray-800">{{ user?.name }}</h2>
+          <p class="text-sm text-gray-600">{{ user?.email }}</p>
           <p class="text-sm text-gray-600">{{ user.phone }}</p>
           <p class="text-sm text-gray-500">{{ user.address }}</p>
         </div>

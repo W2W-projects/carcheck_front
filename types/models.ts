@@ -287,6 +287,7 @@ export interface CarListItem {
   id: number;
   reg_number: string;
   image: string | null;
+  thumb: string | null;
   details: CarDetails;
 }
 

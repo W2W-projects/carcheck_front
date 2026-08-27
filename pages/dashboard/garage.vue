@@ -103,7 +103,7 @@ const handleClickOutside = (event: MouseEvent) => {
 
 // Add a new ref to track window width
 const windowWidth = ref(0);
-const isFilterVisible = ref(false);
+const isFilterVisible = ref(true);
 
 // Toggle filter visibility function
 const toggleFilters = () => {
@@ -158,7 +158,7 @@ onBeforeUnmount(() => {
 
 <template>
   <!-- Add h-full class to the root div to fill available space -->
-  <div class="flex flex-col h-full space-y-3">
+  <div class="garage-page flex flex-col h-full space-y-3">
     <div v-if="isLoading" class="space-y-3" role="status" aria-label="Loading garage">
       <div class="grid grid-cols-2 gap-4 p-4 bg-white border rounded-lg md:grid-cols-4 border-gray-50">
         <div v-for="item in 4" :key="item" class="space-y-2">
@@ -176,19 +176,21 @@ onBeforeUnmount(() => {
       <span class="sr-only">Loading garage...</span>
     </div>
 
-    <div v-else class="bg-white border rounded-lg border-gray-50">
+    <div v-else class="garage-filter bg-white border rounded-lg border-gray-50"
+      :class="{ 'filters-expanded': isFilterVisible && isMobileWidth }">
       <!-- Filter toggle button (mobile only) -->
-      <div class="flex items-center justify-between p-3 border-b md:hidden">
+      <div class="garage-filter-toggle flex items-center justify-between p-3 border-b md:hidden">
         <p class="font-medium text-black">Filters</p>
         <button @click="toggleFilters" class="flex items-center space-x-1 text-brand">
           <span>{{ isFilterVisible ? 'Hide' : 'Show' }}</span>
-          <img src="/public/assets/svg/chevron-down.svg" alt="toggle"
+          <img src="/assets/svg/chevron-down.svg" alt="toggle"
             :class="{ 'transform rotate-180': isFilterVisible }">
         </button>
       </div>
 
       <!-- Filter section - toggleable on mobile -->
-      <div class="flex flex-col md:flex-row" :class="{ 'hidden': !isFilterVisible && isMobileWidth }">
+      <div class="garage-filter-fields flex flex-col md:flex-row"
+        :class="{ 'hidden': !isFilterVisible && isMobileWidth }">
         <!-- Filters container - stacks vertically on mobile -->
         <div class="flex-1 p-4 md:pl-4 lg:pl-10">
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 md:gap-0">
@@ -199,16 +201,17 @@ onBeforeUnmount(() => {
                 <button type="button" class="flex items-center justify-between w-full py-2 text-left cursor-pointer"
                   @click="brandOpen = !brandOpen">
                   <span class="text-sm font-bold">{{ tempSelectedBrand || 'All brands' }}</span>
-                  <img src="/public/assets/svg/chevron-down.svg" alt="dropdown"
+                  <img src="/assets/svg/chevron-down.svg" alt="dropdown"
                     :class="{ 'transform rotate-180': brandOpen }">
                 </button>
                 <div v-if="brandOpen"
                   class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
-                  <div @click="tempSelectedBrand = ''; brandOpen = false"
+                  <div @click="tempSelectedBrand = ''; brandOpen = false; applyFilters()"
                     class="px-3 py-2 cursor-pointer hover:bg-gray-100">
                     All brands
                   </div>
-                  <div v-for="brand in carBrands" :key="brand" @click="tempSelectedBrand = brand; brandOpen = false"
+                  <div v-for="brand in carBrands" :key="brand"
+                    @click="tempSelectedBrand = brand; brandOpen = false; applyFilters()"
                     class="px-3 py-2 cursor-pointer hover:bg-gray-100">
                     {{ brand }}
                   </div>
@@ -223,16 +226,17 @@ onBeforeUnmount(() => {
                 <button type="button" class="flex items-center justify-between w-full py-2 text-left cursor-pointer"
                   @click="yearOpen = !yearOpen">
                   <span class="text-sm font-bold">{{ tempSelectedYear || 'All years' }}</span>
-                  <img src="/public/assets/svg/chevron-down.svg" alt="dropdown"
+                  <img src="/assets/svg/chevron-down.svg" alt="dropdown"
                     :class="{ 'transform rotate-180': yearOpen }">
                 </button>
                 <div v-if="yearOpen"
                   class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
-                  <div @click="tempSelectedYear = ''; yearOpen = false"
+                  <div @click="tempSelectedYear = ''; yearOpen = false; applyFilters()"
                     class="px-3 py-2 cursor-pointer hover:bg-gray-100">
                     All years
                   </div>
-                  <div v-for="year in carYears" :key="year" @click="tempSelectedYear = year; yearOpen = false"
+                  <div v-for="year in carYears" :key="year"
+                    @click="tempSelectedYear = year; yearOpen = false; applyFilters()"
                     class="px-3 py-2 cursor-pointer hover:bg-gray-100">
                     {{ year }}
                   </div>
@@ -247,17 +251,17 @@ onBeforeUnmount(() => {
                 <button type="button" class="flex items-center justify-between w-full py-2 text-left cursor-pointer"
                   @click="engineOpen = !engineOpen">
                   <span class="text-sm font-bold">{{ tempSelectedEngine || 'All types' }}</span>
-                  <img src="/public/assets/svg/chevron-down.svg" alt="dropdown"
+                  <img src="/assets/svg/chevron-down.svg" alt="dropdown"
                     :class="{ 'transform rotate-180': engineOpen }">
                 </button>
                 <div v-if="engineOpen"
                   class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
-                  <div @click="tempSelectedEngine = ''; engineOpen = false"
+                  <div @click="tempSelectedEngine = ''; engineOpen = false; applyFilters()"
                     class="px-3 py-2 cursor-pointer hover:bg-gray-100">
                     All types
                   </div>
                   <div v-for="engine in engineTypes" :key="engine"
-                    @click="tempSelectedEngine = engine; engineOpen = false"
+                    @click="tempSelectedEngine = engine; engineOpen = false; applyFilters()"
                     class="px-3 py-2 cursor-pointer hover:bg-gray-100">
                     {{ engine }}
                   </div>
@@ -272,16 +276,17 @@ onBeforeUnmount(() => {
                 <button type="button" class="flex items-center justify-between w-full py-2 text-left cursor-pointer"
                   @click="monthOpen = !monthOpen">
                   <span class="text-sm font-bold">{{ tempSelectedMonth || 'All months' }}</span>
-                  <img src="/public/assets/svg/chevron-down.svg" alt="dropdown"
+                  <img src="/assets/svg/chevron-down.svg" alt="dropdown"
                     :class="{ 'transform rotate-180': monthOpen }">
                 </button>
                 <div v-if="monthOpen"
                   class="absolute z-10 w-full mt-1 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg max-h-48">
-                  <div @click="tempSelectedMonth = ''; monthOpen = false"
+                  <div @click="tempSelectedMonth = ''; monthOpen = false; applyFilters()"
                     class="px-3 py-2 cursor-pointer hover:bg-gray-100">
                     All months
                   </div>
-                  <div v-for="month in monthsOfCheck" :key="month" @click="tempSelectedMonth = month; monthOpen = false"
+                  <div v-for="month in monthsOfCheck" :key="month"
+                    @click="tempSelectedMonth = month; monthOpen = false; applyFilters()"
                     class="px-3 py-2 cursor-pointer hover:bg-gray-100">
                     {{ month }}
                   </div>
@@ -292,19 +297,19 @@ onBeforeUnmount(() => {
         </div>
 
         <!-- Search button - centered and full width on mobile -->
-        <div class="p-4 flex justify-center md:w-[8.25rem]">
-          <button @click="applyFilters; isFilterVisible = false"
+        <div class="hidden p-4 justify-center md:flex md:w-[8.25rem]">
+          <button @click="applyFilters(); isFilterVisible = false"
             class="h-[3rem] w-full md:w-[3rem] bg-brand rounded flex items-center justify-center">
-            <img src="/public/assets/svg/search-sm.svg" alt="Search">
+            <img src="/assets/svg/search-sm.svg" alt="Search">
             <span class="ml-2 md:hidden">Apply Filters</span>
           </button>
         </div>
       </div>
     </div>
 
-    <div class="flex flex-col flex-grow space-y-3">
-      <div class="flex items-center justify-between">
-        <H3 class="text-black font-bold text-xl sm:text-[1.25rem]">
+    <div class="garage-checks flex flex-col flex-grow space-y-3">
+      <div class="garage-title-row flex items-center justify-between">
+        <H3 class="garage-title text-black font-bold text-xl sm:text-[1.25rem]">
           My Checks
         </H3>
 
@@ -326,19 +331,120 @@ onBeforeUnmount(() => {
 
       <!-- Update the cars grid to fill available space -->
       <div v-else
-        class="grid flex-grow h-full grid-cols-1 gap-4 pr-2 overflow-y-auto transition-all duration-300 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 custom-scrollbar md:pr-6"
+        class="garage-grid grid grid-cols-1 gap-[13px] transition-all duration-300 md:flex-grow md:h-full md:grid-cols-3 md:gap-4 md:pr-6 md:overflow-y-auto lg:grid-cols-4 custom-scrollbar"
         :class="{
           'pb-20': isFilterVisible && isMobileWidth,
           'max-h-[32.5rem]': !isMobileWidth,
           'min-h-[50vh]': isMobileWidth
         }">
-        <DashboardCarInfo v-for="(car, index) in filteredCars" :key="car.id || index" :car="car" />
+        <DashboardCarInfo v-for="(car, index) in filteredCars" :key="car.id || index" :car="car" full-width />
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+@media (max-width: 767px) {
+  .garage-page {
+    margin-top: -10px;
+  }
+
+  .garage-filter {
+    position: relative;
+    width: calc(100vw - 39px);
+    margin-left: 13px;
+    overflow: visible;
+    border: 0;
+    border-radius: 6px;
+  }
+
+  .garage-filter.filters-expanded {
+    height: 309px;
+  }
+
+  .filters-expanded .garage-filter-toggle {
+    position: absolute;
+    z-index: 20;
+    top: 9px;
+    right: 14px;
+    width: auto;
+    padding: 0;
+    border: 0;
+  }
+
+  .filters-expanded .garage-filter-toggle > p {
+    display: none;
+  }
+
+  .garage-filter-toggle button {
+    font-size: 11px;
+  }
+
+  .garage-filter-toggle img {
+    width: 14px;
+    height: 14px;
+  }
+
+  .garage-filter-fields > div:first-child {
+    padding: 23px 25px 2px 40px;
+  }
+
+  .garage-filter-fields .grid {
+    gap: 0;
+  }
+
+  .garage-filter-fields .dropdown {
+    height: 71px;
+  }
+
+  .garage-filter-fields .dropdown:not(:last-child)::after {
+    position: absolute;
+    top: 58px;
+    right: 0;
+    left: 0;
+    height: 1px;
+    content: '';
+    background: #e9e9e9;
+  }
+
+  .garage-filter-fields label,
+  .garage-filter-fields button {
+    font-size: 13px;
+    line-height: 16px;
+  }
+
+  .garage-filter-fields label {
+    margin: 0;
+    color: #cecece;
+  }
+
+  .garage-filter-fields .dropdown > div > button {
+    height: 16px;
+    padding: 0;
+    margin-top: 12px;
+  }
+
+  .garage-filter-fields .dropdown > div > button img {
+    width: 16px;
+    height: 16px;
+  }
+
+  .garage-title-row {
+    padding: 4px 31px 0;
+  }
+
+  .garage-title {
+    font-size: 17px;
+    line-height: 21px;
+  }
+
+  .garage-grid {
+    justify-items: center;
+    min-height: 50vh;
+    padding-bottom: 20px;
+  }
+}
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
 }

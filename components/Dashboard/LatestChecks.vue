@@ -5,6 +5,12 @@ import CarInfo from './CarInfo.vue';
 
 const carStore = useCarStore();
 const isLoading = ref(true);
+const { carousel, updateCurrentSlide, startDrag, drag, endDrag } = useCarousel();
+
+function startChecksDrag(event: PointerEvent) {
+    if (window.matchMedia('(min-width: 768px)').matches || (event.target as HTMLElement).closest('button, a, input')) return;
+    startDrag(event);
+}
 
 const filteredCars = computed(() => {
     if (!carStore.userCarsList?.length) return [];
@@ -31,11 +37,13 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="space-y-4">
-        <div v-if="isLoading" class="grid grid-cols-1 gap-3 sm:gap-4 xs:grid-cols-2 md:grid-cols-3" role="status"
+    <div class="min-w-0 space-y-4">
+        <div v-if="isLoading"
+            class="checks-scroll flex w-full min-w-0 gap-[10px] overflow-x-auto pl-[7.5vw] md:grid md:grid-cols-3 md:gap-4 md:overflow-hidden md:px-0"
+            role="status"
             aria-label="Loading recent checks">
             <div v-for="item in 3" :key="item"
-                class="h-[12.5rem] rounded-xl bg-white px-[1.7rem] py-[1.25rem]">
+                class="w-[71.79vw] min-w-[230px] max-w-[280px] aspect-[258/182] flex-none rounded-xl bg-white px-6 py-4 md:h-[12.5rem] md:w-auto md:min-w-0 md:max-w-none md:aspect-auto md:px-[1.7rem] md:py-[1.25rem]">
                 <div class="flex justify-between">
                     <UtilitiesSkeleton class="w-20 h-3" />
                     <UtilitiesSkeleton class="w-8 h-3" />
@@ -50,9 +58,11 @@ onMounted(async () => {
             <span class="sr-only">Loading recent checks...</span>
         </div>
 
-        <!-- Car Grid - Responsive layout improved -->
         <div v-else-if="filteredCars.length"
-            class="grid grid-cols-1 gap-3 overflow-hidden sm:gap-4 xs:grid-cols-2 md:grid-cols-3">
+            ref="carousel"
+            class="checks-scroll flex w-full min-w-0 cursor-grab select-none gap-[10px] overflow-x-auto pl-[7.5vw] active:cursor-grabbing md:grid md:cursor-auto md:select-auto md:grid-cols-3 md:gap-4 md:overflow-hidden md:px-0"
+            @scroll.passive="updateCurrentSlide" @pointerdown="startChecksDrag" @pointermove="drag"
+            @pointerup="endDrag" @pointercancel="endDrag" @pointerleave="endDrag">
             <CarInfo v-for="(car, index) in filteredCars" :key="car.id || index" :car="car"
                 class="transition-all duration-300 hover:shadow-md" />
         </div>
@@ -66,3 +76,24 @@ onMounted(async () => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.checks-scroll {
+    scrollbar-width: none;
+}
+
+.checks-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .checks-scroll {
+        width: 100vw;
+        max-width: 100vw;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        overscroll-behavior-inline: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+</style>
