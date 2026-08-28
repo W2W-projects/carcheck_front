@@ -10,8 +10,8 @@ definePageMeta({
 </script>
 
 <template>
-  <div class="flex flex-col w-full h-full lg:flex-row lg:space-x-7 lg:space-y-0">
-    <div class="relative flex flex-col md:space-y-5 lg:flex-1 lg:h-full">
+  <div class="flex flex-col w-full h-full xl:flex-row xl:space-x-7 xl:space-y-0">
+    <div class="relative flex min-w-0 flex-col md:space-y-5 xl:flex-1 xl:h-full">
       <dashboard-checks-summary></dashboard-checks-summary>
       <div class="h-auto mt-[14px] md:mt-0 md:h-[15rem] 2xl:h-[16.5rem]">
         <div class="flex items-center justify-between w-full pl-[7.5vw] pr-[5vw] md:px-2">
@@ -29,7 +29,7 @@ definePageMeta({
       </div>
       <dashboard-discount-widgets class="mt-[23px] md:mt-0"></dashboard-discount-widgets>
     </div>
-    <dashboard-right-sidebar class="mt-[11px] lg:mt-0"></dashboard-right-sidebar>
+    <dashboard-right-sidebar class="mt-[11px] xl:mt-0"></dashboard-right-sidebar>
   </div>
 </template>
 

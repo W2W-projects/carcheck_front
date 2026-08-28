@@ -57,7 +57,7 @@ watch(() => user.value, resetFormWithUserData, { immediate: true });
 </script>
 
 <template>
-    <form @submit.prevent="submitForm" class="flex flex-col h-full">
+    <form @submit.prevent="submitForm" class="account-settings-form flex flex-col h-full">
         <div v-if="formSuccess" class="px-4 py-2 mx-8 mb-4 text-green-700 bg-green-100 rounded">
             Your profile has been updated successfully!
         </div>
@@ -66,49 +66,49 @@ watch(() => user.value, resetFormWithUserData, { immediate: true });
             {{ errors.general }}
         </div>
 
-        <div class="flex items-center justify-center flex-1 px-8 text-black md:py-0">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
+        <div class="settings-fields flex items-center justify-center flex-1 px-8 text-black md:py-0">
+            <div class="grid w-full grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
                 <!-- First Name -->
-                <div class="col-span-1">
-                    <label for="first-name" class="block text-sm font-medium text-gray-700">First Name</label>
+                <div class="order-1 col-span-1 md:order-none">
+                    <label for="first-name" class="settings-label block text-sm font-medium text-gray-700">First name</label>
                     <input id="first-name" type="text" class="block w-full mt-1 rounded" v-model="form.first_name" />
                     <div v-if="errors.first_name" class="mt-2 text-sm text-red-600">{{ errors.first_name }}</div>
                 </div>
 
                 <!-- Last Name -->
-                <div class="col-span-1">
-                    <label for="last-name" class="block text-sm font-medium text-gray-700">Last Name</label>
+                <div class="order-5 col-span-1 md:order-none">
+                    <label for="last-name" class="settings-label block text-sm font-medium text-gray-700">Last name</label>
                     <input id="last-name" type="text" class="block w-full mt-1 rounded" v-model="form.last_name" />
                     <div v-if="errors.last_name" class="mt-2 text-sm text-red-600">{{ errors.last_name }}</div>
                 </div>
 
                 <!-- Username -->
-                <div class="col-span-1">
-                    <label for="email" class="block text-sm font-medium text-gray-700">Username</label>
+                <div class="order-2 col-span-1 md:order-none">
+                    <label for="username" class="settings-label block text-sm font-medium text-gray-700">Username</label>
                     <input id="username" disabled type="text" class="block w-full mt-1 text-gray-400 rounded disabled"
                         v-model="form.username" />
                     <div v-if="errors.username" class="mt-2 text-sm text-red-600">{{ errors.username }}</div>
                 </div>
 
                 <!-- Email -->
-                <div class="col-span-1">
-                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <div class="order-6 col-span-1 md:order-none">
+                    <label for="email" class="settings-label block text-sm font-medium text-gray-700">Email</label>
                     <input id="email" disabled type="email" class="block w-full mt-1 text-gray-400 rounded disabled"
                         v-model="form.email" />
                     <div v-if="errors.email" class="mt-2 text-sm text-red-600">{{ errors.email }}</div>
                 </div>
 
                 <!-- phone -->
-                <div class="col-span-1">
-                    <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                <div class="order-3 col-span-1 md:order-none">
+                    <label for="phone" class="settings-label block text-sm font-medium text-gray-700">Telephone</label>
                     <input id="phone" type="tel" class="block w-full mt-1 rounded" v-model="form.phone" />
                     <div v-if="errors.phone" class="mt-2 text-sm text-red-600">{{ errors.phone }}</div>
                 </div>
 
                 <!-- Country -->
-                <div class="col-span-1">
-                    <label for="country" class="block text-sm font-medium text-gray-700">Country</label>
-                    <select v-model="form.country" class="block w-full mt-1 rounded">
+                <div class="order-7 col-span-1 md:order-none">
+                    <label for="country" class="settings-label block text-sm font-medium text-gray-700">Country</label>
+                    <select id="country" v-model="form.country" class="block w-full mt-1 rounded">
                         <option disabled selected> -- Select Country --</option>
                         <option v-for="country in countries" :key="country.alpha2Code" :value="country.alpha2Code">{{
                             country.name }}</option>
@@ -117,24 +117,24 @@ watch(() => user.value, resetFormWithUserData, { immediate: true });
                 </div>
 
                 <!-- Postcode -->
-                <div class="col-span-1">
-                    <label for="postcode" class="block text-sm font-medium text-gray-700">Postcode</label>
+                <div class="order-4 col-span-1 md:order-none">
+                    <label for="postcode" class="settings-label block text-sm font-medium text-gray-700">Postcode</label>
                     <input id="postcode" type="text" class="block w-full mt-1 rounded" v-model="form.postcode" />
                     <div v-if="errors.postcode" class="mt-2 text-sm text-red-600">{{ errors.postcode }}</div>
                 </div>
 
                 <!-- City -->
-                <div class="col-span-1">
-                    <label for="city" class="block text-sm font-medium text-gray-700">City</label>
+                <div class="order-8 col-span-1 md:order-none">
+                    <label for="city" class="settings-label block text-sm font-medium text-gray-700">City</label>
                     <input id="city" type="text" class="block w-full mt-1 rounded" v-model="form.city" />
                     <div v-if="errors.city" class="mt-2 text-sm text-red-600">{{ errors.city }}</div>
                 </div>
             </div>
         </div>
-        <div class="flex items-center justify-between px-8 mt-5 mb-4 text-black md:mt-0 bg-primary-blue">
+        <div class="settings-actions flex items-center justify-between px-8 mt-5 mb-4 text-black md:mt-0 bg-primary-blue">
             <p class="hidden md:block">Update your personal information</p>
             <button
-                class="flex items-center justify-center space-x-2 text-white rounded bg-brand w-full md:w-[7.3125rem] h-[2.1875rem]"
+                class="flex items-center justify-center w-full h-[2.1875rem] space-x-1 text-white rounded bg-brand md:w-[7.3125rem]"
                 :disabled="processing">
                 <span>
                     <img src="/assets/svg/update.svg" alt="">
@@ -160,5 +160,47 @@ select {
     height: 2.93488rem;
     background-color: rgba(255, 165, 0, 0.06);
     border: 1px solid rgba(140, 140, 140, 0.2);
+}
+
+@media (max-width: 767px) {
+    .settings-fields {
+        display: block;
+        padding: 40px 19px 0;
+    }
+
+    .settings-fields>div {
+        gap: 15px;
+    }
+
+    .settings-label {
+        color: #141414;
+        font-size: 16.48px;
+        line-height: 20px;
+    }
+
+    input,
+    select {
+        height: 45px;
+        padding: 0 14px;
+        color: #141414;
+        font-size: 16.48px;
+        font-weight: 300;
+        line-height: 20px;
+        border-color: rgba(39, 48, 82, 0.1);
+        border-radius: 4px;
+    }
+
+    .settings-actions {
+        padding: 0 19px;
+        margin-top: 46px;
+        margin-bottom: 37px;
+    }
+
+    .settings-actions button {
+        height: 42px;
+        font-size: 17px;
+        font-weight: 700;
+        border-radius: 4px;
+    }
 }
 </style>

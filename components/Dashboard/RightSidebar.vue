@@ -28,7 +28,7 @@ const full_history = [
     </div>
   </section>
 
-  <aside class="bg-city relative hidden h-full w-[20rem] flex-col rounded-lg bg-white px-9 py-7 text-black lg:flex">
+  <aside class="bg-city relative hidden h-full w-[20rem] flex-col rounded-lg bg-white px-9 py-7 text-black xl:flex">
     <div class="relative z-10">
       <p class="text-[0.85rem] font-bold uppercase text-brand">make a NEW CHECK</p>
       <p class="text-3xl leading-8">Check it before <b>you regret it</b></p>

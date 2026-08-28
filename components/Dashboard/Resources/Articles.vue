@@ -1,5 +1,21 @@
 <template>
-  <div class="relative w-full min-h-[16.625rem] overflow-hidden">
+  <div ref="carousel" class="articles-mobile" @pointerdown="startDrag" @pointermove="drag"
+    @pointerup="endDrag" @pointercancel="endDrag" @pointerleave="endDrag">
+    <article v-for="(article, index) in data" :key="index" class="article-mobile-card">
+      <div class="article-mobile-image" :style="{
+        backgroundImage: `url('${article.image}')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }">
+        <img src="/images/svg/icon-play.svg" class="article-mobile-play" alt="">
+      </div>
+      <p class="article-mobile-title">{{ article.title }}</p>
+      <small class="article-mobile-description">{{ article.description }}</small>
+    </article>
+  </div>
+
+  <div class="articles-desktop relative w-full min-h-[16.625rem] overflow-hidden">
     <swiper :slides-per-view="'auto'" :space-between="25" :free-mode="true" :modules="modules"
       class="w-full articles-swiper" @slideChange="handleSlideChange" @init="handleSwiperInit"
       @reachEnd="handleReachEnd" @fromEdge="handleFromEdge" @transitionEnd="updateLastVisibleSlide">
@@ -25,13 +41,14 @@
 </template>
 
 <script lang="ts" setup>
-import { Swiper, SwiperSlide } from 'swiper/vue';
-import { FreeMode } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/free-mode';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { FreeMode } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 
 const modules = [FreeMode];
+const { carousel, startDrag, drag, endDrag } = useCarousel();
 const { data } = defineProps<{
   data: any[];
 }>();
@@ -175,5 +192,86 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.2);
   pointer-events: none;
   z-index: 5;
+}
+
+.articles-mobile {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .articles-desktop {
+    display: none;
+  }
+
+  .articles-mobile {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(2, auto);
+    grid-auto-columns: 45.9vw;
+    gap: 17px;
+    padding-right: clamp(1.25rem, 8.9vw, 2rem);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    touch-action: pan-x;
+    cursor: grab;
+    user-select: none;
+  }
+
+  .articles-mobile:active {
+    cursor: grabbing;
+  }
+
+  .articles-mobile::-webkit-scrollbar {
+    display: none;
+  }
+
+  .article-mobile-card {
+    width: 45.9vw;
+    min-height: 184px;
+    color: #0f1829;
+  }
+
+  .article-mobile-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 165 / 103;
+    overflow: hidden;
+    border-radius: 13px;
+  }
+
+  .article-mobile-play {
+    position: absolute;
+    right: 8px;
+    bottom: 5px;
+    width: 26px;
+    height: 25px;
+  }
+
+  .article-mobile-title {
+    display: -webkit-box;
+    height: 28px;
+    margin-top: 7px;
+    overflow: hidden;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 13px;
+    text-align: left;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .article-mobile-description {
+    display: -webkit-box;
+    height: 36px;
+    margin-top: 5px;
+    overflow: hidden;
+    color: #8e9197;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 12px;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
 }
 </style>

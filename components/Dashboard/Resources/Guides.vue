@@ -1,5 +1,19 @@
 <template>
-  <div class="relative w-full min-h-[19.625rem] overflow-hidden">
+  <div class="guides-mobile-shell">
+    <swiper :slides-per-view="1" :space-between="12" :modules="mobileModules" :grab-cursor="true"
+      :pagination="{ clickable: true }" class="guides-mobile">
+      <swiper-slide v-for="(guide, index) in data.slice(0, 3)" :key="index" class="guide-mobile-slide">
+        <article class="guide-mobile-card" :style="{ backgroundImage: `url('${guide.image}')` }">
+          <div class="guide-mobile-content">
+            <p>{{ guide.title }}</p>
+            <img src="/images/svg/icon-play.svg" alt="">
+          </div>
+        </article>
+      </swiper-slide>
+    </swiper>
+  </div>
+
+  <div class="guides-desktop relative w-full min-h-[19.625rem] overflow-hidden">
     <swiper :slides-per-view="'auto'" :space-between="25" :free-mode="true" :modules="modules"
       class="w-full guides-swiper" @slideChange="handleSlideChange" @init="handleSwiperInit" @reachEnd="handleReachEnd"
       @fromEdge="handleFromEdge" @transitionEnd="updateLastVisibleSlide">
@@ -7,21 +21,21 @@
         index === 0 ? 'first-slide' : 'other-slide',
         shouldBeTransparent(index) ? 'semi-transparent' : ''
       ]">
-        <div class="h-[19.625rem] rounded-xl w-full" :style="{
+        <div class="guide-card h-[19.625rem] rounded-xl w-full" :style="{
           backgroundImage: `url('${data[index].image}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
         }">
-          <div class="flex items-end justify-between h-full px-5 pb-6">
+          <div class="guide-card-content flex items-end justify-between h-full px-5 pb-6">
             <div class="flex items-center justify-between" :class="[index === 0 ? 'gap-x-[6rem]' : 'gap-x-[1.25rem]']">
               <div>
-                <p class="overflow-hidden font-bold text-white line-clamp-2 text-ellipsis"
+                <p class="guide-card-title overflow-hidden font-bold text-white line-clamp-2 text-ellipsis"
                   :class="[index === 0 ? 'text-[1.5rem]' : 'text-[1.0625rem] leading-5']">
                   {{ data[index].title }}
                 </p>
               </div>
-              <div class="" :class="[index === 0 ? 'w-[3.24256rem] h-[3.06725rem]' : 'w-[1.93375rem] h-[1.82919rem]']">
+              <div class="guide-play" :class="[index === 0 ? 'w-[3.24256rem] h-[3.06725rem]' : 'w-[1.93375rem] h-[1.82919rem]']">
                 <img src="/images/svg/icon-play.svg" class="w-full h-full" alt="">
               </div>
             </div>
@@ -34,12 +48,14 @@
 
 <script lang="ts" setup>
 import { Swiper, SwiperSlide } from 'swiper/vue';
-import { FreeMode } from 'swiper/modules';
+import { FreeMode, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/free-mode';
+import 'swiper/css/pagination';
 import { ref, onMounted, onUnmounted } from 'vue';
 
 const modules = [FreeMode];
+const mobileModules = [Pagination];
 const { data } = defineProps<{
   data: any[];
 }>();
@@ -189,5 +205,101 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.2);
   pointer-events: none;
   z-index: 5;
+}
+
+.guides-mobile-shell {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .guides-desktop {
+    display: none;
+  }
+
+  .guides-mobile-shell {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 187px;
+    overflow: hidden;
+    border-radius: 11px;
+  }
+
+  .guides-mobile {
+    width: 100%;
+    height: 100%;
+  }
+
+  .guide-mobile-slide {
+    width: 100% !important;
+    min-width: 100% !important;
+    height: 100% !important;
+  }
+
+  .guide-mobile-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 11px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  .guide-mobile-card::after {
+    position: absolute;
+    inset: 55% 0 0;
+    content: '';
+    background: linear-gradient(to top, rgb(0 0 0 / 65%), transparent);
+  }
+
+  .guide-mobile-content {
+    position: absolute;
+    z-index: 1;
+    right: 15px;
+    bottom: 19px;
+    left: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .guide-mobile-content p {
+    display: -webkit-box;
+    max-width: 180px;
+    overflow: hidden;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 17px;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .guide-mobile-content img {
+    flex: 0 0 auto;
+    width: 31px;
+    height: 30px;
+  }
+
+  .guides-mobile :deep(.swiper-pagination) {
+    bottom: 10px;
+  }
+
+  .guides-mobile :deep(.swiper-pagination-bullet) {
+    width: 10px;
+    height: 10px;
+    margin: 0 1px !important;
+    background: transparent;
+    border: 1px solid #c2c2c2;
+    opacity: 1;
+  }
+
+  .guides-mobile :deep(.swiper-pagination-bullet-active) {
+    background: #ff7400;
+    border-color: #ff7400;
+  }
 }
 </style>

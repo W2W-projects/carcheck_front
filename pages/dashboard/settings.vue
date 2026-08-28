@@ -37,10 +37,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <div
-    class=" min-h-[35rem] md:min-h-[50vh] md:h-[40rem] h-auto flex flex-col lg:flex-row lg:space-x-4 space-y-4 lg:space-y-0">
-    <!-- Mobile Profile Summary (Only shows on small screens) -->
-    <div class="p-4 bg-white rounded-lg shadow-sm lg:hidden">
+  <div class="settings-page flex h-auto min-h-[35rem] flex-col gap-[14px] md:h-[40rem] md:min-h-[50vh] md:gap-4 lg:flex-row">
+    <h1 class="text-center text-[21px] font-medium leading-[26px] text-[#0f1829] md:hidden">Edit profile</h1>
+
+    <!-- Tablet Profile Summary -->
+    <div class="hidden p-4 bg-white rounded-lg shadow-sm md:block lg:hidden">
       <div class="flex items-center space-x-4">
         <div class="w-16 h-16 overflow-hidden bg-white rounded-full shadow-md">
           <img src="/images/webp/user.webp" class="object-cover w-full" alt="User profile">
@@ -95,8 +96,30 @@ onMounted(() => {
     </div>
 
     <!-- Main Content -->
-    <div class="flex flex-col flex-1 w-full h-auto overflow-hidden bg-white rounded-lg shadow-sm">
-      <div class="flex items-start justify-start overflow-x-auto border-b border-gray-100 scrollbar-hide">
+    <div class="settings-panel flex flex-col flex-1 w-full h-auto overflow-hidden bg-white rounded-lg shadow-sm">
+      <div class="settings-mobile-profile md:hidden">
+        <div class="settings-mobile-avatar">
+          <img src="/images/webp/user.webp" class="object-cover" alt="User profile">
+        </div>
+        <h2 class="text-[31px] font-medium leading-[37px] text-[#0f1829]">{{ user?.name }}</h2>
+      </div>
+
+      <div class="settings-mobile-tabs flex md:hidden">
+        <button type="button" aria-label="Previous settings section"
+          @click="activeTab = (activeTab + tabs.length - 1) % tabs.length">
+          <img src="/assets/svg/chevron-down.svg" class="w-4 h-4 rotate-90 brightness-0 invert" alt="">
+        </button>
+        <div class="flex items-center justify-center flex-1 gap-2">
+          <img :src="`/assets/svg/${tabs[activeTab].icon}`" class="w-[17px] h-[18px] brightness-0 invert" alt="">
+          <span class="text-[17px] font-medium text-[#fffaf0]">{{ tabs[activeTab].label }}</span>
+        </div>
+        <button type="button" aria-label="Next settings section"
+          @click="activeTab = (activeTab + 1) % tabs.length">
+          <img src="/assets/svg/chevron-down.svg" class="w-4 h-4 -rotate-90 brightness-0 invert" alt="">
+        </button>
+      </div>
+
+      <div class="items-start justify-start hidden overflow-x-auto border-b border-gray-100 md:flex scrollbar-hide">
         <div v-for="(tab, index) in tabs" :key="tab.label"
           class="flex items-end px-1.5 sm:px-3 md:px-6 cursor-pointer gap-x-1 sm:gap-x-2 whitespace-nowrap"
           @click="changeTab(index)">
@@ -115,18 +138,72 @@ onMounted(() => {
       </div>
 
       <!-- Tab Content -->
-      <div class="flex-1 p-2 overflow-auto sm:p-3 md:p-6">
+      <div class="settings-content flex-1 p-0 overflow-visible md:p-6 md:overflow-auto">
         <component :is="activeComponent" class="h-full" />
       </div>
 
       <!-- Footer Accent -->
-      <div class="w-full h-2 rounded-b-lg bg-brand"></div>
+      <div class="w-full h-[9px] rounded-b-lg bg-brand md:h-2"></div>
     </div>
   </div>
 </template>
 
 
 <style>
+.settings-mobile-profile {
+  height: 258px;
+  padding-top: 1px;
+  text-align: center;
+  background-image: url('/images/webp/panoramic-city.webp');
+  background-repeat: no-repeat;
+  background-position: center 7px;
+  background-size: auto 127px;
+}
+
+.settings-mobile-avatar {
+  position: relative;
+  width: 205px;
+  height: 205px;
+  margin: 1px auto 9px;
+  overflow: hidden;
+  border: 9px solid #FF7400;
+  border-top-color: transparent;
+  border-radius: 9999px;
+}
+
+.settings-mobile-avatar img {
+  width: 100%;
+  height: 100%;
+}
+
+.settings-mobile-tabs {
+  height: 36px;
+  margin: 0 19px;
+  background: #FF7400;
+  border-radius: 3px 3px 0 0;
+}
+
+.settings-mobile-tabs button {
+  display: flex;
+  width: 38px;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 767px) {
+  .settings-page {
+    min-height: 0;
+    margin-top: -8px;
+  }
+
+  .settings-panel {
+    flex: none;
+    width: min(303px, calc(100% - 40px));
+    margin: 0 auto;
+    border-radius: 14px;
+  }
+}
+
 .bg-panoramic {
   background-size: 80rem;
   background-position: 40% 85%;

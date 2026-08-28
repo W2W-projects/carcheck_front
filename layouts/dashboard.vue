@@ -78,7 +78,7 @@ function handleDownload(car: any) {
     </div>
 
     <!-- Mobile bottom navigation -->
-    <div class="fixed bottom-0 left-0 right-0 bg-[#0F1829] md:hidden z-50 px-2 py-3 flex justify-between">
+    <div class="fixed bottom-[18px] left-[31px] right-[31px] bg-[#0F1829] rounded-[10px] md:hidden z-50 px-2 py-3 flex justify-between">
       <NuxtLink v-for="(item, index) in sideBarData" :key="item.route_name" :to="item.target"
         :class="[isRouteActive(item.route_name) ? 'text-white' : 'text-gray-400']"
         class="flex flex-col items-center flex-1">
@@ -89,7 +89,7 @@ function handleDownload(car: any) {
     </div>
 
     <!-- body -->
-    <div class="flex flex-col flex-1 pb-24 space-y-[31px] md:pb-0 md:space-y-6">
+    <div class="flex flex-col flex-1 min-w-0 pb-24 space-y-[31px] md:pb-0 md:space-y-6">
       <!-- body-header -->
       <div class="flex flex-col w-full h-[27px] px-[clamp(1.25rem,8.9vw,2rem)] md:px-0 2xl:max-w-screen-2xl 2xl:mx-auto md:h-[3.5rem] md:flex-row"
         :class="{ 'lg:pr-10': isRouteResource() }">
@@ -98,7 +98,25 @@ function handleDownload(car: any) {
           <div class="flex md:pl-1">
             <AppLogo class="w-[5.25rem] md:w-[9rem]" />
           </div>
-          <img src="/images/home/menu.svg" class="h-5 w-[27px] md:hidden" alt="" aria-hidden="true">
+          <details class="relative md:hidden">
+            <summary aria-label="Open account menu"
+              class="flex items-center justify-center h-8 w-9 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+              <img src="/images/home/menu.svg" class="h-5 w-[27px]" alt="" aria-hidden="true">
+            </summary>
+            <div
+              class="absolute right-0 z-50 w-40 py-2 mt-2 bg-white border border-gray-100 rounded-lg shadow-lg top-full">
+              <NuxtLink to="/dashboard/settings"
+                class="flex items-center gap-3 px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">
+                <img src="/assets/svg/dash-settings.svg" class="w-4 h-4 brightness-0" alt="">
+                <span>Settings</span>
+              </NuxtLink>
+              <button type="button" @click="makeLogout"
+                class="flex items-center w-full gap-3 px-4 py-2 text-sm text-left text-gray-800 hover:bg-gray-100">
+                <img src="/images/svg/icon-logout.svg" class="w-4 h-4 brightness-0" alt="">
+                <span>Logout</span>
+              </button>
+            </div>
+          </details>
         </div>
 
         <!-- User info and Actions -->
