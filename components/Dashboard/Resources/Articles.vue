@@ -99,7 +99,7 @@ const updateLastVisibleSlide = () => {
 
     let candidateIndex = -1;
 
-    const slides = Array.from(swiperInstance.slides || []);
+    const slides = Array.from(swiperInstance.slides || []) as HTMLElement[];
 
     for (let index = 0; index < slides.length; index++) {
       const slide = slides[index];
@@ -120,7 +120,7 @@ const updateLastVisibleSlide = () => {
   }
 };
 
-const shouldBeTransparent = (index) => {
+const shouldBeTransparent = (index: number) => {
   if (isAtEnd.value) {
     return false;
   }
