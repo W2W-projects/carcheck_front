@@ -211,11 +211,11 @@ onMounted(async () => {
         </div>
       </div>
       <h1 class="text-sm font-thin mt-7" v-if="plan.plan_code === '48h-expert-subscription'">
-        Get premium reports on
+        Get full reports on
         <span class="font-bold"> {{ plan.reports_count_trial }}</span> checks
       </h1>
       <h1 class="text-sm font-thin mt-7" v-else-if="plan.plan_code === 'premium'">
-        Get a premium report for one check
+        Get a full report for one check
       </h1>
       <h1 class="text-sm font-thin mt-7" v-else>
         Get a basic report for one check

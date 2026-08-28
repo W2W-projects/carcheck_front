@@ -32,6 +32,7 @@ const customPlans = computed(() => carStore.custom_plans ?? []);
 const mappedPlans = computed(() =>
   customPlans.value.slice(0, 3).map(item => ({
     ...item,
+    checksLabel: `${item.reports_count} ${item.reports_count === 1 ? 'Check' : 'Checks'}`,
     pricePerCheck:
       item.reports_count && item.price_after_discount
         ? Number((Number(item.price_after_discount) / item.reports_count).toFixed(2))
@@ -127,7 +128,7 @@ async function buyCustomPlan(plan: CustomPlan): Promise<void> {
         class="w-[52.2vw] min-w-[168px] max-w-[200px] aspect-[188/173] rounded-md px-[14px] pt-3 pb-3 flex flex-col flex-shrink-0 shadow-[0_4px_5px_rgba(0,0,0,0.06)] md:h-[9.4rem] md:w-[10rem] md:min-w-0 md:max-w-none md:aspect-auto md:rounded-lg md:px-[0.8rem] md:pt-[1.2rem] md:pb-[0.6rem] md:shadow-none lg:w-[10.35rem]"
         :style="{ backgroundColor: `rgba(${parseInt(check_colors[index].slice(1, 3), 16)}, ${parseInt(check_colors[index].slice(3, 5), 16)}, ${parseInt(check_colors[index].slice(5, 7), 16)}, 0.30)` }">
         <div class="flex flex-col flex-1 text-center text-[#0F1829] md:hidden">
-          <p class="text-[23px] font-bold leading-7">{{ pln.name }}</p>
+          <p class="text-[23px] font-bold leading-7">{{ pln.checksLabel }}</p>
           <p class="text-xs leading-3">Full Report</p>
           <p class="mt-1 text-[32px] leading-9 text-white"
             style="text-shadow: -1px -1px 0 #0F1829, 1px -1px 0 #0F1829, -1px 1px 0 #0F1829, 1px 1px 0 #0F1829;">
@@ -138,7 +139,7 @@ async function buyCustomPlan(plan: CustomPlan): Promise<void> {
         <div class="flex-1 hidden space-y-2 text-center text-black md:block">
           <div class="flex items-center justify-between">
             <div class="leading-[0.9rem] text-start">
-              <p class="text-[0.95rem] font-extrabold">{{ pln.name }}</p>
+              <p class="text-[0.95rem] font-extrabold">{{ pln.checksLabel }}</p>
               <p class="text-[0.7rem]">Full Report</p>
             </div>
             <p class="text-xl text-white outlined-text"

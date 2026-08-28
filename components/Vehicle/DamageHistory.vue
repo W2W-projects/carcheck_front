@@ -9,7 +9,7 @@
       </h5>
       <p>
         Check the damage history for this MERCEDES-BENZ. See if, where and when this MERCEDES-BENZ had damage and the car repair costs. We also check if this MERCEDES-BENZ was scrapped.
-        Download the premium report here for the results.
+        Download the full report here for the results.
       </p>
       <div class="flex">
         <div class="w-2/5 p-2">

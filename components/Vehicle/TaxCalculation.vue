@@ -6,7 +6,7 @@
     <div class="text-content mb-6">
       <h2 class="text-2xl font-bold text-white mb-2">Tax calculation</h2>
       <p class="text-lg text-gray-200">
-        See the tax details for this vehicle in the premium report.
+        See the tax details for this vehicle in the full report.
       </p>
     </div>
     <div class="flex">

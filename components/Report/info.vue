@@ -40,7 +40,7 @@ const toggleTableVisibility = () => {
         </svg>
 
         <p class="flex items-center justify-center text-xl font-bold md:text-2xl">
-          VEHICLE INFOS
+          VEHICLE INFO
         </p>
         <span>
           <img v-if="isTableVisible" src="/svg/chev-down.svg" alt="">

@@ -100,7 +100,7 @@ onMounted(async () => {
             <span class="md:hidden">Basic</span><span class="hidden md:inline">Basic report</span></th>
           <th
             class="comparison-plan comparison-plan--premium h-[3.26rem] flex items-center justify-center rounded flex-1 border border-brand bg-brand text-[#0F1829]">
-            <span class="md:hidden">Premium</span><span class="hidden md:inline">Premium report</span></th>
+            <span class="md:hidden">Full Report</span><span class="hidden md:inline">Full report</span></th>
           <th
             class="comparison-plan comparison-plan--expert h-[3.26rem] flex items-center justify-center rounded flex-1 border border-[#0F1829] bg-[#0F1829] text-white">
             <span class="md:hidden">Expert</span><span class="hidden md:inline">Expert report</span></th>
@@ -144,7 +144,7 @@ onMounted(async () => {
           </td>
           <td v-for="(item, index) in plans" :key="item?.name"
             class="comparison-value h-[4.65rem] flex items-center justify-center border-b border-l border-gray-400 flex-1 capitalize">
-            <p class="mx-auto text-center">{{ index === 0 ? 'Basic report' : 'Premium report' }}</p>
+            <p class="mx-auto text-center">{{ index === 0 ? 'Basic report' : 'Full report' }}</p>
           </td>
 
         </tr>
