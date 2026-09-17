@@ -41,7 +41,7 @@ definePageMeta({ title: 'Terms and Conditions', alias: '/terms' });
       <header class="relative flex min-h-[300px] items-center overflow-hidden rounded-[20px] bg-[#0f1829] px-7 py-10 text-white sm:min-h-[330px] sm:rounded-[28px] sm:px-[7%] sm:py-14">
         <div class="relative z-10 max-w-[660px]">
           <p class="flex items-center gap-2.5 text-xs font-bold tracking-[.18em] text-[#ff9a46]"><span class="h-0.5 w-6 bg-brand"></span> {{ appName.toUpperCase() }} / LEGAL</p>
-          <h1 class="mb-3.5 mt-5 text-5xl font-bold leading-none tracking-[-.045em] sm:text-6xl lg:text-[76px]">Terms <span class="text-brand">&amp;</span><br>Conditions</h1>
+          <h1 class="mb-3.5 mt-5 text-5xl font-bold leading-none tracking-[-.045em] sm:text-6xl lg:text-[76px]">Terms <span class="text-brand">and</span><br>Conditions</h1>
           <p class="max-w-[490px] text-base leading-6 text-[#cbd2dd] sm:text-lg">The important details about using {{ appName }}, your account, and our vehicle reports.</p>
           <div v-if="termsEffectiveDate" class="mt-7 inline-flex items-center gap-2 rounded-full border border-[#536071] px-3.5 py-2 text-[13px] text-[#e5e8ed]"><span class="h-[7px] w-[7px] rounded-full bg-brand"></span> Effective as of {{ termsEffectiveDate }}</div>
         </div>

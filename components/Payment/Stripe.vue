@@ -260,7 +260,7 @@ watch(errorMessage, (newErrorMessage) => {
                 I agree to the
                 <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" class="text-brand"> privacy policy</a>
                 and
-                <a href="/terms" target="_blank" class="text-brand"> terms & conditions</a> of
+                <a href="/terms" target="_blank" class="text-brand"> Terms and Conditions</a> of
                 service.
             </label>
         </div>

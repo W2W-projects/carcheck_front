@@ -371,7 +371,7 @@ onBeforeUnmount(() => {
           I agree to the
           <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" class="text-brand hover:underline">privacy policy</a>
           and
-          <a href="/terms" target="_blank" rel="noopener noreferrer" class="text-brand hover:underline">terms &amp; conditions</a>
+          <a href="/terms" target="_blank" rel="noopener noreferrer" class="text-brand hover:underline">Terms and Conditions</a>
           of service.
         </label>
       </div>

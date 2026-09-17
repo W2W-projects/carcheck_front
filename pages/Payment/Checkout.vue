@@ -54,6 +54,7 @@ const planPrice = computed(() => {
 });
 
 const subsPrice = computed(() => planStore?.getSubsPrice);
+const { contactEmail } = useRuntimeConfig().public;
 
 </script>
 
@@ -107,7 +108,7 @@ const subsPrice = computed(() => planStore?.getSubsPrice);
         trial,
         unless you cancel, the subscription will automatically renew at {{ subsPrice }} per month. You can
         cancel anytime. Feel
-        free to contact us with any questions.</small>
+        free to <a :href="`mailto:${contactEmail}`" class="font-semibold text-brand underline underline-offset-2">contact us</a> with any questions.</small>
     </div>
   </section>
 </template>
