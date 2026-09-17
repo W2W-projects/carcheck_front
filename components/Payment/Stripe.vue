@@ -258,7 +258,7 @@ watch(errorMessage, (newErrorMessage) => {
                 style="border:1px solid #0F1829 !important; border-radius: 30% !important;" />
             <label for="agree-terms" class="flex-1 text-[15px] font-thin leading-[1.15] lg:text-[20px]">
                 I agree to the
-                <a href="/terms" target="_blank" class="text-brand"> privacy policy</a>
+                <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" class="text-brand"> privacy policy</a>
                 and
                 <a href="/terms" target="_blank" class="text-brand"> terms & conditions</a> of
                 service.

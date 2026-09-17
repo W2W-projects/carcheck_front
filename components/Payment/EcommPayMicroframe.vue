@@ -369,7 +369,7 @@ onBeforeUnmount(() => {
           class="w-4 h-4 shrink-0 border border-[#0F1829] rounded-[30%] lg:w-[1.35rem] lg:h-[1.35rem]" />
         <label for="ecommpay-agree-terms" class="flex-1 text-[13px] font-thin leading-[1.15] lg:text-[17px]">
           I agree to the
-          <a href="/terms" target="_blank" rel="noopener noreferrer" class="text-brand hover:underline">privacy policy</a>
+          <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" class="text-brand hover:underline">privacy policy</a>
           and
           <a href="/terms" target="_blank" rel="noopener noreferrer" class="text-brand hover:underline">terms &amp; conditions</a>
           of service.

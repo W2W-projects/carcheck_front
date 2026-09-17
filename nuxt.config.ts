@@ -48,6 +48,11 @@ export default defineNuxtConfig({
       isDev: ["dev", "develop", "local"].includes(
         process.env.VITE_APP_ENV || process.env.APP_ENV || "local",
       ),
+      appName: "Car-Check",
+      siteUrl: "https://car-check.io",
+      contactEmail: "contact@car-check.io",
+      contactPhone: process.env.NUXT_PUBLIC_CONTACT_PHONE || "+44 20 3951 2469",
+      termsEffectiveDate: "",
     },
   },
 

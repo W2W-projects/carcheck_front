@@ -8,7 +8,6 @@ const isMenuOpen = ref(false);
 function toggleMenu() {
   isMenuOpen.value = !isMenuOpen.value;
 }
-const token = useTokenStore();
 const auth = useAuthStore();
 
 const isAuthenticated = computed(() => {
@@ -22,13 +21,13 @@ const currentPath = computed(() => route.name);
 <template>
   <nav class="relative index-header-container">
     <div
-      class="flex flex-wrap items-center justify-between mx-auto sm:px-8 lg:py-10 lg:px-[9.12rem]"
+      class="flex flex-wrap items-center justify-between mx-auto sm:px-8 lg:py-10 xl:px-[9.12rem]"
       :class="currentPath === 'report' ? 'px-8 pt-12 pb-8' : currentPath === 'index' ? 'home-header md:py-6' : currentPath === 'pricing' ? 'pricing-header md:px-8 md:py-6' : 'px-4 py-6'">
       <AppLogo :class="currentPath === 'report' ? 'w-[5.25rem] sm:w-[9.15rem]' : currentPath === 'index' ? 'h-[7.5cqw] w-[23.38cqw] md:h-auto md:w-[9.15rem]' : currentPath === 'pricing' ? 'h-[7.5cqw] w-[23.38cqw] md:h-auto md:w-[9.15rem]' : 'w-[7.5rem] sm:w-[9.15rem]'" />
 
       <!-- Mobile toggle button with improved styling -->
       <button type="button"
-        class="inline-flex items-center text-gray-700 rounded-lg md:hidden focus:outline-none"
+        class="inline-flex items-center text-gray-700 rounded-lg lg:hidden focus:outline-none"
         :class="currentPath === 'index' ? 'home-menu-button justify-start p-0' : currentPath === 'pricing' ? 'pricing-menu-button justify-start p-0' : 'h-10 w-10 justify-center p-2'"
         aria-controls="navbar-cta" :aria-expanded="isMenuOpen" @click="toggleMenu">
         <span class="sr-only">Toggle menu</span>
@@ -46,19 +45,19 @@ const currentPath = computed(() => route.name);
       </button>
 
       <!-- Desktop navigation (unchanged) -->
-      <div class="items-center justify-between hidden w-auto md:flex">
+      <div class="items-center justify-between hidden w-auto lg:flex">
         <ul
-          class="flex items-center font-medium space-x-8 lg:space-x-[2.8rem] rtl:space-x-reverse text-black text-xl tracking-wide">
+          class="flex items-center font-medium space-x-6 xl:space-x-[2.8rem] rtl:space-x-reverse text-black text-xl tracking-wide">
           <li>
             <NuxtLink to="/how-it-works" class="p-0 hover:text-orange-500">How It Works</NuxtLink>
           </li>
           <li>
             <NuxtLink to="/about" class="p-0 hover:text-orange-500">About Us</NuxtLink>
           </li>
-          <li v-show="currentPath !== 'pricing'">
+          <li>
             <NuxtLink href="/pricing" class="p-0 hover:text-orange-500">Pricing</NuxtLink>
           </li>
-          <li v-show="currentPath !== 'report'">
+          <li>
             <NuxtLink href="/report" class="p-0 hover:text-orange-500">Reports</NuxtLink>
           </li>
           <li class="flex items-center space-x-4">
@@ -73,7 +72,7 @@ const currentPath = computed(() => route.name);
         enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-150 ease-in"
         leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
         <div v-if="isMenuOpen"
-          class="absolute left-0 right-0 z-50 w-full px-4 py-3 bg-white border-t border-gray-100 rounded-b-lg shadow-lg top-full md:hidden">
+          class="absolute left-0 right-0 z-50 w-full px-4 py-3 bg-white border-t border-gray-100 rounded-b-lg shadow-lg top-full lg:hidden">
 
           <!-- User account section (when logged in) -->
           <div v-if="isAuthenticated" class="pb-4 mb-4 border-b border-gray-100">
@@ -147,7 +146,7 @@ const currentPath = computed(() => route.name);
               </NuxtLink>
             </li>
 
-            <li v-show="currentPath !== 'pricing'">
+            <li>
               <NuxtLink href="/pricing"
                 class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-50 active:bg-gray-100">
                 <span class="text-lg">Pricing</span>
@@ -159,7 +158,7 @@ const currentPath = computed(() => route.name);
               </NuxtLink>
             </li>
 
-            <li v-show="currentPath !== 'report'">
+            <li>
               <NuxtLink href="/report"
                 class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-50 active:bg-gray-100">
                 <span class="text-lg">Reports</span>
@@ -196,7 +195,7 @@ const currentPath = computed(() => route.name);
 
 <style scoped>
 .index-header-container {
-  z-index: 1;
+  z-index: 50;
   container-type: inline-size;
 }
 
