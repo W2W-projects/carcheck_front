@@ -1,11 +1,5 @@
 <script setup lang="ts">
-import { useAuthStore } from '~/stores/auth';
-import { computed } from 'vue';
-
-const authStore = useAuthStore();
-const currentUser = computed(() => authStore.getCurrentUser);
-
-
+// const cookieSettingsOpen = useState<boolean>('cookieSettingsOpen', () => false);
 </script>
 
 <template>
@@ -17,17 +11,20 @@ const currentUser = computed(() => authStore.getCurrentUser);
           <h2 class="mb-2 sm:mb-4 text-lg sm:text-xl font-semibold text-[#0F1829]">How it works</h2>
           <ul class="space-y-2 font-medium text-gray-500 sm:space-y-3 dark:text-gray-400">
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">What's included</a>
+              <NuxtLink to="/pricing#report-offering" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">What's included</NuxtLink>
             </li>
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Steps to check</a>
+              <NuxtLink to="/pricing" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Steps to check</NuxtLink>
             </li>
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Another Page</a>
+              <NuxtLink to="/privacy-policy" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Privacy policy</NuxtLink>
             </li>
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Last Page</a>
+              <NuxtLink to="/terms" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Terms</NuxtLink>
             </li>
+            <!-- <li>
+              <button type="button" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin" @click="cookieSettingsOpen = true">Cookie settings</button>
+            </li> -->
           </ul>
         </div>
 
@@ -36,13 +33,10 @@ const currentUser = computed(() => authStore.getCurrentUser);
           <h2 class="mb-2 sm:mb-4 text-lg sm:text-xl font-semibold text-[#0F1829]">About us</h2>
           <ul class="space-y-2 font-medium text-gray-500 sm:space-y-3 dark:text-gray-400">
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Who we are</a>
+              <NuxtLink to="/about" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Who we are</NuxtLink>
             </li>
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Our resources</a>
-            </li>
-            <li>
-              <NuxtLink to="/contact-us" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Contact
+              <NuxtLink to="/contact" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Contact
                 us</NuxtLink>
             </li>
           </ul>
@@ -53,13 +47,13 @@ const currentUser = computed(() => authStore.getCurrentUser);
           <h2 class="mb-2 sm:mb-4 text-lg sm:text-xl font-semibold text-[#0F1829]">Pricing</h2>
           <ul class="space-y-2 font-medium text-gray-500 sm:space-y-3 dark:text-gray-400">
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Best offers</a>
+              <NuxtLink to="/pricing" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Best offers</NuxtLink>
             </li>
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Best prices</a>
+              <NuxtLink to="/pricing" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Best prices</NuxtLink>
             </li>
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Find your plans</a>
+              <NuxtLink to="/pricing" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Find your plans</NuxtLink>
             </li>
           </ul>
         </div>
@@ -69,10 +63,7 @@ const currentUser = computed(() => authStore.getCurrentUser);
           <h2 class="mb-2 sm:mb-4 text-lg sm:text-xl font-semibold text-[#0F1829]">Reports</h2>
           <ul class="space-y-2 font-medium text-gray-500 sm:space-y-3 dark:text-gray-400">
             <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Sample Report</a>
-            </li>
-            <li>
-              <a href="#" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">What's in there</a>
+              <NuxtLink to="/pricing#report-offering" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">What's in there</NuxtLink>
             </li>
           </ul>
         </div>
@@ -93,7 +84,7 @@ const currentUser = computed(() => authStore.getCurrentUser);
             <p class="mt-3 text-base font-thin text-gray-600 sm:mt-4 sm:text-lg">Get in touch with someone</p>
             <NuxtLink
               class="inline-block px-5 py-1 mt-2 text-lg font-bold text-white rounded-sm sm:px-6 sm:text-xl bg-brand"
-              to="#check">
+              to="/">
               Start Checking
             </NuxtLink>
           </div>

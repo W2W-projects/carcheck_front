@@ -16,7 +16,7 @@ useHead({
   <div class="bg-[#EEEEEE]">
     <Header />
     <main>
-      <NuxtPage />
+      <slot />
     </main>
     <Footer />
   </div>
