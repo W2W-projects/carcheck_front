@@ -20,7 +20,7 @@
               <NuxtLink to="/privacy-policy" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Privacy policy</NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/terms" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Terms</NuxtLink>
+              <NuxtLink to="/terms" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin">Terms and Conditions</NuxtLink>
             </li>
             <!-- <li>
               <button type="button" class="hover:underline text-[#0F1829] text-base sm:text-lg font-thin" @click="cookieSettingsOpen = true">Cookie settings</button>
