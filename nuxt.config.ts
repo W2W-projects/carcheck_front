@@ -50,7 +50,7 @@ export default defineNuxtConfig({
       ),
       appName: "Car-Check",
       siteUrl: "https://car-check.io",
-      contactEmail: "contact@car-check.io",
+      contactEmail: process.env.NUXT_PUBLIC_CONTACT_EMAIL || "",
       contactPhone: process.env.NUXT_PUBLIC_CONTACT_PHONE || "+44 20 3951 2469",
       termsEffectiveDate: "",
     },
