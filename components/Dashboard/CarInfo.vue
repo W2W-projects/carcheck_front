@@ -1,28 +1,31 @@
 <template>
   <div
-    class="h-[12.5rem] 2xl:h-[14rem] rounded-xl bg-white flex flex-col items-center justify-between px-[1.7rem] py-[1.25rem] text-black">
-    <div class="flex w-full">
+    class="car-card flex-none rounded-xl bg-white flex flex-col items-center justify-between text-black md:h-[12.5rem] md:w-auto md:min-w-0 md:max-w-none md:aspect-auto md:px-[1.7rem] md:py-[1.25rem] 2xl:h-[14rem]"
+    :class="fullWidth ? 'garage-card' : 'w-[71.79vw] min-w-[230px] max-w-[280px] aspect-[258/182] px-6 py-4'">
+    <div class="car-card__header flex w-full">
       <div class="flex items-center flex-1 space-x-1">
-        <div v-show="car?.details?.vbrand_logo" class="w-7">
+        <div v-show="car?.details?.vbrand_logo" class="car-card__logo w-3 md:w-7">
           <img :src="car?.details?.vbrand_logo" class="w-full" alt="Logo">
         </div>
         <div class="flex flex-col leading-3">
-          <small class="font-bold">{{ car.details?.make ?? car.details?.makeModel }}</small>
-          <p class="text-[0.5rem] font-bold text-[#CFCCCC]">{{ car.details?.makeModel }}</p>
+          <small class="car-card__make text-[11px] font-bold md:text-[13px]">{{ car.details?.make ?? car.details?.makeModel }}</small>
+          <p class="car-card__model text-[0.5rem] font-bold text-[#CFCCCC]">{{ car.details?.makeModel }}</p>
         </div>
       </div>
       <div>
-        <p class="text-[0.65rem] font-bold">{{ car.details?.yearOfManufacture }}</p>
+        <p class="car-card__year text-[0.65rem] font-bold">{{ car.details?.yearOfManufacture }}</p>
       </div>
     </div>
-    <div>
-      <img :src="car.image" alt="" class="max-w-[9rem] 2xl:max-w-[14rem]">
+    <div class="car-card__image flex items-center justify-center">
+      <img :src="car.thumb || car.image" alt="" loading="lazy"
+        class="car-card__image-file max-w-[172px] md:max-w-[9rem] 2xl:max-w-[14rem]"
+        @error="onCarImageError">
     </div>
 
-    <div class="flex w-full space-x-2">
+    <div class="car-card__meta flex w-full space-x-2">
       <div class="flex justify-between flex-1 space-x-1">
         <div class="leading-3">
-          <div class="text-[0.5rem] space-x-1 flex items-center">
+          <div class="car-card__label text-[0.5rem] space-x-1 flex items-center">
             <span>
               <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8" fill="none">
                 <rect x="0.67571" y="3.06058" width="6.5" height="2" transform="rotate(-21.5245 0.67571 3.06058)"
@@ -45,12 +48,12 @@
             </span>
             <span>Plate</span>
           </div>
-          <div class="text-[0.7rem] uppercase font-bold">
+          <div class="car-card__value text-[9px] uppercase font-bold md:text-[0.7rem]">
             {{ car.reg_number }}
           </div>
         </div>
         <div class="leading-3">
-          <div class="text-[0.5rem] space-x-1 flex items-center">
+          <div class="car-card__label text-[0.5rem] space-x-1 flex items-center">
             <span>
               <svg xmlns="http://www.w3.org/2000/svg" width="7" height="7" viewBox="0 0 7 7" fill="none">
                 <g clip-path="url(#clip0_959_361)">
@@ -82,12 +85,12 @@
             </span>
             <span>Mileage</span>
           </div>
-          <div class="text-[0.7rem] font-bold">
+          <div class="car-card__value text-[9px] font-bold md:text-[0.7rem]">
             {{ car.details?.mileage }}
           </div>
         </div>
         <div class="leading-3">
-          <div class="text-[0.5rem] space-x-1 flex items-center">
+          <div class="car-card__label text-[0.5rem] space-x-1 flex items-center">
             <span>
               <svg xmlns="http://www.w3.org/2000/svg" width="9" height="7" viewBox="0 0 9 7" fill="none">
                 <path
@@ -103,12 +106,12 @@
             </span>
             <span>Type</span>
           </div>
-          <div class="text-[0.7rem] font-bold">
+          <div class="car-card__value text-[9px] font-bold md:text-[0.7rem]">
             {{ car.details?.fuelType }}
           </div>
         </div>
         <button @click="handleSeeMoreClick(car)"
-          class="flex items-center space-x-1 text-[0.58rem]  font-bold text-[#C2C2C2]">
+          class="car-card__more flex items-center space-x-1 text-[9px] font-bold text-[#C2C2C2] md:text-[0.58rem]">
           <p>See more</p>
           <span>
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -135,15 +138,78 @@ defineProps({
   car: {
     type: Object,
     required: true
+  },
+  fullWidth: {
+    type: Boolean,
+    default: false
   }
 });
 
 const { isModalOpen, selectedCar, showCarDetailsModal } = useCarDetails();
 const { downloadReport, isDownloading, isAnyDownloading } = useDownloadReport();
 
+function onCarImageError(event: Event) {
+  const img = event.target as HTMLImageElement;
+
+  if (img.dataset.fallbackApplied) return;
+
+  img.dataset.fallbackApplied = 'true';
+  img.src = '/images/placeholder/car.png';
+}
+
 function handleSeeMoreClick(data: any) {
   showCarDetailsModal(data);
 }
 </script>
 
-<style></style>
+<style scoped>
+@media (max-width: 767px) {
+  .garage-card {
+    width: calc(100vw - 53px);
+    min-width: 0;
+    max-width: none;
+    aspect-ratio: 307 / 216;
+    padding: 19px 28px 24px;
+    border-radius: 13px;
+  }
+
+  .garage-card .car-card__logo {
+    width: 14px;
+  }
+
+  .garage-card .car-card__make,
+  .garage-card .car-card__year {
+    font-size: 13px;
+    line-height: 15px;
+  }
+
+  .garage-card .car-card__model {
+    font-size: 9px;
+    line-height: 11px;
+  }
+
+  .garage-card .car-card__image {
+    width: 100%;
+    height: 46%;
+  }
+
+  .garage-card .car-card__image-file {
+    width: 82%;
+    max-width: none;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .garage-card .car-card__label,
+  .garage-card .car-card__value {
+    font-size: 11px;
+    line-height: 13px;
+  }
+
+  .garage-card .car-card__more {
+    font-size: 12px;
+    line-height: 14px;
+    white-space: nowrap;
+  }
+}
+</style>

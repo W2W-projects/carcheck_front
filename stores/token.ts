@@ -1,7 +1,5 @@
-import { navigateTo } from "#app";
 import { defineStore } from "pinia";
 import { jwtDecode } from "jwt-decode";
-import { useAuthStore } from "./auth";
 
 interface JwtPayload {
   exp?: number;
@@ -42,9 +40,7 @@ export const useTokenStore = defineStore("token", {
     },
 
     removeToken(): void {
-      useAuthStore().$reset();
       this.$reset();
-      void navigateTo("/auth/login");
     },
   },
 });

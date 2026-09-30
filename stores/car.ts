@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import ApiService from "~/services/apiService";
+import { useSubscriptionStore } from "~/stores/subscription";
 import type {
   ApiDataResponse,
   ApiPayloadResponse,
@@ -18,6 +19,10 @@ interface CarState {
   userCarsList: CarListItem[] | null;
   userReports: CarReport[] | null;
   custom_plans: CustomPlan[] | null;
+  etags: {
+    requestCounts: string | null;
+    userCarsList: string | null;
+  };
 }
 
 export const useCarStore = defineStore("car", {
@@ -31,10 +36,14 @@ export const useCarStore = defineStore("car", {
     userCarsList: null,
     userReports: null,
     custom_plans: null,
+    etags: {
+      requestCounts: null,
+      userCarsList: null,
+    },
   }),
 
   persist: {
-    pick: ["car_reg_number", "requestCounts", "userCarsList", "userReports"],
+    pick: ["car_reg_number", "requestCounts", "userCarsList", "userReports", "etags"],
   },
 
   getters: {
@@ -52,18 +61,33 @@ export const useCarStore = defineStore("car", {
     },
 
     async fetchRequestCounts(): Promise<RequestCounts> {
-      const response = await ApiService.get<ApiPayloadResponse<RequestCounts>>(
+      const response = await ApiService.getConditional<ApiPayloadResponse<RequestCounts>>(
         "fetch-user-request-counts",
+        this.etags.requestCounts,
       );
-      this.requestCounts = response.payload;
+
+      if (!response.notModified && response.data) {
+        this.requestCounts = response.data.payload;
+        this.etags.requestCounts = response.etag;
+        if (this.requestCounts.has_subscription) {
+          await useSubscriptionStore().setHasSubscription(this.requestCounts.has_subscription);
+        }
+      }
+
       return this.requestCounts;
     },
 
     async fetchCarsUserList(): Promise<CarListItem[] | null> {
-      const response = await ApiService.get<ApiDataResponse<CarListItem[]>>(
+      const response = await ApiService.getConditional<ApiDataResponse<CarListItem[]>>(
         "v1/fetch-users-car-detail",
+        this.userCarsList ? this.etags.userCarsList : null,
       );
-      this.userCarsList = response.data;
+
+      if (!response.notModified && response.data) {
+        this.userCarsList = response.data.data;
+        this.etags.userCarsList = response.etag;
+      }
+
       return this.userCarsList;
     },
 
@@ -82,7 +106,8 @@ export const useCarStore = defineStore("car", {
       return this.userReports;
     },
 
-    async fetchAllCustomPlans(): Promise<CustomPlan[] | null> {
+    async fetchAllCustomPlans(force = false): Promise<CustomPlan[] | null> {
+      if (!force && this.custom_plans) return this.custom_plans;
       const response = await ApiService.get<ApiDataResponse<CustomPlan[]>>("custom-plans");
       this.custom_plans = response.data;
       return this.custom_plans;

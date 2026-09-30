@@ -20,6 +20,7 @@ export default {
         "primary-orange": "#FF7400"
       },
       fontFamily: {
+        norms: ["TT Norms Pro", "sans-serif"],
         roboto: ["Roboto", "sans-serif"],
       },
     },

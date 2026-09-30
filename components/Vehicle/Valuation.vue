@@ -7,7 +7,7 @@
       <h5 class="mb-3 text-base font-semibold text-green-900 md:text-xl dark:text-white">
         Valuation Details
       </h5>
-      <p class="text-sm">What is this car worth? See the vehicle value of this MERCEDES-BENZ in the premium report. We check: purchase value, age, mileage, MOT history, damages and online sale prices.
+      <p class="text-sm">What is this car worth? See the vehicle value of this MERCEDES-BENZ in the full report. We check: purchase value, age, mileage, MOT history, damages and online sale prices.
         </p>
       <div class="flex">
         <div class="w-full p-2">

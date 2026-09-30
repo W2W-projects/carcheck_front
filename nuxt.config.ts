@@ -16,6 +16,10 @@ export default defineNuxtConfig({
   plugins: ["~/plugins/fontawesome.js", "~/plugins/eventBus.js"],
 
   vite: {
+    optimizeDeps: {
+      include: ["swiper/vue", "swiper/modules", "chart.js", "date-fns"],
+    },
+
     build: {
       rolldownOptions: {
         checks: { pluginTimings: false },
@@ -41,7 +45,19 @@ export default defineNuxtConfig({
 
     public: {
       stripe_public_key: process.env.STRIPE_PUBLIC_KEY,
+      isDev: ["dev", "develop", "local"].includes(
+        process.env.VITE_APP_ENV || process.env.APP_ENV || "local",
+      ),
+      appName: "Car-Check",
+      siteUrl: "https://car-check.io",
+      contactEmail: process.env.NUXT_PUBLIC_CONTACT_EMAIL || "",
+      contactPhone: process.env.NUXT_PUBLIC_CONTACT_PHONE || "+44 20 3951 2469",
+      termsEffectiveDate: "",
     },
+  },
+
+  routeRules: {
+    "/report": { ssr: false },
   },
 
   compatibilityDate: "2024-09-05",

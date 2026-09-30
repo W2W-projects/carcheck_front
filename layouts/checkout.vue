@@ -17,7 +17,7 @@ useHead({
       <img src="/svg/logo.svg" class="w-[5.25rem] lg:w-[9.15rem]" alt="Car Check">
     </header>
     <main>
-      <NuxtPage />
+      <slot />
     </main>
   </div>
 </template>

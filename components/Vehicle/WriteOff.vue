@@ -15,7 +15,7 @@
 
                 If not, and you buy this FORD then you could lose the money and the car you paid for.
 
-                Download the premium report here and check if this FORD is financed.
+                Download the full report here and check if this FORD is financed.
             </p>
             <div class="flex">
                 <div class="w-full p-2">

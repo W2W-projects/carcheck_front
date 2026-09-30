@@ -9,6 +9,11 @@ const planPrice = computed(() => {
     return `${plan.currency?.symbol || '£'}${plan.plan_code === 'single-offer' ? plan.amount_premium : plan.amount_trial}`;
 });
 
+const trialChecks = computed(() => {
+    const plan = selectedPlan.value;
+    return plan?.reports_count_trial || plan?.reports_count || 0;
+});
+
 const includedData = [{
     icon: 'damage-check.svg',
     text: 'Damage check',
@@ -45,7 +50,7 @@ const includedData = [{
                     <p class="text-[17px] font-bold leading-5 text-[#733500] lg:text-xl lg:leading-6">{{ selectedPlan?.name || 'Plan' }}</p>
                     <div class="mt-0.5">
                         <p class="text-[13.5px] leading-3 lg:text-[16px] lg:leading-[14px]">Generate up to</p>
-                        <p class="text-[24px] leading-5 font-bold lg:text-[28px] lg:leading-6">{{ selectedPlan?.reports_count ?? 0 }} reports</p>
+                        <p class="text-[24px] leading-5 font-bold lg:text-[28px] lg:leading-6">{{ trialChecks }} {{ trialChecks === 1 ? 'report' : 'reports' }}</p>
                     </div>
                 </div>
                 <div class="flex flex-col items-center justify-center">
